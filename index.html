@@ -81,6 +81,7 @@
   .cmd { color: var(--primary); } .out { color: #666; } .ok { color: #00ff88; } .warn { color: #ffbd2e; }
   .cursor { display: inline-block; width: 7px; height: 13px; background: var(--primary); animation: blink 1s infinite; vertical-align: middle; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:translateY(0)} }
 
   section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
   h2 { font-size: 1.6rem; margin-bottom: 2rem; text-align: center; letter-spacing: 2px; }
@@ -133,6 +134,47 @@
     font-family: 'Courier New', monospace;
   }
   .buy-btn:hover { box-shadow: 0 4px 20px rgba(232,86,42,0.4); transform: translateY(-2px); }
+
+  /* DISCOUNT CODE */
+  .discount-wrap {
+    margin-bottom: 1.2rem;
+  }
+  .discount-label {
+    font-size: 0.78rem; color: #555; letter-spacing: 1px; margin-bottom: 0.5rem;
+    font-family: 'Courier New', monospace; text-transform: uppercase;
+  }
+  .discount-row {
+    display: flex; gap: 0.5rem;
+  }
+  .discount-input {
+    flex: 1; padding: 0.7rem 1rem;
+    background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 6px;
+    color: var(--text); font-family: 'Courier New', monospace; font-size: 0.9rem;
+    outline: none; transition: border-color 0.2s; text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .discount-input:focus { border-color: var(--primary); }
+  .discount-input.valid { border-color: #00ff88; }
+  .discount-input.invalid { border-color: #ff4444; }
+  .discount-apply-btn {
+    padding: 0.7rem 1.2rem;
+    background: #1a1a1a; border: 1px solid #333; border-radius: 6px;
+    color: var(--text); font-family: 'Courier New', monospace; font-size: 0.85rem;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 1px;
+  }
+  .discount-apply-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .discount-msg {
+    font-size: 0.8rem; margin-top: 0.5rem; font-family: 'Courier New', monospace;
+    min-height: 1.1rem; letter-spacing: 0.5px;
+  }
+  .discount-msg.success { color: #00ff88; }
+  .discount-msg.error   { color: #ff4444; }
+  .price-original {
+    text-decoration: line-through; color: #555; font-size: 1.4rem; margin-right: 0.3rem;
+  }
+  .price-discounted {
+    color: #00ff88 !important;
+  }
 
   /* LICENSE */
   .license-box {
@@ -213,7 +255,7 @@
       <h3>Cmdr System V1</h3>
       <p>The official command system DLC for the Event System.</p>
       <div class="price-box">
-        <div class="price">🟠 125 <span style="font-size:1.2rem;color:#aaa">Robux</span></div>
+        <div class="price" id="priceDisplay2">🟠 125 <span style="font-size:1.2rem;color:#aaa">Robux</span></div>
         <div class="price-sub">One-time purchase · No subscription</div>
       </div>
     </div>
@@ -229,7 +271,32 @@
       <div class="warning-box">
         ⚠️ <span>This is a <strong>one-time purchase</strong>. The gamepass cannot be transferred or refunded once activated.</span>
       </div>
-      <a href="https://www.roblox.com/de/game-pass/1738044254/125" class="buy-btn">🟠 BUY NOW ON ROBLOX – 125 R$</a>
+      <!-- DISCOUNT CODE -->
+      <div class="discount-wrap">
+        <div class="discount-label">&gt; Discount Codes <span id="codeCounter" style="color:#555;font-size:0.75rem">(0/10 used)</span></div>
+        <div id="codeSlots"></div>
+        <button class="discount-apply-btn" id="addCodeBtn" onclick="addCodeSlot()" style="margin-top:0.5rem;width:100%">+ ADD CODE</button>
+      </div>
+
+      <!-- DISCORD JOIN BOX (hidden until code valid) -->
+      <div id="discordJoin" style="display:none; align-items:center; gap:1rem;
+        background:#1a1a2e; border:1px solid #5865F2; border-radius:8px;
+        padding:1rem 1.2rem; margin-bottom:1.2rem; animation: fadeIn 0.4s ease;">
+        <div style="font-size:1.8rem">💬</div>
+        <div style="flex:1">
+          <div style="font-size:0.75rem; color:#5865F2; letter-spacing:1px; font-family:'Courier New',monospace; margin-bottom:0.2rem;">JOIN TO RECEIVE YOUR FILE</div>
+          <div style="font-size:0.85rem; color:#e0e0e0; font-family:'Segoe UI',sans-serif;">Join the Discord server to get your discounted file.</div>
+        </div>
+        <a href="https://discord.gg/XaZSGVFvzV" target="_blank"
+          style="background:#5865F2; color:white; padding:0.6rem 1.2rem;
+          border-radius:6px; text-decoration:none; font-weight:700;
+          font-family:'Courier New',monospace; font-size:0.85rem; letter-spacing:1px;
+          white-space:nowrap; transition:background 0.2s;"
+          onmouseover="this.style.background='#4752c4'"
+          onmouseout="this.style.background='#5865F2'">JOIN NOW</a>
+      </div>
+
+      <a href="https://www.roblox.com/de/game-pass/1738044254/125" class="buy-btn" id="buyBtn">🟠 BUY NOW ON ROBLOX – <span id="priceDisplay">125 R$</span></a>
     </div>
   </div>
 </section>
@@ -267,5 +334,112 @@
   <p>© 2026 <span>CMDR_SYSTEM</span> · Roblox DLC · Hosted on GitHub Pages · All rights reserved</p>
 </footer>
 
+<script>
+  const MAX_CODES = 10;
+  const usedCodes = [];
+
+  const CODES = {
+    'CMDREVENT': function() {
+      const BASE = 125, DISC = 5;
+      const discounted = Math.round(BASE * (1 - DISC / 100));
+      document.getElementById('priceDisplay').innerHTML =
+        `<span class="price-original">${BASE} R$</span><span class="price-discounted">${discounted} R$</span>`;
+      document.getElementById('priceDisplay2').innerHTML =
+        `🟠 <span class="price-original" style="font-size:1.6rem">${BASE}</span> <span class="price-discounted" style="font-size:2.2rem;font-weight:700">${discounted}</span> <span style="font-size:1.2rem;color:#aaa">Robux</span>`;
+      document.getElementById('buyBtn').href = 'https://www.roblox.com/de/game-pass/1735695643/119-Rbx';
+      return '✓ Code accepted! 5% discount applied.';
+    },
+    'TAZZFREECMDR': function() {
+      document.getElementById('discordJoin').style.display = 'flex';
+      return '✓ Code accepted! GO IN THE SUPPORT FOR THE FREE CMDR EVENT PANEL!';
+    }
+  };
+
+  function updateCounter() {
+    document.getElementById('codeCounter').textContent = `(${usedCodes.length}/${MAX_CODES} used)`;
+  }
+
+  function addCodeSlot() {
+    if (usedCodes.length >= MAX_CODES) return;
+    const slots = document.getElementById('codeSlots');
+    const id = 'slot_' + Date.now();
+    const div = document.createElement('div');
+    div.className = 'discount-row';
+    div.style.marginBottom = '0.4rem';
+    div.id = id;
+    div.innerHTML = `
+      <input type="text" class="discount-input" placeholder="ENTER CODE..." maxlength="20"
+        onkeydown="if(event.key==='Enter') applyCode('${id}')" />
+      <button class="discount-apply-btn" onclick="applyCode('${id}')">APPLY</button>
+      <div class="discount-msg" id="msg_${id}" style="display:none;margin-top:0"></div>`;
+    slots.appendChild(div);
+
+    // Move the msg div below the row
+    const row = div;
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'discount-msg';
+    msgDiv.id = 'msg_' + id;
+    msgDiv.style.marginBottom = '0.4rem';
+    slots.appendChild(msgDiv);
+
+    // Remove inline msg from inner div since we made a separate one
+    div.querySelector('.discount-msg').remove();
+
+    // Hide add button if max reached
+    if (slots.children.length / 2 >= MAX_CODES) {
+      document.getElementById('addCodeBtn').style.display = 'none';
+    }
+  }
+
+  function applyCode(slotId) {
+    const slot = document.getElementById(slotId);
+    const input = slot.querySelector('input');
+    const msg = document.getElementById('msg_' + slotId);
+    const code = input.value.trim().toUpperCase();
+
+    if (input.disabled) {
+      msg.textContent = '✓ Already applied!';
+      msg.className = 'discount-msg success';
+      return;
+    }
+
+    if (code === '') {
+      msg.textContent = '⚠ Please enter a code.';
+      msg.className = 'discount-msg error';
+      return;
+    }
+
+    if (usedCodes.includes(code)) {
+      msg.textContent = '✗ This code was already used.';
+      msg.className = 'discount-msg error';
+      input.classList.add('invalid');
+      setTimeout(() => input.classList.remove('invalid'), 1500);
+      return;
+    }
+
+    if (CODES[code]) {
+      const resultMsg = CODES[code]();
+      usedCodes.push(code);
+      input.classList.add('valid');
+      input.disabled = true;
+      slot.querySelector('button').disabled = true;
+      slot.querySelector('button').style.opacity = '0.4';
+      msg.textContent = resultMsg;
+      msg.className = 'discount-msg success';
+      updateCounter();
+    } else {
+      input.classList.remove('valid');
+      input.classList.add('invalid');
+      msg.textContent = '✗ Invalid code. Please try again.';
+      msg.className = 'discount-msg error';
+      setTimeout(() => input.classList.remove('invalid'), 1500);
+    }
+  }
+
+  // Add first slot on load
+  document.addEventListener('DOMContentLoaded', () => {
+    addCodeSlot();
+  });
+</script>
 </body>
 </html>
