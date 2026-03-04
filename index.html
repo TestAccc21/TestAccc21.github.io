@@ -372,6 +372,7 @@
   .role-developer { color: #ffbd2e; }
   .role-moderator { color: #5865F2; }
   .role-trial     { color: #aaa; }
+  .role-collaborator { color: #ff69b4; }
 
   /* TEAM MODAL */
   #teamModal {
@@ -640,7 +641,7 @@
   <div class="logo">&gt; CMDR</div>
   <div>
     <a href="#product">Product</a>
-    <a href="#license">License</a>
+    <button onclick="openLicensePage()" style="background:none;border:none;color:#e0e0e0;cursor:pointer;font-family:'Courier New',monospace;font-size:0.85rem;letter-spacing:0;margin-left:1.2rem;transition:color 0.2s;" onmouseover="this.style.color='#00ff88'" onmouseout="this.style.color='#e0e0e0'">License</button>
     <button onclick="openTeamPage()" style="background:var(--primary);color:#000;padding:0.4rem 1rem;border-radius:4px;font-weight:700;border:none;cursor:pointer;font-family:'Courier New',monospace;font-size:0.85rem;letter-spacing:1px;">👥 TeamList</button>
     <a href="#support">Support</a>
     <a href="https://discord.gg/XaZSGVFvzV" class="discord-nav">💬 Discord</a>
@@ -679,7 +680,6 @@
   <p>A powerful command extension for your Roblox Event System. Advanced controls, automation & more — one purchase, forever yours.</p>
   <p class="sub">Requires base Event System · Roblox Gamepass · One-time purchase</p>
   <div class="btn-group">
-    <a href="https://www.roblox.com/de/game-pass/1738044254/125" class="btn-rbx">🟠 Buy on Roblox – 125 Robux</a>
     <a href="https://discord.gg/XaZSGVFvzV" class="btn-discord">💬 Join Discord</a>
   </div>
 
@@ -699,6 +699,21 @@
     </div>
   </div>
 </div>
+
+
+<!-- COLLABORATOR -->
+<section style="padding-bottom:0; max-width:900px; margin:0 auto; padding:2rem 2rem 0;">
+  <h2 style="font-size:1.6rem;margin-bottom:1.5rem;text-align:center;letter-spacing:2px;">&gt; <span style="color:#00ff88">COLLABORATOR</span>_</h2>
+  <div style="background:#111;border:1px solid #ff69b4;border-radius:12px;padding:1.8rem;display:flex;align-items:center;gap:1.5rem;max-width:500px;margin:0 auto;box-shadow:0 0 30px rgba(255,105,180,0.1);">
+    <img src="roky.png" style="width:75px;height:75px;border-radius:50%;border:2px solid #ff69b4;object-fit:cover;flex-shrink:0;box-shadow:0 0 15px rgba(255,105,180,0.3);" onerror="this.src='https://ui-avatars.com/api/?name=Roky&background=ff69b4&color=fff&size=75&bold=true'" alt="Roky">
+    <div style="flex:1;">
+      <div style="font-family:'Courier New',monospace;font-weight:700;color:#e0e0e0;font-size:1.1rem;letter-spacing:1px;margin-bottom:0.2rem;">Roky</div>
+      <div style="font-size:0.72rem;color:#ff69b4;letter-spacing:1.5px;font-family:'Courier New',monospace;margin-bottom:0.6rem;">✦ COLLABORATOR</div>
+      <div style="font-size:0.85rem;color:#888;font-family:'Segoe UI',sans-serif;line-height:1.5;margin-bottom:1rem;">Buy from me the Events! 3 packs available: Gold, Silver and Bronze</div>
+      <button disabled style="width:100%;padding:0.7rem;background:#1a1a1a;border:1px solid #444;border-radius:6px;color:#555;font-family:'Courier New',monospace;font-size:0.85rem;letter-spacing:1px;cursor:not-allowed;opacity:0.6;">🔒 SOON</button>
+    </div>
+  </div>
+</section>
 
 <!-- PRODUCT -->
 <section id="product">
@@ -720,8 +735,8 @@
     <div class="product-body">
       <ul class="feat-list">
         <li>Full Cmdr V1 command system</li>
-        <li>Event System integration</li>
-        <li>Easy setup via Roblox Gamepass</li>
+        <!-- <li>Event System integration</li> -->
+        <li>Contact Support for Setup Video</li>
         <li>All future updates included</li>
         <li>Discord support included</li>
         <li>One-time payment – own it forever</li>
@@ -754,26 +769,12 @@
           onmouseout="this.style.background='#5865F2'">JOIN NOW</a>
       </div>
 
-      <a href="https://www.roblox.com/de/game-pass/1738044254/125" class="buy-btn" id="buyBtn">🟠 BUY NOW ON ROBLOX – <span id="priceDisplay">125 R$</span></a>
+      <button id="buyBtn" class="buy-btn" style="width:100%;border:none;cursor:pointer;">🟠 BUY NOW ON ROBLOX – <span id="priceDisplay">125 R$</span></button>
     </div>
   </div>
 </section>
 
-<!-- LICENSE -->
-<section id="license" style="padding-top:0">
-  <h2>&gt; <span>LICENSE</span>_</h2>
-  <div class="license-box">
-    <h3>📄 Terms of Purchase</h3>
-    <ul>
-      <li><strong>One-time Purchase</strong> – Pay once, use forever. No recurring fees.</li>
-      <li><strong>Personal Use Only</strong> – The gamepass is tied to your Roblox account.</li>
-      <li><strong>No Redistribution</strong> – You may not share or resell the DLC or its files.</li>
-      <li><strong>No Refunds</strong> – All sales are final due to the digital nature of the product.</li>
-      <li><strong>Updates</strong> – All future Cmdr V1 updates are free for existing owners.</li>
-      <li><strong>Support</strong> – Join the Discord server for help and bug reports.</li>
-    </ul>
-  </div>
-</section>
+
 
 
 
@@ -796,6 +797,39 @@
 </footer>
 
 <script>
+
+
+  var buyUrl = 'https://www.roblox.com/de/game-pass/1738044254/125';
+  function openWarningModal() {
+    var modal = document.getElementById('warningModal');
+    modal.style.display = 'flex';
+  }
+  function closeWarningModal() {
+    var modal = document.getElementById('warningModal');
+    modal.style.display = 'none';
+  }
+  function confirmBuy() {
+    closeWarningModal();
+    window.open(buyUrl, '_blank');
+  }
+  // Attach buy button click after DOM loads
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('buyBtn');
+    if (btn) btn.addEventListener('click', function() {
+      if (btn.style.pointerEvents !== 'none') openWarningModal();
+    });
+  });
+
+  function openLicensePage() {
+    var lp = document.getElementById('licensePage');
+    lp.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLicensePage() {
+    document.getElementById('licensePage').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
   function openTeamPage() {
     var tp = document.getElementById('teamPage');
     tp.style.display = 'block';
@@ -1460,7 +1494,7 @@ const BLACK_FRIDAY      = false;  // 🖤 Black Friday discount
 
 // =============================================
 // 🛒 DISABLE BUY BUTTON — true = disabled
-const DISABLE_BUY_BUTTON = true;
+const DISABLE_BUY_BUTTON = false;
 // =============================================
 
 // ── BLACK FRIDAY LOGIC ──
@@ -1479,7 +1513,7 @@ if (BLACK_FRIDAY) {
     '<span class="price-original">125 R$</span><span class="price-discounted">113 R$</span>';
   document.getElementById('priceDisplay2').innerHTML =
     '🟠 <span class="price-original" style="font-size:1.6rem">125</span> <span class="price-discounted" style="font-size:2.2rem;font-weight:700">113</span> <span style="font-size:1.2rem;color:#aaa">Robux</span>';
-  document.getElementById('buyBtn').href = 'https://www.roblox.com/de/game-pass/1737709642/113-Rbx';
+  buyUrl = 'https://www.roblox.com/de/game-pass/1737709642/113-Rbx';
 }
 
 // ── NEWYEAR FIREWORKS LOGIC ──
@@ -1552,6 +1586,104 @@ document.getElementById('adminOverlay').addEventListener('click', function(e) {
 </script>
 
 
+
+
+<!-- LICENSE PAGE -->
+<div id="licensePage" style="display:none;position:fixed;inset:0;background:#0a0a0a;z-index:5000;overflow-y:auto;font-family:'Courier New',monospace;">
+
+  <!-- Nav -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2rem;background:#111;border-bottom:1px solid #00ff88;position:sticky;top:0;z-index:100;">
+    <div style="font-size:1.4rem;font-weight:700;color:#00ff88;letter-spacing:2px;">&gt; CMDR</div>
+    <button onclick="closeLicensePage()" style="background:none;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:0.5rem 1rem;font-family:'Courier New',monospace;font-size:0.85rem;cursor:pointer;letter-spacing:1px;">← Back</button>
+  </div>
+
+  <!-- Hero -->
+  <div style="text-align:center;padding:3rem 2rem 2rem;background:radial-gradient(ellipse at center,#001a0d 0%,#0a0a0a 70%);border-bottom:1px solid #1a1a1a;">
+    <h1 style="font-size:2rem;margin-bottom:0.5rem;">&gt; <span style="color:#00ff88">LICENSE</span>_</h1>
+    <p style="color:#555;font-size:0.85rem;letter-spacing:2px;">Terms of Purchase</p>
+  </div>
+
+  <!-- Content -->
+  <div style="max-width:700px;margin:0 auto;padding:2.5rem 2rem;">
+    <div style="background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:2rem;">
+
+      <div style="display:flex;flex-direction:column;gap:0;">
+
+        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
+          <span style="color:#00ff88;font-size:1.2rem;margin-top:0.1rem;">📄</span>
+          <div>
+            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">One-time Purchase</div>
+            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">Pay once, use forever. No recurring fees.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
+          <span style="color:#00ff88;font-size:1.2rem;margin-top:0.1rem;">👤</span>
+          <div>
+            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">Personal Use Only</div>
+            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">The gamepass is tied to your Roblox account.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
+          <span style="color:#ff4444;font-size:1.2rem;margin-top:0.1rem;">🚫</span>
+          <div>
+            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">No Redistribution</div>
+            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">You may not share or resell the DLC or its files.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
+          <span style="color:#ff4444;font-size:1.2rem;margin-top:0.1rem;">💸</span>
+          <div>
+            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">No Refunds</div>
+            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">All sales are final due to the digital nature of the product.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
+          <span style="color:#00ff88;font-size:1.2rem;margin-top:0.1rem;">🔄</span>
+          <div>
+            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">Updates</div>
+            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">All future Cmdr V1 updates are free for existing owners.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;">
+          <span style="color:#5865F2;font-size:1.2rem;margin-top:0.1rem;">💬</span>
+          <div>
+            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">Support</div>
+            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">Join the Discord server for help and bug reports.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Discord Button -->
+    <a href="https://discord.gg/XaZSGVFvzV" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:0.8rem;margin-top:1.5rem;padding:1rem;background:#1a1c2e;border:1px solid #5865F2;border-radius:8px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#252840'" onmouseout="this.style.background='#1a1c2e'">
+      <span style="font-size:1.5rem;">💬</span>
+      <div>
+        <div style="color:#fff;font-weight:700;font-family:'Courier New',monospace;letter-spacing:1px;">Join Support Server</div>
+        <div style="color:#888;font-size:0.8rem;font-family:'Segoe UI',sans-serif;">discord.gg/XaZSGVFvzV</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- WARNING MODAL -->
+<div id="warningModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9500;align-items:center;justify-content:center;" onclick="if(event.target===this)document.getElementById('warningModal').style.display='none'">
+  <div class="warning-modal-box">
+    <div class="w-icon">⚠️</div>
+    <h3>WARNING!</h3>
+    <p>IF YOU BUY IT NOW YOU WILL GET NO REFUND!</p>
+    <div style="display:flex;gap:0.8rem;margin-top:0.5rem;">
+      <button onclick="closeWarningModal()" style="flex:1;padding:0.8rem;background:none;border:1px solid #444;border-radius:8px;color:#aaa;cursor:pointer;font-family:'Courier New',monospace;font-size:0.85rem;letter-spacing:1px;transition:all 0.2s;" onmouseover="this.style.borderColor='#888';this.style.color='#fff'" onmouseout="this.style.borderColor='#444';this.style.color='#aaa'">✕ CANCEL</button>
+      <button onclick="confirmBuy()" style="flex:2;padding:0.8rem;background:linear-gradient(135deg,#e8562a,#ff7043);border:none;border-radius:8px;color:white;cursor:pointer;font-family:'Courier New',monospace;font-size:0.95rem;font-weight:700;letter-spacing:1px;transition:all 0.2s;box-shadow:0 4px 15px rgba(232,86,42,0.4);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(232,86,42,0.6)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(232,86,42,0.4)'">🟠 BUY NOW</button>
+    </div>
+  </div>
+</div>
+
 <!-- TEAM PAGE -->
 <div id="teamPage" style="display:none;position:fixed;inset:0;background:#0a0a0a;z-index:5000;overflow-y:auto;font-family:'Courier New',monospace;">
   
@@ -1621,6 +1753,15 @@ document.getElementById('adminOverlay').addEventListener('click', function(e) {
         <div style="font-weight:700;color:#e0e0e0;letter-spacing:1px;margin-bottom:0.2rem;">Kyle</div>
         <div style="font-size:0.72rem;color:#aaa;letter-spacing:1.5px;margin-bottom:0.4rem;">✦ TRIAL MODERATOR</div>
         <div style="font-size:0.82rem;color:#666;font-family:'Segoe UI',sans-serif;">New Trial Moderator nice to meet you</div>
+      </div>
+    </div>
+
+    <div onclick="openTeamModal('Roky','✦ Collaborator','role-collaborator','roky.png','Roky','Collaborator')" style="background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:1.2rem;display:flex;align-items:center;gap:1rem;cursor:pointer;" onmouseover="this.style.borderColor='#ff69b4'" onmouseout="this.style.borderColor='#1a1a1a'">
+      <img src="roky.png" style="width:60px;height:60px;border-radius:50%;border:2px solid #2a2a2a;object-fit:cover;flex-shrink:0;" onerror="this.src='https://ui-avatars.com/api/?name=Roky&background=ff69b4&color=fff&size=60&bold=true'" alt="Roky">
+      <div>
+        <div style="font-weight:700;color:#e0e0e0;letter-spacing:1px;margin-bottom:0.2rem;">Roky</div>
+        <div style="font-size:0.72rem;color:#ff69b4;letter-spacing:1.5px;margin-bottom:0.4rem;">✦ COLLABORATOR</div>
+        <div style="font-size:0.82rem;color:#666;font-family:'Segoe UI',sans-serif;">Collaborator</div>
       </div>
     </div>
 
