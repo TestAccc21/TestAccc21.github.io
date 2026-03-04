@@ -1109,7 +1109,7 @@ function adminDeleteCode(code) {
 }
 
 /* ── MAINTENANCE MODE ── */
-const MAINTENANCE_MODE = false;
+const MAINTENANCE_MODE = true;
 let maintenanceActive = MAINTENANCE_MODE;
 
 if (MAINTENANCE_MODE) {
@@ -1145,7 +1145,7 @@ const THEME_HALLOWEEN  = false;   // 🎃 Orange & spooky
 const THEME_WINTER     = false;   // ❄️  Ice blue & snow
 const THEME_CHRISTMAS  = false;   // 🎄 Red & green
 const THEME_SUMMER     = false;   // ☀️  Yellow & warm
-const THEME_VALENTINE  = true;   // 💖 Pink & hearts
+const THEME_VALENTINE  = false;   // 💖 Pink & hearts
 const THEME_EASTER     = false;   // 🐣 Purple & pastel
 
 (function applyTheme() {
