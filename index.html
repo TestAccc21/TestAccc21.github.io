@@ -307,6 +307,129 @@
 
 
 
+
+  /* ═══════════════ THEMES ═══════════════ */
+
+  /* HALLOWEEN */
+  body.theme-halloween {
+    --primary: #ff6600;
+    --dark: #0a0000;
+    --card: #110500;
+  }
+  body.theme-halloween nav { border-bottom-color: #ff6600; }
+  body.theme-halloween .product-card { border-color: #ff6600; box-shadow: 0 0 40px rgba(255,102,0,0.2); }
+  body.theme-halloween .buy-btn { background: #ff6600; }
+  body.theme-halloween .btn-rbx { background: #ff6600; }
+  body.theme-halloween .tag { border-color: #ff6600; color: #ff6600; }
+  body.theme-halloween h2 span { color: #ff6600; }
+  body.theme-halloween .logo { color: #ff6600; }
+  body.theme-halloween .feat-list li::before { color: #ff6600; }
+  .halloween-particle {
+    position: fixed; pointer-events: none; z-index: 0;
+    font-size: 1.5rem; animation: fallDown linear infinite;
+    opacity: 0.4;
+  }
+  @keyframes fallDown {
+    0%   { transform: translateY(-50px) rotate(0deg); opacity: 0.4; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* WINTER / CHRISTMAS */
+  body.theme-winter {
+    --primary: #00cfff;
+    --dark: #010a0f;
+    --card: #050f15;
+  }
+  body.theme-winter nav { border-bottom-color: #00cfff; }
+  body.theme-winter .product-card { border-color: #00cfff; box-shadow: 0 0 40px rgba(0,207,255,0.2); }
+  body.theme-winter .buy-btn { background: #0077aa; }
+  body.theme-winter .btn-rbx { background: #0077aa; }
+  body.theme-winter .tag { border-color: #00cfff; color: #00cfff; }
+  body.theme-winter h2 span { color: #00cfff; }
+  body.theme-winter .logo { color: #00cfff; }
+  body.theme-winter .feat-list li::before { color: #00cfff; }
+  .snow-particle {
+    position: fixed; pointer-events: none; z-index: 0;
+    font-size: 1rem; animation: snowFall linear infinite;
+    opacity: 0.6; color: white;
+  }
+  @keyframes snowFall {
+    0%   { transform: translateY(-30px) translateX(0px); opacity: 0.6; }
+    50%  { transform: translateY(50vh) translateX(20px); }
+    100% { transform: translateY(110vh) translateX(-10px); opacity: 0; }
+  }
+
+  /* CHRISTMAS */
+  body.theme-christmas {
+    --primary: #ff2222;
+    --dark: #020a02;
+    --card: #050f05;
+  }
+  body.theme-christmas nav { border-bottom-color: #ff2222; }
+  body.theme-christmas .product-card { border-color: #ff2222; box-shadow: 0 0 40px rgba(255,34,34,0.2); }
+  body.theme-christmas .buy-btn { background: #cc0000; }
+  body.theme-christmas .tag { border-color: #ff2222; color: #ff2222; }
+  body.theme-christmas h2 span { color: #ff2222; }
+  body.theme-christmas .logo { color: #ff2222; }
+  body.theme-christmas .feat-list li::before { color: #00ff44; }
+
+  /* SUMMER */
+  body.theme-summer {
+    --primary: #ffdd00;
+    --dark: #0a0800;
+    --card: #110f00;
+  }
+  body.theme-summer nav { border-bottom-color: #ffdd00; }
+  body.theme-summer .product-card { border-color: #ffdd00; box-shadow: 0 0 40px rgba(255,221,0,0.2); }
+  body.theme-summer .buy-btn { background: #ff9900; }
+  body.theme-summer .btn-rbx { background: #ff9900; }
+  body.theme-summer .tag { border-color: #ffdd00; color: #ffdd00; }
+  body.theme-summer h2 span { color: #ffdd00; }
+  body.theme-summer .logo { color: #ffdd00; }
+  body.theme-summer .feat-list li::before { color: #ffdd00; }
+
+  /* VALENTINE */
+  body.theme-valentine {
+    --primary: #ff69b4;
+    --dark: #0a0005;
+    --card: #110008;
+  }
+  body.theme-valentine nav { border-bottom-color: #ff69b4; }
+  body.theme-valentine .product-card { border-color: #ff69b4; box-shadow: 0 0 40px rgba(255,105,180,0.2); }
+  body.theme-valentine .buy-btn { background: #cc1177; }
+  body.theme-valentine .tag { border-color: #ff69b4; color: #ff69b4; }
+  body.theme-valentine h2 span { color: #ff69b4; }
+  body.theme-valentine .logo { color: #ff69b4; }
+  body.theme-valentine .feat-list li::before { color: #ff69b4; }
+  .heart-particle {
+    position: fixed; pointer-events: none; z-index: 0;
+    font-size: 1.2rem; animation: floatUp linear infinite; opacity: 0.5;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh); opacity: 0.5; }
+    100% { transform: translateY(-50px); opacity: 0; }
+  }
+
+  /* EASTER */
+  body.theme-easter {
+    --primary: #cc44ff;
+    --dark: #05000a;
+    --card: #0a0010;
+  }
+  body.theme-easter nav { border-bottom-color: #cc44ff; }
+  body.theme-easter .product-card { border-color: #cc44ff; box-shadow: 0 0 40px rgba(204,68,255,0.2); }
+  body.theme-easter .buy-btn { background: #9900cc; }
+  body.theme-easter .tag { border-color: #cc44ff; color: #cc44ff; }
+  body.theme-easter h2 span { color: #cc44ff; }
+  body.theme-easter .logo { color: #cc44ff; }
+  body.theme-easter .feat-list li::before { color: #cc44ff; }
+
+  /* THEME BANNER */
+  #themeBanner {
+    display: none; text-align: center; padding: 0.5rem;
+    font-family: 'Courier New', monospace; font-size: 0.85rem;
+    letter-spacing: 2px; position: relative; z-index: 200;
+  }
   /* ANNOUNCEMENT BANNER */
   #announcementBanner {
     display: none; background: #0d0d0d;
@@ -421,6 +544,8 @@
 
 
 
+<!-- THEME BANNER -->
+<div id="themeBanner"></div>
 <!-- ANNOUNCEMENT BANNER -->
 <div id="announcementBanner">
   <span class="ann-icon" id="annIcon">🔧</span>
@@ -984,7 +1109,7 @@ function adminDeleteCode(code) {
 }
 
 /* ── MAINTENANCE MODE ── */
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 let maintenanceActive = MAINTENANCE_MODE;
 
 if (MAINTENANCE_MODE) {
@@ -1011,26 +1136,138 @@ function toggleMaintenance() {
 
 
 
+
+/* ══════════════════════════════════════════════════════
+   🎨 THEMES — set one to true to activate
+   Only ONE theme should be active at a time!
+   ══════════════════════════════════════════════════════ */
+const THEME_HALLOWEEN  = false;   // 🎃 Orange & spooky
+const THEME_WINTER     = false;   // ❄️  Ice blue & snow
+const THEME_CHRISTMAS  = false;   // 🎄 Red & green
+const THEME_SUMMER     = false;   // ☀️  Yellow & warm
+const THEME_VALENTINE  = true;   // 💖 Pink & hearts
+const THEME_EASTER     = false;   // 🐣 Purple & pastel
+
+(function applyTheme() {
+  const body = document.body;
+  const banner = document.getElementById('themeBanner');
+
+  if (THEME_HALLOWEEN) {
+    body.classList.add('theme-halloween');
+    banner.style.display = 'block';
+    banner.style.background = 'rgba(255,102,0,0.1)';
+    banner.style.borderBottom = '1px solid #ff6600';
+    banner.innerHTML = '🎃 Happy Halloween! 🎃';
+    banner.style.color = '#ff6600';
+    // Spawn Halloween particles
+    const emojis = ['🎃','👻','🦇','🕷️','💀'];
+    for (let i = 0; i < 15; i++) {
+      const el = document.createElement('div');
+      el.className = 'halloween-particle';
+      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (Math.random() * 6 + 4) + 's';
+      el.style.animationDelay = (Math.random() * 5) + 's';
+      document.body.appendChild(el);
+    }
+  }
+
+  if (THEME_WINTER) {
+    body.classList.add('theme-winter');
+    banner.style.display = 'block';
+    banner.style.background = 'rgba(0,207,255,0.05)';
+    banner.style.borderBottom = '1px solid #00cfff';
+    banner.innerHTML = '❄️ Happy Winter! ❄️';
+    banner.style.color = '#00cfff';
+    // Spawn snowflakes
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement('div');
+      el.className = 'snow-particle';
+      el.textContent = '❄';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (Math.random() * 6 + 5) + 's';
+      el.style.animationDelay = (Math.random() * 8) + 's';
+      document.body.appendChild(el);
+    }
+  }
+
+  if (THEME_CHRISTMAS) {
+    body.classList.add('theme-christmas');
+    banner.style.display = 'block';
+    banner.style.background = 'rgba(255,34,34,0.05)';
+    banner.style.borderBottom = '1px solid #ff2222';
+    banner.innerHTML = '🎄 Merry Christmas! 🎁';
+    banner.style.color = '#ff2222';
+    // Spawn snowflakes
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement('div');
+      el.className = 'snow-particle';
+      el.textContent = ['❄','⛄','🎅'][Math.floor(Math.random()*3)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (Math.random() * 6 + 5) + 's';
+      el.style.animationDelay = (Math.random() * 8) + 's';
+      document.body.appendChild(el);
+    }
+  }
+
+  if (THEME_SUMMER) {
+    body.classList.add('theme-summer');
+    banner.style.display = 'block';
+    banner.style.background = 'rgba(255,221,0,0.05)';
+    banner.style.borderBottom = '1px solid #ffdd00';
+    banner.innerHTML = '☀️ Happy Summer! 🌊';
+    banner.style.color = '#ffdd00';
+  }
+
+  if (THEME_VALENTINE) {
+    body.classList.add('theme-valentine');
+    banner.style.display = 'block';
+    banner.style.background = 'rgba(255,105,180,0.05)';
+    banner.style.borderBottom = '1px solid #ff69b4';
+    banner.innerHTML = '💖 Happy Valentines Day! 💖';
+    banner.style.color = '#ff69b4';
+    // Spawn hearts
+    for (let i = 0; i < 15; i++) {
+      const el = document.createElement('div');
+      el.className = 'heart-particle';
+      el.textContent = ['💖','💕','❤️','💝'][Math.floor(Math.random()*4)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (Math.random() * 5 + 4) + 's';
+      el.style.animationDelay = (Math.random() * 6) + 's';
+      document.body.appendChild(el);
+    }
+  }
+
+  if (THEME_EASTER) {
+    body.classList.add('theme-easter');
+    banner.style.display = 'block';
+    banner.style.background = 'rgba(204,68,255,0.05)';
+    banner.style.borderBottom = '1px solid #cc44ff';
+    banner.innerHTML = '🐣 Happy Easter! 🌸';
+    banner.style.color = '#cc44ff';
+  }
+})();
+
 /* ══════════════════════════════════════════════════════
    📢 ANKÜNDIGUNG / ANNOUNCEMENT BANNER
    
-   ANNOUNCEMENT_ENABLED  — true = Banner anzeigen
+   ANNOUNCEMENT_ENABLED  — true = show banner
    ANNOUNCEMENT_TYPE     — 'maintenance' | 'update' | 'info' | 'warning'
-   ANNOUNCEMENT_TEXT     — Dein Ankündigungstext
-   ANNOUNCEMENT_TIME     — Datum/Uhrzeit (z.B. "01.01.2026 um 20:00 Uhr")
+   ANNOUNCEMENT_TEXT     — your announcement text
+   ANNOUNCEMENT_TIME     — date/time (e.g. "01/01/2026 at 8:00 PM")
    
-   Beispiele:
+   Examples:
    🔧 Maintenance:  type='maintenance', icon='🔧'
    🆕 Update:       type='update',      icon='🆕'
    ℹ️  Info:         type='info',        icon='ℹ️'
-   ⚠️  Warnung:      type='warning',     icon='⚠️'
+   ⚠️  Warning:      type='warning',     icon='⚠️'
    ══════════════════════════════════════════════════════ */
 
-const ANNOUNCEMENT_ENABLED = false;
-const ANNOUNCEMENT_TYPE    = 'maintenance';   // maintenance | update | info | warning
+const ANNOUNCEMENT_ENABLED = true;
+const ANNOUNCEMENT_TYPE    = 'info';   // maintenance | update | info | warning
 const ANNOUNCEMENT_ICON    = '🔧';
-const ANNOUNCEMENT_TEXT    = 'Geplante <strong>Wartung</strong> – Die Website wird kurzzeitig offline sein.';
-const ANNOUNCEMENT_TIME    = '01.01.2026 um 20:00 Uhr';
+const ANNOUNCEMENT_TEXT    = 'Scheduled <strong>Maintenance</strong> – The website will be briefly offline.';
+const ANNOUNCEMENT_TIME    = '04/03/2026 at 5:00 PM';
 
 if (ANNOUNCEMENT_ENABLED) {
   const banner = document.getElementById('announcementBanner');
