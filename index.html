@@ -308,6 +308,85 @@
 
 
 
+
+  /* ═══════════════ TEAM ═══════════════ */
+  .team-grid {
+    display: flex; flex-wrap: wrap; gap: 1.5rem;
+    justify-content: center; max-width: 900px; margin: 0 auto;
+  }
+  .team-card {
+    background: var(--card); border: 1px solid #1a1a1a;
+    border-radius: 12px; padding: 1.5rem 1.2rem;
+    text-align: center; width: 150px;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    cursor: default;
+  }
+  .team-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0,255,136,0.1);
+    transform: translateY(-4px);
+  }
+  .team-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 2px solid #2a2a2a; margin: 0 auto 0.8rem;
+    object-fit: cover; display: block;
+    transition: border-color 0.3s;
+  }
+  .team-card:hover .team-avatar { border-color: var(--primary); }
+  .team-name {
+    font-family: 'Courier New', monospace; font-size: 0.95rem;
+    font-weight: 700; color: var(--text); margin-bottom: 0.3rem;
+    letter-spacing: 1px;
+  }
+  .team-role {
+    font-size: 0.72rem; letter-spacing: 1.5px;
+    font-family: 'Courier New', monospace; text-transform: uppercase;
+  }
+  .role-creator   { color: #00ff88; }
+  .role-cocreator { color: #00cfff; }
+  .role-developer { color: #ffbd2e; }
+  .role-moderator { color: #5865F2; }
+  .role-trial     { color: #aaa; }
+
+  /* TEAM MODAL */
+  #teamModal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 9000;
+    align-items: center; justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+  #teamModal.open { display: flex; }
+  .team-modal-box {
+    background: #0d0d0d; border: 1px solid var(--primary);
+    border-radius: 12px; padding: 2rem; width: 340px; max-width: 90vw;
+    text-align: center; position: relative;
+    box-shadow: 0 0 40px rgba(0,255,136,0.15);
+  }
+  .team-modal-avatar {
+    width: 90px; height: 90px; border-radius: 50%;
+    border: 2px solid var(--primary); margin: 0 auto 1rem;
+    object-fit: cover; display: block;
+    box-shadow: 0 0 20px rgba(0,255,136,0.2);
+  }
+  .team-modal-name {
+    font-family: 'Courier New', monospace; font-size: 1.2rem;
+    font-weight: 700; color: var(--text); letter-spacing: 2px; margin-bottom: 0.3rem;
+  }
+  .team-modal-role {
+    font-size: 0.75rem; letter-spacing: 2px;
+    font-family: 'Courier New', monospace; margin-bottom: 1rem;
+  }
+  .team-modal-text {
+    color: #888; font-size: 0.88rem; font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6; border-top: 1px solid #1a1a1a; padding-top: 1rem;
+  }
+  .team-modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; color: #555; cursor: pointer;
+    font-size: 1.1rem; transition: color 0.2s;
+  }
+  .team-modal-close:hover { color: var(--primary); }
+  .team-card { cursor: pointer; }
   /* ═══════════════ THEMES ═══════════════ */
 
   /* HALLOWEEN */
@@ -536,6 +615,7 @@
   <div>
     <a href="#product">Product</a>
     <a href="#license">License</a>
+    <a href="#team">Team</a>
     <a href="#support">Support</a>
     <a href="https://discord.gg/XaZSGVFvzV" class="discord-nav">💬 Discord</a>
     <a href="#" onclick="openAdmin();return false;" style="color:#0a0a0a;font-size:0.75rem;letter-spacing:1px;margin-left:0.8rem;user-select:none">⚙</a>
@@ -670,6 +750,51 @@
   </div>
 </section>
 
+
+<!-- TEAM -->
+<section id="team" style="padding-bottom:0">
+  <h2>&gt; <span>THE TEAM</span>_</h2>
+  <div class="team-grid">
+
+    <div class="team-card" onclick="openTeamModal('Max','✦ Creator','role-creator','max.png','Max','Creator of this Website with the Cmdr!')">
+      <img src="max.png" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Max&background=00ff88&color=000&size=80&font-size=0.4&bold=true'" alt="Max">
+      <div class="team-name">Max</div>
+      <div class="team-role role-creator">✦ Creator</div>
+    </div>
+
+    <div class="team-card" onclick="openTeamModal('Tazz','✦ Co-Creator','role-cocreator','tazz.png','Tazz','Co Creator for the Discord')">
+      <img src="tazz.png" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Tazz&background=00cfff&color=000&size=80&font-size=0.4&bold=true'" alt="Tazz">
+      <div class="team-name">Tazz</div>
+      <div class="team-role role-cocreator">✦ Co-Creator</div>
+    </div>
+
+    <div class="team-card" onclick="openTeamModal('Bobasimi','✦ Developer','role-developer','bobasimi.png','Bobasimi','Hi im the Developer for the Server')">
+      <img src="bobasimi.png" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Bobasimi&background=ffbd2e&color=000&size=80&font-size=0.4&bold=true'" alt="Bobasimi">
+      <div class="team-name">Bobasimi</div>
+      <div class="team-role role-developer">✦ Developer</div>
+    </div>
+
+    <div class="team-card" onclick="openTeamModal('Batman','✦ Moderator','role-moderator','batman.png','Batman','Hello im an Moderator to keep the Server Safe')">
+      <img src="batman.png" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Batman&background=5865F2&color=fff&size=80&font-size=0.4&bold=true'" alt="Batman">
+      <div class="team-name">Batman</div>
+      <div class="team-role role-moderator">✦ Moderator</div>
+    </div>
+
+    <div class="team-card" onclick="openTeamModal('Levi','✦ Moderator','role-moderator','levi.png','Levi','Im here for the Cmdr Website')">
+      <img src="levi.png" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Levi&background=5865F2&color=fff&size=80&font-size=0.4&bold=true'" alt="Levi">
+      <div class="team-name">Levi</div>
+      <div class="team-role role-moderator">✦ Moderator</div>
+    </div>
+
+    <div class="team-card" onclick="openTeamModal('Kyle','✦ Trial Moderator','role-trial','kyle.png','Kyle','New Trial Moderator nice to meet you')">
+      <img src="kyle.png" class="team-avatar" onerror="this.src='https://ui-avatars.com/api/?name=Kyle&background=444444&color=fff&size=80&font-size=0.4&bold=true'" alt="Kyle">
+      <div class="team-name">Kyle</div>
+      <div class="team-role role-trial">✦ Trial Moderator</div>
+    </div>
+
+  </div>
+</section>
+
 <!-- DISCORD -->
 <div class="discord-section" id="support">
   <h2>&gt; <span>SUPPORT</span>_</h2>
@@ -714,6 +839,12 @@
       return '✓ Code accepted! 5% discount applied.';
     },
     'TAZZFREECMDR': function() {
+      try {
+        if (localStorage.getItem('tazzfreecmdr_used')) {
+          return '✗ This code has already been used on this device!';
+        }
+        localStorage.setItem('tazzfreecmdr_used', '1');
+      } catch(e) {}
       document.getElementById('discordJoin').style.display = 'flex';
       return '✓ Code accepted! GO IN THE SUPPORT FOR THE FREE CMDR EVENT PANEL!';
     }
@@ -810,9 +941,9 @@
         el.textContent = Math.floor(start);
       }, 16);
     }
-    const checkLoader = setInterval(() => {
-      const loader = document.getElementById("loader");
-      if (loader.style.opacity === "0" || loader.style.display === "none") {
+    var checkLoader = setInterval(function() {
+      var ld = document.getElementById("loader");
+      if (!ld || ld.style.display === "none" || ld.style.opacity === "0") {
         clearInterval(checkLoader);
         document.getElementById("priceDisplay").innerHTML = "<span id=\"ap1\">0</span> R$";
         document.getElementById("priceDisplay2").innerHTML = "🟠 <span id=\"ap2\">0</span> <span style=\"font-size:1.2rem;color:#aaa\">Robux</span>";
@@ -980,41 +1111,52 @@ document.addEventListener('mousemove', e => {
 });
 
 /* ── LOADER ── */
-const loaderLines = [
-  '> Booting CMDR_SYSTEM...',
-  '> Loading modules...',
-  '> Verifying gamepass data...',
-  '> Connecting to Discord API...',
-  '> Rendering interface...',
-  '> Done.'
-];
+(function() {
+  var loaderLines = [
+    '> Booting CMDR_SYSTEM...',
+    '> Loading modules...',
+    '> Verifying gamepass data...',
+    '> Connecting to Discord API...',
+    '> Rendering interface...',
+    '> Done.'
+  ];
 
-window.addEventListener('load', () => {
-  const bar  = document.getElementById('lBar');
-  const line = document.getElementById('lLine');
-  let progress = 0;
-  let lineIdx  = 0;
+  function startLoader() {
+    var bar  = document.getElementById('lBar');
+    var line = document.getElementById('lLine');
+    if (!bar || !line) return;
+    var progress = 0;
+    var lineIdx  = 0;
 
-  const interval = setInterval(() => {
-    progress += Math.random() * 18 + 6;
-    if (progress >= 100) progress = 100;
-    bar.style.width = progress + '%';
+    var interval = setInterval(function() {
+      progress += Math.random() * 18 + 6;
+      if (progress >= 100) progress = 100;
+      bar.style.width = progress + '%';
 
-    if (lineIdx < loaderLines.length) {
-      line.textContent = loaderLines[lineIdx++];
-    }
+      if (lineIdx < loaderLines.length) {
+        line.textContent = loaderLines[lineIdx++];
+      }
 
-    if (progress >= 100) {
-      clearInterval(interval);
-      setTimeout(() => {
-        const loader = document.getElementById('loader');
-        loader.style.transition = 'opacity 0.6s';
-        loader.style.opacity = '0';
-        setTimeout(() => loader.style.display = 'none', 600);
-      }, 400);
-    }
-  }, 220);
-});
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(function() {
+          var ld = document.getElementById('loader');
+          if (!ld) return;
+          ld.style.transition = 'opacity 0.6s';
+          ld.style.opacity = '0';
+          setTimeout(function() { ld.style.display = 'none'; }, 600);
+        }, 400);
+      }
+    }, 220);
+  }
+
+  // Start immediately - don't wait for full page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startLoader);
+  } else {
+    startLoader();
+  }
+})();
 
 /* ── ADMIN PANEL ── */
 const _0x4a2f=['63','6d','64','72','5f','61','64','6d','69','6e','5f','32','30','32','36'];
@@ -1109,7 +1251,7 @@ function adminDeleteCode(code) {
 }
 
 /* ── MAINTENANCE MODE ── */
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 let maintenanceActive = MAINTENANCE_MODE;
 
 if (MAINTENANCE_MODE) {
@@ -1263,16 +1405,16 @@ const THEME_EASTER     = false;   // 🐣 Purple & pastel
    ⚠️  Warning:      type='warning',     icon='⚠️'
    ══════════════════════════════════════════════════════ */
 
-const ANNOUNCEMENT_ENABLED = true;
-const ANNOUNCEMENT_TYPE    = 'info';   // maintenance | update | info | warning
+const ANNOUNCEMENT_ENABLED = false;
+const ANNOUNCEMENT_TYPE    = 'maintenance';   // maintenance | update | info | warning
 const ANNOUNCEMENT_ICON    = '🔧';
 const ANNOUNCEMENT_TEXT    = 'Scheduled <strong>Maintenance</strong> – The website will be briefly offline.';
-const ANNOUNCEMENT_TIME    = '04/03/2026 at 5:00 PM';
+const ANNOUNCEMENT_TIME    = '01/01/2026 at 8:00 PM';
 
 if (ANNOUNCEMENT_ENABLED) {
-  const banner = document.getElementById('announcementBanner');
-  banner.className = 'type-' + ANNOUNCEMENT_TYPE;
-  banner.style.display = 'block';
+  const annBanner = document.getElementById('announcementBanner');
+  annBanner.className = 'type-' + ANNOUNCEMENT_TYPE;
+  annBanner.style.display = 'block';
   document.getElementById('annIcon').textContent = ANNOUNCEMENT_ICON;
   document.getElementById('annText').innerHTML = ANNOUNCEMENT_TEXT;
   document.getElementById('annTime').textContent = ANNOUNCEMENT_TIME;
@@ -1290,24 +1432,24 @@ if (BLACK_FRIDAY) {
   document.getElementById('blackFridayBanner').style.display = 'block';
   // Add BLACK FRIDAY code
   window.CODES['BLACKFRIDAY'] = function() {
-    const BASE = 125;
-    const discounted = Math.round(BASE * 0.90); // 10% off = 113
+    const bfBASE = 125;
+    const bfDiscounted = Math.round(bfBASE * 0.90); // 10% off = 113
     document.getElementById('priceDisplay').innerHTML =
-      `<span class="price-original">${BASE} R$</span><span class="price-discounted">${discounted} R$</span>`;
+      `<span class="price-original">${bfBASE} R$</span><span class="price-discounted">${bfDiscounted} R$</span>`;
     document.getElementById('priceDisplay2').innerHTML =
-      `🟠 <span class="price-original" style="font-size:1.6rem">${BASE}</span> <span class="price-discounted" style="font-size:2.2rem;font-weight:700">${discounted}</span> <span style="font-size:1.2rem;color:#aaa">Robux</span>`;
+      `🟠 <span class="price-original" style="font-size:1.6rem">${bfBASE}</span> <span class="price-discounted" style="font-size:2.2rem;font-weight:700">${bfDiscounted}</span> <span style="font-size:1.2rem;color:#aaa">Robux</span>`;
     // Countdown animation
-    const cdEl = document.getElementById('discountCountdown');
-    const cdPrice = document.getElementById('countdownPrice');
-    cdPrice.textContent = BASE;
-    cdEl.style.display = 'block';
-    let cdVal = BASE;
-    const cdTimer = setInterval(() => {
-      cdVal--;
-      cdPrice.textContent = cdVal;
-      if (cdVal <= discounted) clearInterval(cdTimer);
+    const bfCdEl = document.getElementById('discountCountdown');
+    const bfCdPrice = document.getElementById('countdownPrice');
+    bfCdPrice.textContent = bfBASE;
+    bfCdEl.style.display = 'block';
+    let bfCdVal = bfBASE;
+    const bfCdTimer = setInterval(() => {
+      bfCdVal--;
+      bfCdPrice.textContent = bfCdVal;
+      if (bfCdVal <= bfDiscounted) clearInterval(bfCdTimer);
     }, 60);
-    return '✓ BLACK FRIDAY! 10% Rabatt aktiviert!';
+    return '✓ BLACK FRIDAY! 10% discount activated!';
   };
 }
 
@@ -1330,11 +1472,11 @@ if (NEWYEAR_FIREWORKS) {
     const x = Math.random() * fwCanvas.width;
     const y = Math.random() * fwCanvas.height * 0.6;
     const color = fwColors[Math.floor(Math.random() * fwColors.length)];
-    const particles = [];
+    const fwParticles = [];
     for (let i = 0; i < 60; i++) {
       const angle = (Math.PI * 2 / 60) * i;
       const speed = Math.random() * 4 + 2;
-      particles.push({
+      fwParticles.push({
         x, y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
@@ -1342,7 +1484,7 @@ if (NEWYEAR_FIREWORKS) {
         color
       });
     }
-    fireworks.push(particles);
+    fireworks.push(fwParticles);
   }
 
   function drawFireworks() {
@@ -1378,6 +1520,40 @@ if (NEWYEAR_FIREWORKS) {
 document.getElementById('adminOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeAdmin();
 });
+</script>
+
+<!-- TEAM MODAL -->
+<div id="teamModal" onclick="if(event.target===this)closeTeamModal()">
+  <div class="team-modal-box">
+    <button class="team-modal-close" onclick="closeTeamModal()">✕</button>
+    <img id="tmAvatar" src="" class="team-modal-avatar" alt="">
+    <div class="team-modal-name" id="tmName"></div>
+    <div class="team-modal-role" id="tmRole"></div>
+    <div class="team-modal-text" id="tmText"></div>
+  </div>
+</div>
+
+<script>
+/* ── TEAM MODAL ── */
+function openTeamModal(name, role, roleClass, img, avatarName, text) {
+  var fallback = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(avatarName) + '&background=00ff88&color=000&size=90&font-size=0.4&bold=true';
+  var avatar = document.getElementById('tmAvatar');
+  avatar.src = img;
+  avatar.onerror = function() { this.src = fallback; };
+  document.getElementById('tmName').textContent = name;
+  var roleEl = document.getElementById('tmRole');
+  roleEl.textContent = role;
+  roleEl.className = 'team-modal-role ' + roleClass;
+  document.getElementById('tmText').textContent = text;
+  document.getElementById('teamModal').classList.add('open');
+}
+
+function closeTeamModal() {
+  document.getElementById('teamModal').classList.remove('open');
+}
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
