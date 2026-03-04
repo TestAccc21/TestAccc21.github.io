@@ -1423,10 +1423,10 @@ const THEME_EASTER     = false;   // 🐣 Purple & pastel
    ══════════════════════════════════════════════════════ */
 
 const ANNOUNCEMENT_ENABLED = true;
-const ANNOUNCEMENT_TYPE    = 'info';   // maintenance | update | info | warning
-const ANNOUNCEMENT_ICON    = 'ℹ️';
-const ANNOUNCEMENT_TEXT    = 'Scheduled <strong>Maintenance</strong> – The website will be briefly offline.';
-const ANNOUNCEMENT_TIME    = '04/03/2026 at 7:30 PM';
+const ANNOUNCEMENT_TYPE    = 'warning';   // maintenance | update | info | warning
+const ANNOUNCEMENT_ICON    = '🔧';
+const ANNOUNCEMENT_TEXT    = 'Warn <strong>Announcement</strong> – The website will be briefly offline.';
+const ANNOUNCEMENT_TIME    = '01/01/2026 at 8:00 PM';
 
 if (ANNOUNCEMENT_ENABLED) {
   const annBanner = document.getElementById('announcementBanner');
@@ -1438,11 +1438,11 @@ if (ANNOUNCEMENT_ENABLED) {
 }
 
 /* ══════════════════════════════════════════
-   🎆 NEUJAHRS FEUERWERK — true = aktiv
-   🖤 BLACK FRIDAY        — true = aktiv
+   🎆 NEW YEAR FIREWORKS — true = active
+   🖤 BLACK FRIDAY        — true = active
    ══════════════════════════════════════════ */
-const NEWYEAR_FIREWORKS = false;
-const BLACK_FRIDAY      = true;
+const NEWYEAR_FIREWORKS = false;  // 🎆 New Year fireworks
+const BLACK_FRIDAY      = true;  // 🖤 Black Friday discount
 
 // ── BLACK FRIDAY LOGIC ──
 if (BLACK_FRIDAY) {
@@ -1450,11 +1450,12 @@ if (BLACK_FRIDAY) {
   // Add BLACK FRIDAY code
   window.CODES['BLACKFRIDAY'] = function() {
     const bfBASE = 125;
-    const bfDiscounted = Math.round(bfBASE * 0.90); // 10% off = 113
+    const bfDiscounted = 113;
     document.getElementById('priceDisplay').innerHTML =
       `<span class="price-original">${bfBASE} R$</span><span class="price-discounted">${bfDiscounted} R$</span>`;
     document.getElementById('priceDisplay2').innerHTML =
       `🟠 <span class="price-original" style="font-size:1.6rem">${bfBASE}</span> <span class="price-discounted" style="font-size:2.2rem;font-weight:700">${bfDiscounted}</span> <span style="font-size:1.2rem;color:#aaa">Robux</span>`;
+    document.getElementById('buyBtn').href = 'https://www.roblox.com/de/game-pass/1737709642/113-Rbx';
     // Countdown animation
     const bfCdEl = document.getElementById('discountCountdown');
     const bfCdPrice = document.getElementById('countdownPrice');
