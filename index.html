@@ -880,40 +880,57 @@
 
 <script>
 
-/* ╔══════════════════════════════════════════════════════╗
-   ║           ⚙️  SITE SETTINGS — EDIT HERE              ║
-   ╠══════════════════════════════════════════════════════╣
-   ║  All toggles for the website are here at the top.   ║
-   ║  Set to true to enable, false to disable.           ║
-   ╚══════════════════════════════════════════════════════╝ */
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║              ⚙️  SITE SETTINGS — EDIT HERE                   ║
+   ╠══════════════════════════════════════════════════════════════╣
+   ║  Alle Toggles für die Website sind hier oben.               ║
+   ║  true = aktiviert  |  false = deaktiviert                   ║
+   ╚══════════════════════════════════════════════════════════════╝ */
 
-// ── 🛒 SHOP ──────────────────────────────────────────────
-var DISABLE_BUY_BUTTON = false;  // true = disables buy button & codes
+// ┌─────────────────────────────────────────────────────────────┐
+// │  📢  ANKÜNDIGUNGEN  (neueste zuerst!)                        │
+// └─────────────────────────────────────────────────────────────┘
+var ANNOUNCEMENTS_LIST = [
+  // Beispiel — zum Aktivieren das // am Anfang entfernen:
+  // { title: 'Website Update', date: '13.03.2026', text: 'Neue Features hinzugefügt!', type: 'update' },
+  // { title: 'Wartung', date: '10.03.2026', text: 'Kurze Wartungsarbeiten.', type: 'maintenance' },
+  // Typen: 'update' | 'maintenance' | 'info' | 'new'
+];
 
-// ── 🔧 MAINTENANCE ───────────────────────────────────────
-var MAINTENANCE_MODE = false;    // true = shows maintenance screen
-var MAINTENANCE_END  = '';       // e.g. '2026/03/20 20:00:00'
+// ┌─────────────────────────────────────────────────────────────┐
+// │  🛒  SHOP                                                    │
+// └─────────────────────────────────────────────────────────────┘
+var DISABLE_BUY_BUTTON = false;  // true = Buy Button & Codes deaktivieren
 
-// ── 📢 ANNOUNCEMENT BANNER ───────────────────────────────
-var ANNOUNCEMENT_ENABLED = false;
-var ANNOUNCEMENT_TYPE    = 'maintenance'; // maintenance | update | info | warning
+// ┌─────────────────────────────────────────────────────────────┐
+// │  🔧  MAINTENANCE & ANKÜNDIGUNGEN                            │
+// └─────────────────────────────────────────────────────────────┘
+var MAINTENANCE_MODE     = false;          // true = Wartungsseite anzeigen
+var MAINTENANCE_END      = '';             // Enddatum z.B. '2026/03/20 20:00:00'
+
+var ANNOUNCEMENT_ENABLED = false;          // true = Banner oben anzeigen
+var ANNOUNCEMENT_TYPE    = 'maintenance';  // maintenance | update | info | warning
 var ANNOUNCEMENT_ICON    = '🔧';
 var ANNOUNCEMENT_TEXT    = 'Scheduled Maintenance...';
 var ANNOUNCEMENT_TIME    = '01/01/2026 at 8:00 PM';
 
-// ── 🎆 SEASONAL EVENTS ───────────────────────────────────
-var NEWYEAR_FIREWORKS = false;   // 🎆 New Year fireworks & banner
-var BLACK_FRIDAY      = false;   // 🖤 Black Friday discount (113 Rbx)
+// ┌─────────────────────────────────────────────────────────────┐
+// │  🎆  SAISONALE EVENTS                                        │
+// └─────────────────────────────────────────────────────────────┘
+var NEWYEAR_FIREWORKS = false;   // 🎆 Neujahr Feuerwerk & Banner
+var BLACK_FRIDAY      = false;   // 🖤 Black Friday Rabatt (113 Rbx)
 
-// ── 🎨 THEMES (only ONE at a time!) ──────────────────────
-var THEME_HALLOWEEN  = false;   // 🎃 Orange & spooky
-var THEME_WINTER     = false;   // ❄️  Ice blue & snow
-var THEME_CHRISTMAS  = false;   // 🎄 Red & green
-var THEME_SUMMER     = false;   // ☀️  Yellow & warm
-var THEME_VALENTINE  = false;   // 💖 Pink & hearts
-var THEME_EASTER     = false;   // 🐣 Purple & pastel
+// ┌─────────────────────────────────────────────────────────────┐
+// │  🎨  THEMES  (nur EINES gleichzeitig aktivieren!)           │
+// └─────────────────────────────────────────────────────────────┘
+var THEME_HALLOWEEN  = false;   // 🎃 Orange & gruselig
+var THEME_WINTER     = false;   // ❄️  Eisblau & Schnee
+var THEME_CHRISTMAS  = false;   // 🎄 Rot & Grün
+var THEME_SUMMER     = false;   // ☀️  Gelb & warm
+var THEME_VALENTINE  = false;   // 💖 Pink & Herzen
+var THEME_EASTER     = false;   // 🐣 Lila & Pastell
 
-/* ══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════ */
 
   /* ── LANGUAGE ── */
   var currentLang = 'en';
@@ -2259,29 +2276,48 @@ function closeTeamModal() {
     <div style="color:#444;font-size:0.78rem;letter-spacing:2px;margin-top:0.5rem;font-family:'Courier New',monospace;">LATEST UPDATES</div>
   </div>
 
-  <div style="max-width:700px;margin:2rem auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:0.8rem;">
-
-    <!-- ╔══════════════════════════════════════════╗ -->
-    <!-- ║   📢 ANKÜNDIGUNGEN HIER HINZUFÜGEN       ║ -->
-    <!-- ║   Kopiere einen Block und fülle ihn aus  ║ -->
-    <!-- ╚══════════════════════════════════════════╝ -->
-
-    <!-- BEISPIEL — zum Aktivieren <!-- und --> entfernen:
-    <div style="background:#111;border-left:3px solid #00ff88;border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;">
-      <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
-        <span style="font-size:1rem;">📢</span>
-        <span style="font-family:'Courier New',monospace;font-weight:700;color:#fff;font-size:0.95rem;">TITEL DER ANKÜNDIGUNG</span>
-        <span style="margin-left:auto;font-size:0.7rem;color:#444;font-family:'Courier New',monospace;">01.01.2026</span>
-      </div>
-      <div style="font-size:0.85rem;color:#888;font-family:'Segoe UI',sans-serif;line-height:1.6;">Text der Ankündigung hier schreiben.</div>
-    </div>
-    -->
-
-    <!-- Keine Ankündigungen vorhanden -->
+  <div id="annPageList" style="max-width:700px;margin:2rem auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:0.8rem;">
     <div id="noAnnMsg" style="color:#444;font-family:'Courier New',monospace;text-align:center;padding:3rem;">Keine Ankündigungen vorhanden.</div>
-
   </div>
 </div>
+
+<script>
+(function renderAnnouncements() {
+  if (typeof ANNOUNCEMENTS_LIST === 'undefined' || !ANNOUNCEMENTS_LIST.length) return;
+  var list = document.getElementById('annPageList');
+  var noMsg = document.getElementById('noAnnMsg');
+  if (!list) return;
+  if (noMsg) noMsg.style.display = 'none';
+
+  var colors = {
+    update:      '#00ff88',
+    maintenance: '#ffbd2e',
+    info:        '#00cfff',
+    new:         '#a855f7'
+  };
+  var icons = {
+    update:      '🔄',
+    maintenance: '🔧',
+    info:        'ℹ️',
+    new:         '✨'
+  };
+
+  ANNOUNCEMENTS_LIST.forEach(function(ann) {
+    var color = colors[ann.type] || '#00ff88';
+    var icon  = icons[ann.type]  || '📢';
+    var div = document.createElement('div');
+    div.style.cssText = 'background:#111;border-left:3px solid ' + color + ';border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;';
+    div.innerHTML =
+      '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">' +
+        '<span style="font-size:1rem;">' + icon + '</span>' +
+        '<span style="font-family:'Courier New',monospace;font-weight:700;color:#fff;font-size:0.92rem;letter-spacing:1px;">' + ann.title + '</span>' +
+        '<span style="margin-left:auto;font-size:0.7rem;color:#444;font-family:'Courier New',monospace;">' + ann.date + '</span>' +
+      '</div>' +
+      '<div style="font-size:0.85rem;color:#888;font-family:'Segoe UI',sans-serif;line-height:1.6;">' + ann.text + '</div>';
+    list.appendChild(div);
+  });
+})();
+</script>
 
 <!-- CHANGELOG PAGE -->
 <div id="changelogPage" style="display:none;">
