@@ -2738,77 +2738,89 @@ function closeTeamModal() {
 </script>
 
 <script>
-// ── JSONBIN CONFIG ───────────────────────────────────
-var JSONBIN_KEY = '$2a$10$gN8elN3gozQMZxcFFr4.CekA4ZdPC9yRTIE/U/iLh0uZw/Jc5dYbe';
-var JSONBIN_BIN = '69b54d0bc3097a1dd5247ad6';
-var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN;
+// ── SUPABASE CONFIG ──────────────────────────────────
+var SB_URL = 'https://feladnkiczghtkyfvzcl.supabase.co';
+var SB_KEY = 'sb_publishable_R3ridIeXe8k-vDBdF_G7zA_veKC2GiZ';
 
-function jsonbinGet() {
-  return fetch(JSONBIN_URL + '/latest', {
-    headers: {
-      'X-Access-Key': JSONBIN_KEY
-    }
-  }).then(function(r) {
-    if (!r.ok) throw new Error('Status ' + r.status);
-    return r.json();
-  }).then(function(d) { return d.record; });
-}
-
-function jsonbinSet(data) {
-  return fetch(JSONBIN_URL, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Access-Key': JSONBIN_KEY
-    },
-    body: JSON.stringify(data)
-  }).then(function(r) {
-    if (!r.ok) throw new Error('Status ' + r.status);
-    return r.json();
+function sbFetch(path, opts) {
+  opts = opts || {};
+  opts.headers = Object.assign({
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json'
+  }, opts.headers || {});
+  return fetch(SB_URL + '/rest/v1/' + path, opts).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+    return r.status === 204 ? {} : r.json().catch(function() { return {}; });
   });
 }
 
-// ── LOAD SETTINGS FROM JSONBIN ON PAGE LOAD ──────────
-window.addEventListener('DOMContentLoaded', function() {
-  jsonbinGet().then(function(data) {
-    if (!data) return;
+function sbGetSettings() {
+  return sbFetch('settings?id=eq.1&select=*').then(function(d) { return d[0] || null; });
+}
+function sbSetSettings(data) {
+  data.id = 1;
+  return sbFetch('settings?id=eq.1', { method: 'PATCH', body: JSON.stringify(data) })
+    .catch(function() {
+      return sbFetch('settings', { method: 'POST', headers: {'Prefer':'return=minimal'}, body: JSON.stringify(data) });
+    });
+}
+function sbGetAnnouncements() {
+  return sbFetch('announcements?select=*&order=id.desc');
+}
+function sbAddAnnouncement(ann) {
+  return sbFetch('announcements', { method: 'POST', headers: {'Prefer':'return=minimal'}, body: JSON.stringify(ann) });
+}
+function sbClearAnnouncements() {
+  return sbFetch('announcements?id=gt.0', { method: 'DELETE' });
+}
 
-    // Maintenance (bypass code skips it)
+// Backwards compat
+function jsonbinGet() {
+  return sbGetSettings().then(function(s) {
+    return { maintenance: s ? s.maintenance : false, disableBuyButton: s ? s.disable_buy_button : false };
+  });
+}
+function jsonbinSet(data) {
+  return sbSetSettings({ maintenance: data.maintenance || false, disable_buy_button: data.disableBuyButton || false });
+}
+
+// ── LOAD ON PAGE START ────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  sbGetSettings().then(function(s) {
+    if (!s) return;
     var urlBypass = new URLSearchParams(window.location.search).get('bypass');
-    if (data.maintenance && urlBypass !== 'CmdrDLC') {
+    if (s.maintenance && urlBypass !== 'CmdrDLC') {
       var screen = document.getElementById('maintenanceScreen');
       if (screen) screen.style.display = 'flex';
     }
-
-    // Disable buy button
-    if (data.disableBuyButton) {
-      var btns = document.querySelectorAll('.buy-btn');
-      btns.forEach(function(b) { b.disabled = true; b.style.opacity = '0.4'; });
+    if (s.disable_buy_button) {
+      document.querySelectorAll('.buy-btn').forEach(function(b) { b.disabled = true; b.style.opacity = '0.4'; });
     }
+  }).catch(function(e) { console.log('Supabase settings error:', e); });
 
-    // Announcements
-    if (data.announcements && data.announcements.length) {
-      var list = document.getElementById('annPageList');
-      var noMsg = document.getElementById('noAnnMsg');
-      if (noMsg) noMsg.style.display = 'none';
-      var colors = { update:'#00ff88', maintenance:'#ffbd2e', info:'#00cfff', new:'#a855f7' };
-      var icons  = { update:'🔄', maintenance:'🔧', info:'ℹ️', new:'✨' };
-      data.announcements.forEach(function(ann) {
-        var color = colors[ann.type] || '#00ff88';
-        var icon  = icons[ann.type]  || '📢';
-        var div = document.createElement('div');
-        div.style.cssText = 'background:#111;border-left:3px solid ' + color + ';border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;';
-        div.innerHTML =
-          '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">' +
-            '<span>' + icon + '</span>' +
-            '<span style="font-family:monospace;font-weight:700;color:#fff;font-size:0.92rem;">' + ann.title + '</span>' +
-            '<span style="margin-left:auto;font-size:0.7rem;color:#444;font-family:monospace;">' + ann.date + '</span>' +
-          '</div>' +
-          '<div style="font-size:0.85rem;color:#888;line-height:1.6;">' + ann.text + '</div>';
-        if (list) list.appendChild(div);
-      });
-    }
-  }).catch(function(e) { console.log('JSONBin load error:', e); });
+  sbGetAnnouncements().then(function(anns) {
+    if (!anns || !anns.length) return;
+    var list = document.getElementById('annPageList');
+    var noMsg = document.getElementById('noAnnMsg');
+    if (noMsg) noMsg.style.display = 'none';
+    var colors = { update:'#00ff88', maintenance:'#ffbd2e', info:'#00cfff', new:'#a855f7' };
+    var icons  = { update:'🔄', maintenance:'🔧', info:'ℹ️', new:'✨' };
+    anns.forEach(function(ann) {
+      var color = colors[ann.type] || '#00ff88';
+      var icon  = icons[ann.type] || '📢';
+      var div = document.createElement('div');
+      div.style.cssText = 'background:#111;border-left:3px solid ' + color + ';border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;margin-bottom:0.8rem;';
+      div.innerHTML =
+        '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">' +
+          '<span>' + icon + '</span>' +
+          '<span style="font-family:monospace;font-weight:700;color:#fff;font-size:0.92rem;">' + ann.title + '</span>' +
+          '<span style="margin-left:auto;font-size:0.7rem;color:#444;font-family:monospace;">' + ann.date + '</span>' +
+        '</div>' +
+        '<div style="font-size:0.85rem;color:#888;line-height:1.6;">' + ann.text + '</div>';
+      if (list) list.appendChild(div);
+    });
+  }).catch(function(e) { console.log('Supabase announcements error:', e); });
 });
 </script>
 
