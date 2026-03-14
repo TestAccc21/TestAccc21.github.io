@@ -1113,6 +1113,25 @@ var THEME_EASTER     = false;   // 🐣 Lila & Pastell
   }
 
 
+  /* ── MAINTENANCE DISABLE ── */
+  function adminDisableMaintenance() {
+    if (!confirm('Disable maintenance for everyone?')) return;
+    if (typeof sbSetSettings === 'function') {
+      sbSetSettings({ id: 1, maintenance: false, disable_buy_button: false })
+      .then(function() {
+        document.getElementById('maintenanceScreen').style.display = 'none';
+        document.getElementById('maintenanceAdminBtn').style.display = 'none';
+        alert('✓ Maintenance disabled for everyone!');
+      }).catch(function(e) {
+        alert('✗ Error: ' + e.message);
+      });
+    } else {
+      // Fallback: just hide locally
+      document.getElementById('maintenanceScreen').style.display = 'none';
+      alert('✓ Maintenance hidden (not saved globally - Supabase not loaded yet)');
+    }
+  }
+
   /* ── PAGE OPEN/CLOSE FUNCTIONS ── */
   function openTeamPage() {
     var el = document.getElementById('teamPage');
