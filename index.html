@@ -1488,17 +1488,38 @@ if (BLACK_FRIDAY) {
       <button class="a-close" onclick="closeAdmin()">CANCEL</button>
     </div>
     <div id="adminDashSection" style="display:none">
+
+      <!-- MAINTENANCE -->
+      <div class="a-section-title">&gt; MAINTENANCE MODE</div>
+      <button class="a-btn" id="maintenanceBtn" onclick="toggleMaintenance()" style="background:#ff2222;color:white;margin-bottom:0.5rem">⚠ ENABLE MAINTENANCE</button>
+      <hr class="a-divider">
+
+      <!-- ANNOUNCEMENTS -->
+      <div class="a-section-title">&gt; ADD ANNOUNCEMENT</div>
+      <input type="text" id="annTitleInput" placeholder="Title (e.g. Website Update)" />
+      <input type="text" id="annTextInput" placeholder="Text (e.g. New features added!)" />
+      <input type="text" id="annDateInput" placeholder="Date (e.g. 14.03.2026)" />
+      <select id="annTypeInput" style="width:100%;background:#0a0a0a;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:0.5rem;font-family:'Courier New',monospace;font-size:0.82rem;margin-bottom:0.5rem;">
+        <option value="update">🔄 Update</option>
+        <option value="maintenance">🔧 Maintenance</option>
+        <option value="info">ℹ️ Info</option>
+        <option value="new">✨ New</option>
+      </select>
+      <div class="a-msg" id="annMsg"></div>
+      <button class="a-btn" onclick="adminAddAnnouncement()">+ ADD ANNOUNCEMENT</button>
+      <button class="a-btn danger" onclick="adminClearAnnouncements()" style="margin-top:0.3rem;">🗑 CLEAR ALL</button>
+      <hr class="a-divider">
+
+      <!-- CODES -->
       <div class="a-section-title">&gt; ADD NEW CODE</div>
       <input type="text" id="newCodeInput" placeholder="CODE NAME (e.g. SUMMER10)" />
       <input type="text" id="newCodeAction" placeholder='ACTION (e.g. "5% discount" or "discord")' />
       <div class="a-msg" id="adminDashMsg"></div>
       <button class="a-btn" onclick="adminAddCode()">+ ADD CODE</button>
       <hr class="a-divider">
-      <div class="a-section-title">&gt; MAINTENANCE MODE</div>
-      <button class="a-btn" id="maintenanceBtn" onclick="toggleMaintenance()" style="background:#ff2222;color:white;margin-bottom:0.5rem">⚠ ENABLE MAINTENANCE</button>
-      <hr class="a-divider">
       <div class="a-section-title">&gt; ACTIVE CODES</div>
       <div class="a-codes-list" id="adminCodesList"></div>
+
       <button class="a-btn danger" onclick="adminLogout()">LOGOUT</button>
       <button class="a-close" onclick="closeAdmin()">CLOSE</button>
     </div>
@@ -2687,6 +2708,72 @@ function closeTeamModal() {
       document.getElementById('sneakModalTitle').textContent = 'Sneak Peek #' + (sneakCurrent + 1);
     }
   });
+</script>
+
+<script>
+// ── JSONBIN CONFIG ───────────────────────────────────
+var JSONBIN_KEY = '$2a$10$gN8elN3gozQMZxcFFr4.CekA4ZdPC9yRTIE/U/iLh0uZw/Jc5dYbe';
+var JSONBIN_BIN = '69b54d0bc3097a1dd5247ad6';
+var JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN;
+
+function jsonbinGet() {
+  return fetch(JSONBIN_URL + '/latest', {
+    headers: { 'X-Master-Key': JSONBIN_KEY }
+  }).then(function(r) { return r.json(); }).then(function(d) { return d.record; });
+}
+
+function jsonbinSet(data) {
+  return fetch(JSONBIN_URL, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': JSONBIN_KEY
+    },
+    body: JSON.stringify(data)
+  }).then(function(r) { return r.json(); });
+}
+
+// ── LOAD SETTINGS FROM JSONBIN ON PAGE LOAD ──────────
+window.addEventListener('DOMContentLoaded', function() {
+  jsonbinGet().then(function(data) {
+    if (!data) return;
+
+    // Maintenance
+    if (data.maintenance) {
+      var screen = document.getElementById('maintenanceScreen');
+      if (screen) screen.style.display = 'flex';
+    }
+
+    // Disable buy button
+    if (data.disableBuyButton) {
+      var btns = document.querySelectorAll('.buy-btn');
+      btns.forEach(function(b) { b.disabled = true; b.style.opacity = '0.4'; });
+    }
+
+    // Announcements
+    if (data.announcements && data.announcements.length) {
+      var list = document.getElementById('annPageList');
+      var noMsg = document.getElementById('noAnnMsg');
+      if (noMsg) noMsg.style.display = 'none';
+      var colors = { update:'#00ff88', maintenance:'#ffbd2e', info:'#00cfff', new:'#a855f7' };
+      var icons  = { update:'🔄', maintenance:'🔧', info:'ℹ️', new:'✨' };
+      data.announcements.forEach(function(ann) {
+        var color = colors[ann.type] || '#00ff88';
+        var icon  = icons[ann.type]  || '📢';
+        var div = document.createElement('div');
+        div.style.cssText = 'background:#111;border-left:3px solid ' + color + ';border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;';
+        div.innerHTML =
+          '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">' +
+            '<span>' + icon + '</span>' +
+            '<span style="font-family:monospace;font-weight:700;color:#fff;font-size:0.92rem;">' + ann.title + '</span>' +
+            '<span style="margin-left:auto;font-size:0.7rem;color:#444;font-family:monospace;">' + ann.date + '</span>' +
+          '</div>' +
+          '<div style="font-size:0.85rem;color:#888;line-height:1.6;">' + ann.text + '</div>';
+        if (list) list.appendChild(div);
+      });
+    }
+  }).catch(function(e) { console.log('JSONBin load error:', e); });
+});
 </script>
 
 </body>
