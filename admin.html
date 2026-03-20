@@ -231,6 +231,8 @@
       <button class="sidebar-item" onclick="showPage('changelog')">📋 Changelog</button>
       <div class="sidebar-section">TEAM</div>
       <button class="sidebar-item" onclick="showPage('team')">👥 Team</button>
+      <div class="sidebar-section">ACCOUNT</div>
+      <button class="sidebar-item" onclick="showPage('password')">🔐 Password</button>
       <div class="sidebar-section">SYSTEM</div>
       <button class="sidebar-item" onclick="showPage('stats')">📊 Statistics</button>
       <button class="sidebar-item" onclick="showPage('visitors')">🌍 Visitors</button>
@@ -451,6 +453,20 @@
         </div>
       </div>
 
+      <!-- PASSWORD PAGE -->
+      <div class="page" id="page_password">
+        <div class="page-title">&gt; CHANGE PASSWORD</div>
+        <div class="page-sub">Update your admin panel password</div>
+        <div class="card" style="max-width:400px;">
+          <div class="card-title">NEW PASSWORD</div>
+          <input type="password" id="pwCurrent" placeholder="Current password">
+          <input type="password" id="pwNew" placeholder="New password">
+          <input type="password" id="pwConfirm" placeholder="Confirm new password">
+          <div class="msg" id="pwMsg"></div>
+          <button class="btn btn-green" onclick="changePassword()">🔐 CHANGE PASSWORD</button>
+        </div>
+      </div>
+
       <!-- VISITORS PAGE -->
       <div class="page" id="page_visitors">
         <div class="page-title">&gt; VISITOR ANALYTICS</div>
@@ -519,17 +535,32 @@
 
   function login() {
     var pw = document.getElementById('pwInput').value;
-    if (pw === ADMIN_PW) {
+    // Check against Supabase first, fallback to local
+    sbFetch('config?key=eq.admin_password&select=value').then(function(d) {
+      var storedPw = d && d[0] ? d[0].value : ADMIN_PW;
+      if (pw === storedPw) {
+        ADMIN_PW = storedPw;
+        doLogin();
+      } else {
+        document.getElementById('loginErr').textContent = '✗ Wrong password';
+      }
+    }).catch(function() {
+      // Fallback to local password
+      if (pw === ADMIN_PW) { doLogin(); }
+      else { document.getElementById('loginErr').textContent = '✗ Wrong password'; }
+    });
+  }
+  function doLogin() {
+    if (true) {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       loadMaintenance();
       loadEvents();
       loadStats();
       sbLog('LOGIN', 'Admin logged in');
+      sbFetch('config?key=eq.admin_password&select=value').then(function(d) { if (d && d[0]) ADMIN_PW = d[0].value; }).catch(function(){});
       setInterval(checkScheduled, 60000);
       checkScheduled();
-    } else {
-      document.getElementById('loginErr').textContent = '✗ Wrong password';
     }
   }
 
@@ -545,7 +576,7 @@
     document.querySelectorAll('.sidebar-item').forEach(function(s) { s.classList.remove('active'); });
     document.getElementById('page_' + name).classList.add('active');
     event.currentTarget.classList.add('active');
-    var loaders = { announcements: loadAnnouncements, codes: loadCodes, changelog: loadChangelog, team: loadTeam, events: loadEvents, toasts: loadToasts, logs: loadLogs, stats: loadStats, scheduled: loadScheduled, visitors: loadVisitors };
+    var loaders = { announcements: loadAnnouncements, codes: loadCodes, changelog: loadChangelog, team: loadTeam, events: loadEvents, toasts: loadToasts, logs: loadLogs, stats: loadStats, scheduled: loadScheduled, visitors: loadVisitors, password: function(){} };
     if (loaders[name]) loaders[name]();
   }
 
@@ -579,6 +610,36 @@
     newyear:"🎆 New Year", valentine:"💖 Valentine", summer:"☀️ Summer",
     winter:"❄️ Winter", easter:"🐣 Easter"
   };
+  // ── PASSWORD ─────────────────────────────────────────
+  function changePassword() {
+    var current = document.getElementById('pwCurrent').value;
+    var newPw    = document.getElementById('pwNew').value;
+    var confirm  = document.getElementById('pwConfirm').value;
+    var msg      = document.getElementById('pwMsg');
+
+    if (!current || !newPw || !confirm) { msg.textContent = 'Fill all fields!'; msg.className = 'msg err'; return; }
+    if (newPw !== confirm) { msg.textContent = 'Passwords do not match!'; msg.className = 'msg err'; return; }
+    if (newPw.length < 6) { msg.textContent = 'Password must be at least 6 characters!'; msg.className = 'msg err'; return; }
+
+    // Verify current password against Supabase
+    sbFetch("config?key=eq.admin_password&select=value").then(function(d) {
+      var storedPw = d && d[0] ? d[0].value : ADMIN_PW;
+      if (current !== storedPw) { msg.textContent = '✗ Current password is wrong!'; msg.className = 'msg err'; return; }
+
+      // Update in Supabase
+      sbFetch("config?key=eq.admin_password", { method: "PATCH", body: JSON.stringify({ value: newPw }) })
+      .then(function() {
+        ADMIN_PW = newPw;
+        msg.textContent = '✓ Password changed successfully!'; msg.className = 'msg ok';
+        document.getElementById('pwCurrent').value = '';
+        document.getElementById('pwNew').value = '';
+        document.getElementById('pwConfirm').value = '';
+        sbLog('SECURITY', 'Admin password changed');
+        sendDiscordWebhook('🔐 Password Changed', 'Admin password was changed.', 16711680);
+      }).catch(function(e) { msg.textContent = '✗ ' + e.message; msg.className = 'msg err'; });
+    }).catch(function() { msg.textContent = '✗ Could not verify password!'; msg.className = 'msg err'; });
+  }
+
   // ── DISCORD WEBHOOK ─────────────────────────────────
   var DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1484646326925787288/9fHKLgvjK9UhGejPBwx0D1a4LxnHUR71aTZNildoIhyJcMOSZgyL3LryTbMSt2acO7GB';
 
@@ -946,6 +1007,7 @@
       document.getElementById('annExpiry').value = '';
       document.getElementById('annPinned').checked = false;
       sbLog('ANNOUNCEMENT', 'Added: ' + title + (pinned ? ' [PINNED]' : '') + (expiry ? ' [EXPIRES: ' + expiry + ']' : ''));
+      sendDiscordWebhook('📢 New Announcement', '**' + title + '**\n' + text + '\nDate: ' + date + (pinned ? '\n📌 Pinned' : ''), 10181046);
       document.getElementById('annTitle').value = '';
       document.getElementById('annText').value = '';
       document.getElementById('annDate').value = '';
