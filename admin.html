@@ -231,6 +231,9 @@
       <button class="sidebar-item" onclick="showPage('changelog')">📋 Changelog</button>
       <div class="sidebar-section">TEAM</div>
       <button class="sidebar-item" onclick="showPage('team')">👥 Team</button>
+      <div class="sidebar-section">SYSTEM</div>
+      <button class="sidebar-item" onclick="showPage('toasts')">🔔 Toasts</button>
+      <button class="sidebar-item" onclick="showPage('logs')">📜 Logs</button>
     </div>
 
     <!-- CONTENT -->
@@ -367,6 +370,46 @@
         </div>
       </div>
 
+      <!-- TOASTS PAGE -->
+      <div class="page" id="page_toasts">
+        <div class="page-title">&gt; TOAST NOTIFICATIONS</div>
+        <div class="page-sub">Send live notifications to all visitors</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">SEND TOAST</div>
+            <input type="text" id="toastMsg" placeholder="Message (e.g. Price was changed! Refresh your Page)">
+            <select id="toastType">
+              <option value="warning">⚠️ Warning</option>
+              <option value="info">ℹ️ Info</option>
+              <option value="success">✅ Success</option>
+              <option value="error">❌ Error</option>
+            </select>
+            <div class="msg" id="toastMsg2"></div>
+            <button class="btn btn-green" onclick="sendToast()">📤 SEND TO ALL</button>
+            <button class="btn btn-red" onclick="clearToasts()">🗑 CLEAR ALL</button>
+          </div>
+          <div class="card">
+            <div class="card-title">ACTIVE TOASTS</div>
+            <div id="toastList"><div style="color:#333;font-size:0.78rem;">Loading...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGS PAGE -->
+      <div class="page" id="page_logs">
+        <div class="page-title">&gt; ACTIVITY LOGS</div>
+        <div class="page-sub">All admin actions are logged here</div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+          <button class="btn btn-red" onclick="clearLogs()">🗑 CLEAR LOGS</button>
+        </div>
+        <div class="card" style="padding:0;">
+          <table class="table">
+            <thead><tr><th>TIME</th><th>ACTION</th><th>DETAILS</th></tr></thead>
+            <tbody id="logsTable"><tr><td colspan="3" style="color:#333;padding:1rem;">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -397,6 +440,7 @@
       document.getElementById('dashboard').style.display = 'block';
       loadMaintenance();
       loadEvents();
+      sbLog('LOGIN', 'Admin logged in');
     } else {
       document.getElementById('loginErr').textContent = '✗ Wrong password';
     }
@@ -413,7 +457,7 @@
     document.querySelectorAll('.sidebar-item').forEach(function(s) { s.classList.remove('active'); });
     document.getElementById('page_' + name).classList.add('active');
     event.currentTarget.classList.add('active');
-    var loaders = { announcements: loadAnnouncements, codes: loadCodes, changelog: loadChangelog, team: loadTeam, events: loadEvents };
+    var loaders = { announcements: loadAnnouncements, codes: loadCodes, changelog: loadChangelog, team: loadTeam, events: loadEvents, toasts: loadToasts, logs: loadLogs };
     if (loaders[name]) loaders[name]();
   }
 
@@ -430,7 +474,7 @@
     var val = document.getElementById('maintToggle').checked;
     var msg = document.getElementById('maintMsg');
     sbFetch('settings?id=eq.1', { method: 'PATCH', body: JSON.stringify({ maintenance: val }) })
-    .then(function() { msg.textContent = '✓ Saved!'; msg.className = 'msg ok'; setTimeout(function(){ msg.textContent=''; }, 2000); })
+    .then(function() { msg.textContent = '✓ Saved!'; msg.className = 'msg ok'; setTimeout(function(){ msg.textContent=''; }, 2000); sbLog('MAINTENANCE', val ? 'Enabled' : 'Disabled'); })
     .catch(function(e) { msg.textContent = '✗ ' + e.message; msg.className = 'msg err'; });
   }
   function toggleBuyButton() {
@@ -447,6 +491,86 @@
     newyear:"🎆 New Year", valentine:"💖 Valentine", summer:"☀️ Summer",
     winter:"❄️ Winter", easter:"🐣 Easter"
   };
+  // ── LOGGING ──────────────────────────────────────────
+  function sbLog(action, details) {
+    sbFetch("logs", { method: "POST", headers: {"Prefer":"return=minimal"}, body: JSON.stringify({ action: action, details: details || "" }) }).catch(function() {});
+  }
+
+  function loadLogs() {
+    sbFetch("logs?select=*&order=id.desc&limit=100").then(function(logs) {
+      var tbody = document.getElementById("logsTable");
+      if (!logs || !logs.length) { tbody.innerHTML = "<tr><td colspan='3' style='color:#333;padding:1rem;'>No logs yet</td></tr>"; return; }
+      tbody.innerHTML = "";
+      logs.forEach(function(log) {
+        var tr = document.createElement("tr");
+        var time = new Date(log.created_at).toLocaleString("de-DE");
+        var colors = { LOGIN: "#00ff88", MAINTENANCE: "#ffbd2e", CODE: "#00cfff", ANNOUNCEMENT: "#a855f7", EVENT: "#ff69b4", TOAST: "#ff9900", TEAM: "#00cfff", CHANGELOG: "#888" };
+        tr.innerHTML =
+          "<td style='color:#444;font-size:0.72rem;white-space:nowrap;'>" + time + "</td>" +
+          "<td><span class='badge' style='background:rgba(0,0,0,0.3);color:" + (colors[log.action] || "#888") + ";'>" + log.action + "</span></td>" +
+          "<td style='color:#888;font-size:0.78rem;'>" + (log.details || "") + "</td>";
+        tbody.appendChild(tr);
+      });
+    }).catch(function(e) {
+      document.getElementById("logsTable").innerHTML = "<tr><td colspan='3' style='color:#ff4444;'>Error: " + e.message + "</td></tr>";
+    });
+  }
+
+  function clearLogs() {
+    if (!confirm("Clear all logs?")) return;
+    sbFetch("logs?id=gt.0", { method: "DELETE" }).then(function() {
+      sbLog("SYSTEM", "Logs cleared");
+      loadLogs();
+    });
+  }
+
+  // ── TOASTS ───────────────────────────────────────────
+  function loadToasts() {
+    sbFetch("toasts?select=*&order=id.desc").then(function(toasts) {
+      var list = document.getElementById("toastList");
+      if (!toasts || !toasts.length) { list.innerHTML = "<div style='color:#333;font-size:0.78rem;'>No active toasts</div>"; return; }
+      list.innerHTML = "";
+      var typeColors = { warning: "#ffbd2e", info: "#00cfff", success: "#00ff88", error: "#ff4444" };
+      var typeIcons  = { warning: "⚠️", info: "ℹ️", success: "✅", error: "❌" };
+      toasts.forEach(function(t) {
+        var div = document.createElement("div");
+        div.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid #1a1a1a;gap:0.5rem;";
+        div.innerHTML =
+          "<div><span style='color:" + (typeColors[t.type] || "#888") + ";margin-right:0.4rem;'>" + (typeIcons[t.type] || "🔔") + "</span>" +
+          "<span style='font-size:0.8rem;color:#ccc;'>" + t.message + "</span></div>" +
+          "<button class='del-btn' onclick='deleteToast(" + t.id + ")'>✕</button>";
+        list.appendChild(div);
+      });
+    });
+  }
+
+  function sendToast() {
+    var msg  = document.getElementById("toastMsg").value.trim();
+    var type = document.getElementById("toastType").value;
+    var feedback = document.getElementById("toastMsg2");
+    if (!msg) { feedback.textContent = "Enter a message!"; feedback.className = "msg err"; return; }
+    sbFetch("toasts", { method: "POST", headers: {"Prefer":"return=minimal"}, body: JSON.stringify({ message: msg, type: type, active: true }) })
+    .then(function() {
+      feedback.textContent = "✓ Toast sent to all visitors!";
+      feedback.className = "msg ok";
+      document.getElementById("toastMsg").value = "";
+      sbLog("TOAST", type.toUpperCase() + ": " + msg);
+      loadToasts();
+    }).catch(function(e) { feedback.textContent = "✗ " + e.message; feedback.className = "msg err"; });
+  }
+
+  function deleteToast(id) {
+    sbFetch("toasts?id=eq." + id, { method: "DELETE" }).then(loadToasts);
+  }
+
+  function clearToasts() {
+    if (!confirm("Clear all toasts?")) return;
+    sbFetch("toasts?id=gt.0", { method: "DELETE" }).then(function() {
+      sbLog("TOAST", "All toasts cleared");
+      loadToasts();
+    });
+  }
+
   function loadEvents() {
     var grid = document.getElementById('eventsGrid');
     grid.innerHTML = '<div style="color:#444;font-size:0.78rem;padding:0.5rem;">Loading...</div>';
@@ -483,6 +607,7 @@
       msg.textContent = '✓ ' + name + ' ' + (!active ? 'enabled' : 'disabled') + '!';
       msg.className = 'msg ok';
       setTimeout(function(){ msg.textContent=''; }, 2000);
+      sbLog('EVENT', name + ' ' + (!active ? 'enabled' : 'disabled'));
       loadEvents();
     }).catch(function(e) { msg.textContent = '✗ ' + e.message; msg.className = 'msg err'; });
   }
@@ -515,6 +640,7 @@
     sbFetch('announcements', { method: 'POST', headers: {'Prefer':'return=minimal'}, body: JSON.stringify({ title, text, date, type }) })
     .then(function() {
       msg.textContent = '✓ Added!'; msg.className = 'msg ok';
+      sbLog('ANNOUNCEMENT', 'Added: ' + title);
       document.getElementById('annTitle').value = '';
       document.getElementById('annText').value = '';
       document.getElementById('annDate').value = '';
@@ -607,6 +733,7 @@
     sbFetch('changelog', { method: 'POST', headers: {'Prefer':'return=minimal'}, body: JSON.stringify({ version, title, date, items }) })
     .then(function() {
       msg.textContent = '✓ Entry added!'; msg.className = 'msg ok';
+      sbLog('CHANGELOG', 'Added: ' + version + ' - ' + title);
       document.getElementById('clVersion').value = '';
       document.getElementById('clTitle').value = '';
       document.getElementById('clDate').value = '';
@@ -647,6 +774,7 @@
     sbFetch('team', { method: 'POST', headers: {'Prefer':'return=minimal'}, body: JSON.stringify({ name, role, color, bio, image, sort_order: 99 }) })
     .then(function() {
       msg.textContent = '✓ Member added!'; msg.className = 'msg ok';
+      sbLog('TEAM', 'Added: ' + name);
       ['teamName','teamRole','teamColor','teamBio','teamImage'].forEach(function(id) { document.getElementById(id).value = ''; });
       loadTeam();
     }).catch(function(e) { msg.textContent = '✗ ' + e.message; msg.className = 'msg err'; });
