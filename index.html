@@ -2695,13 +2695,31 @@ window.addEventListener("DOMContentLoaded", function() {
     });
   }).catch(function() {});
 
-  // Toasts
+  // Toasts - load existing + realtime
   sbFetch("toasts?active=eq.true&select=*&order=id.desc").then(function(toasts) {
-    var icons = { warning: "⚠️", info: "ℹ️", success: "✅", error: "❌" };
-    (toasts || []).forEach(function(t) {
-      showToast(t.message, t.type, t.id);
-    });
+    (toasts || []).forEach(function(t) { showToast(t.message, t.type, t.id); });
   }).catch(function() {});
+
+  // Realtime subscription for new toasts
+  var evtSource = null;
+  function startToastRealtime() {
+    var url = SB_URL + "/realtime/v1/websocket?apikey=" + SB_KEY + "&vsn=1.0.0";
+    var ws = new WebSocket(url.replace("https://", "wss://").replace("http://", "ws://"));
+    var lastId = 0;
+
+    // Poll every 5 seconds for new toasts as fallback
+    var pollInterval = setInterval(function() {
+      sbFetch("toasts?active=eq.true&select=*&order=id.desc&limit=1").then(function(toasts) {
+        if (!toasts || !toasts.length) return;
+        var latest = toasts[0];
+        if (latest.id > lastId) {
+          if (lastId > 0) showToast(latest.message, latest.type, latest.id);
+          lastId = latest.id;
+        }
+      }).catch(function() {});
+    }, 3000);
+  }
+  startToastRealtime();
 
   // Changelog
   sbFetch("changelog?select=*&order=id.desc").then(function(entries) {
