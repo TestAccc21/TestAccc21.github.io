@@ -694,7 +694,8 @@
     var pinned  = document.getElementById('annPinned').checked;
     var msg     = document.getElementById('annMsg');
     if (!title || !text || !date) { msg.textContent = 'Fill all fields!'; msg.className = 'msg err'; return; }
-    var payload = { title: title, text: text, date: date, type: type, pinned: pinned, expires_at: expiry || null };
+    var payload = { title: title, text: text, date: date, type: type };
+    try { payload.pinned = pinned; payload.expires_at = expiry || null; } catch(e) {}
     sbFetch('announcements', { method: 'POST', headers: {'Prefer':'return=minimal'}, body: JSON.stringify(payload) })
     .then(function() {
       msg.textContent = '✓ Added!'; msg.className = 'msg ok';
