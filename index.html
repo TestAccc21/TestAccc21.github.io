@@ -677,6 +677,12 @@
   .toast.error   { border-left-color: #ff4444; }
   .toast.success { border-left-color: #00ff88; }
   .toast.info    { border-left-color: #00cfff; }
+  .toast.admin   { border-left-color: #00ff88; animation: adminBorder 1s infinite; }
+  @keyframes adminBorder {
+    0%   { border-left-color: #00ff88; }
+    50%  { border-left-color: #000; box-shadow: 0 4px 20px rgba(0,255,136,0.4); }
+    100% { border-left-color: #00ff88; }
+  }
   .toast-icon { font-size: 1rem; flex-shrink: 0; }
   .toast-msg  { color: #e0e0e0; line-height: 1.4; flex: 1; }
   .toast-close { background: none; border: none; color: #444; cursor: pointer; font-size: 0.9rem; padding: 0; flex-shrink: 0; }
@@ -1096,7 +1102,7 @@ var THEME_EASTER     = false;   // 🐣 Lila & Pastell
   function showToast(message, type, id) {
     var container = document.getElementById("toastContainer");
     if (!container) return;
-    var icons = { warning: "⚠️", info: "ℹ️", success: "✅", error: "❌" };
+    var icons = { warning: "⚠️", info: "ℹ️", success: "✅", error: "❌", admin: "⚙️" };
     var toast = document.createElement("div");
     toast.className = "toast " + (type || "info");
     toast.innerHTML =
@@ -1256,6 +1262,13 @@ var THEME_EASTER     = false;   // 🐣 Lila & Pastell
 
   var buyUrl = 'https://www.roblox.com/de/game-pass/1738044254/125';
   function openWarningModal() {
+    // Track buy click
+    if (typeof sbFetch === "function") {
+      sbFetch("stats?key=eq.buy_clicks&select=*").then(function(d) {
+        var cur = (d && d[0]) ? d[0].value : 0;
+        sbFetch("stats?key=eq.buy_clicks", { method: "PATCH", body: JSON.stringify({ value: cur + 1 }) }).catch(function(){});
+      }).catch(function(){});
+    }
     var modal = document.getElementById('warningModal');
     modal.style.display = 'flex';
   }
@@ -2625,6 +2638,12 @@ function adminDisableMaintenance() {
 }
 
 window.addEventListener("DOMContentLoaded", function() {
+  // Track page view
+  sbFetch("stats?key=eq.page_views&select=*").then(function(d) {
+    var cur = (d && d[0]) ? d[0].value : 0;
+    sbFetch("stats?key=eq.page_views", { method: "PATCH", body: JSON.stringify({ value: cur + 1 }) }).catch(function(){});
+  }).catch(function(){});
+
   // Settings
   sbFetch("settings?id=eq.1&select=*").then(function(d) {
     var s = d[0];
@@ -2654,22 +2673,27 @@ window.addEventListener("DOMContentLoaded", function() {
     });
   }).catch(function() {});
 
-  // Announcements
-  sbFetch("announcements?select=*&order=id.desc").then(function(anns) {
+  // Announcements (pinned first, filter expired)
+  sbFetch("announcements?select=*&order=pinned.desc,id.desc").then(function(anns) {
     if (!anns || !anns.length) return;
+    var now = new Date();
     var list = document.getElementById("annPageList");
     var noMsg = document.getElementById("noAnnMsg");
-    if (noMsg) noMsg.style.display = "none";
     var colors = { update: "#00ff88", maintenance: "#ffbd2e", info: "#00cfff", new: "#a855f7" };
     var icons  = { update: "🔄", maintenance: "🔧", info: "ℹ️", new: "✨" };
+    var shown = 0;
     (anns || []).forEach(function(ann) {
+      // Skip expired
+      if (ann.expires_at && new Date(ann.expires_at) < now) return;
+      shown++;
+      if (noMsg) noMsg.style.display = "none";
       var color = colors[ann.type] || "#00ff88";
       var icon  = icons[ann.type]  || "📢";
       var div = document.createElement("div");
-      div.style.cssText = "background:#111;border-left:3px solid " + color + ";border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;margin-bottom:0.8rem;";
+      div.style.cssText = "background:#111;border-left:3px solid " + color + ";border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;margin-bottom:0.8rem;" + (ann.pinned ? "border:1px solid " + color + ";border-left:4px solid " + color + ";" : "");
       var h = document.createElement("div");
       h.style.cssText = "display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;";
-      h.innerHTML = "<span>" + icon + "</span><span style='font-family:monospace;font-weight:700;color:#fff;'>" + ann.title + "</span><span style='margin-left:auto;font-size:0.7rem;color:#444;'>" + ann.date + "</span>";
+      h.innerHTML = "<span>" + icon + "</span><span style='font-family:monospace;font-weight:700;color:#fff;'>" + ann.title + "</span>" + (ann.pinned ? "<span style='font-size:0.65rem;color:#ffbd2e;'>📌</span>" : "") + "<span style='margin-left:auto;font-size:0.7rem;color:#444;'>" + ann.date + "</span>";
       var t = document.createElement("div");
       t.style.cssText = "font-size:0.85rem;color:#888;line-height:1.6;";
       t.textContent = ann.text;
