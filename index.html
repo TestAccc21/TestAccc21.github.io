@@ -2674,7 +2674,7 @@ window.addEventListener("DOMContentLoaded", function() {
   }).catch(function() {});
 
   // Announcements (pinned first, filter expired)
-  sbFetch("announcements?select=*&order=pinned.desc,id.desc").then(function(anns) {
+  sbFetch("announcements?select=*&order=id.desc").then(function(anns) {
     if (!anns || !anns.length) return;
     var now = new Date();
     var list = document.getElementById("annPageList");
