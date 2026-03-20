@@ -234,6 +234,7 @@
       <div class="sidebar-section">SYSTEM</div>
       <button class="sidebar-item" onclick="showPage('stats')">📊 Statistics</button>
       <button class="sidebar-item" onclick="showPage('toasts')">🔔 Toasts</button>
+      <button class="sidebar-item" onclick="showPage('scheduled')">📅 Scheduled</button>
       <button class="sidebar-item" onclick="showPage('logs')">📜 Logs</button>
     </div>
 
@@ -408,13 +409,43 @@
               <option value="error">❌ Error</option>
               <option value="admin">⚙️ Admin</option>
             </select>
+            <input type="datetime-local" id="toastScheduled" style="margin-bottom:0.6rem;">
+            <div style="font-size:0.68rem;color:#444;font-family:'Courier New',monospace;margin-bottom:0.6rem;">Leave empty to send immediately</div>
             <div class="msg" id="toastMsg2"></div>
-            <button class="btn btn-green" onclick="sendToast()">📤 SEND TO ALL</button>
+            <button class="btn btn-green" onclick="sendToast()">📤 SEND / SCHEDULE</button>
             <button class="btn btn-red" onclick="clearToasts()">🗑 CLEAR ALL</button>
           </div>
           <div class="card">
             <div class="card-title">ACTIVE TOASTS</div>
             <div id="toastList"><div style="color:#333;font-size:0.78rem;">Loading...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHEDULED PAGE -->
+      <div class="page" id="page_scheduled">
+        <div class="page-title">&gt; SCHEDULED ACTIONS</div>
+        <div class="page-sub">Plan announcements, maintenance and events for the future</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">SCHEDULE ACTION</div>
+            <select id="schedType">
+              <option value="announcement">📢 Announcement</option>
+              <option value="maintenance_on">🔧 Enable Maintenance</option>
+              <option value="maintenance_off">🔧 Disable Maintenance</option>
+              <option value="event_on">🎆 Enable Event</option>
+              <option value="event_off">🎆 Disable Event</option>
+              <option value="toast">🔔 Toast Notification</option>
+            </select>
+            <input type="text" id="schedDetails" placeholder="Details (e.g. announcement title or event name)">
+            <textarea id="schedExtra" placeholder="Extra info (e.g. announcement text)" style="min-height:60px;"></textarea>
+            <input type="datetime-local" id="schedTime">
+            <div class="msg" id="schedMsg"></div>
+            <button class="btn btn-green" onclick="addScheduled()">+ SCHEDULE</button>
+          </div>
+          <div class="card">
+            <div class="card-title">UPCOMING</div>
+            <div id="scheduledList"><div style="color:#333;font-size:0.78rem;">Loading...</div></div>
           </div>
         </div>
       </div>
@@ -441,7 +472,6 @@
 <script>
   var SB_URL = 'https://feladnkiczghtkyfvzcl.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbGFkbmtpY3pnaHRreWZ2emNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0ODg5MjUsImV4cCI6MjA4OTA2NDkyNX0.usuu1QJdga5plabGq0KDImgSp3LJNHkdhLUgWqNJJqM';
-  var ADMIN_PW = 'cmdr_admin_2026';
 
   function sbFetch(path, opts) {
     opts = opts || {};
@@ -456,20 +486,6 @@
     });
   }
 
-  // ── AUTH ──────────────────────────────────────────────
-  function login() {
-    var pw = document.getElementById('pwInput').value;
-    if (pw === ADMIN_PW) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'block';
-      loadMaintenance();
-      loadEvents();
-      loadStats();
-      sbLog('LOGIN', 'Admin logged in');
-    } else {
-      document.getElementById('loginErr').textContent = '✗ Wrong password';
-    }
-  }
   function logout() {
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
@@ -482,7 +498,7 @@
     document.querySelectorAll('.sidebar-item').forEach(function(s) { s.classList.remove('active'); });
     document.getElementById('page_' + name).classList.add('active');
     event.currentTarget.classList.add('active');
-    var loaders = { announcements: loadAnnouncements, codes: loadCodes, changelog: loadChangelog, team: loadTeam, events: loadEvents, toasts: loadToasts, logs: loadLogs, stats: loadStats };
+    var loaders = { announcements: loadAnnouncements, codes: loadCodes, changelog: loadChangelog, team: loadTeam, events: loadEvents, toasts: loadToasts, logs: loadLogs, stats: loadStats, scheduled: loadScheduled };
     if (loaders[name]) loaders[name]();
   }
 
@@ -530,6 +546,87 @@
     sbFetch("stats?key=eq." + key, { method: "PATCH", body: JSON.stringify({ value: 0 }) })
     .then(function() { sbLog("STATS", "Reset: " + key); loadStats(); });
   }
+
+  // ── SCHEDULED ────────────────────────────────────────
+  function loadScheduled() {
+    sbFetch("scheduled?select=*&order=scheduled_at.asc&executed=eq.false").then(function(items) {
+      var list = document.getElementById("scheduledList");
+      if (!items || !items.length) { list.innerHTML = '<div style="color:#333;font-size:0.78rem;">No scheduled actions</div>'; return; }
+      list.innerHTML = "";
+      var typeIcons = { announcement:"📢", maintenance_on:"🔧", maintenance_off:"🔧", event_on:"🎆", event_off:"🎆", toast:"🔔" };
+      var typeColors = { announcement:"#a855f7", maintenance_on:"#ff4444", maintenance_off:"#00ff88", event_on:"#ffbd2e", event_off:"#555", toast:"#00cfff" };
+      items.forEach(function(item) {
+        var div = document.createElement("div");
+        div.style.cssText = "display:flex;justify-content:space-between;align-items:flex-start;padding:0.6rem 0;border-bottom:1px solid #1a1a1a;gap:0.5rem;";
+        var time = new Date(item.scheduled_at).toLocaleString("de-DE");
+        div.innerHTML =
+          "<div><div style='font-size:0.8rem;color:" + (typeColors[item.type]||"#888") + ";'>" + (typeIcons[item.type]||"📅") + " " + item.type.toUpperCase() + "</div>" +
+          "<div style='font-size:0.75rem;color:#ccc;'>" + item.details + "</div>" +
+          "<div style='font-size:0.68rem;color:#444;'>⏰ " + time + "</div></div>" +
+          "<button class='del-btn' onclick='deleteScheduled(" + item.id + ")'>✕</button>";
+        list.appendChild(div);
+      });
+    }).catch(function(e) {
+      document.getElementById("scheduledList").innerHTML = '<div style="color:#ff4444;font-size:0.78rem;">Error: ' + e.message + '</div>';
+    });
+  }
+
+  function addScheduled() {
+    var type    = document.getElementById("schedType").value;
+    var details = document.getElementById("schedDetails").value.trim();
+    var extra   = document.getElementById("schedExtra").value.trim();
+    var time    = document.getElementById("schedTime").value;
+    var msg     = document.getElementById("schedMsg");
+    if (!details || !time) { msg.textContent = "Fill details and time!"; msg.className = "msg err"; return; }
+    sbFetch("scheduled", { method: "POST", headers: {"Prefer":"return=minimal"},
+      body: JSON.stringify({ type: type, action: extra, details: details, scheduled_at: time, executed: false }) })
+    .then(function() {
+      msg.textContent = "✓ Scheduled for " + new Date(time).toLocaleString("de-DE") + "!";
+      msg.className = "msg ok";
+      document.getElementById("schedDetails").value = "";
+      document.getElementById("schedExtra").value = "";
+      document.getElementById("schedTime").value = "";
+      sbLog("SCHEDULED", type + ": " + details + " at " + time);
+      loadScheduled();
+    }).catch(function(e) { msg.textContent = "✗ " + e.message; msg.className = "msg err"; });
+  }
+
+  function deleteScheduled(id) {
+    sbFetch("scheduled?id=eq." + id, { method: "DELETE" }).then(loadScheduled);
+  }
+
+  // Check scheduled items every 60 seconds and execute if due
+  function checkScheduled() {
+    sbFetch("scheduled?executed=eq.false&select=*").then(function(items) {
+      if (!items || !items.length) return;
+      var now = new Date();
+      items.forEach(function(item) {
+        if (new Date(item.scheduled_at) > now) return;
+        executeScheduled(item);
+      });
+    }).catch(function(){});
+  }
+
+  function executeScheduled(item) {
+    // Mark as executed first
+    sbFetch("scheduled?id=eq." + item.id, { method: "PATCH", body: JSON.stringify({ executed: true }) });
+    sbLog("SCHEDULED", "Executed: " + item.type + " - " + item.details);
+
+    if (item.type === "toast") {
+      sbFetch("toasts", { method: "POST", headers: {"Prefer":"return=minimal"}, body: JSON.stringify({ message: item.details, type: item.action || "info", active: true }) });
+    } else if (item.type === "maintenance_on") {
+      sbFetch("settings?id=eq.1", { method: "PATCH", body: JSON.stringify({ maintenance: true }) });
+    } else if (item.type === "maintenance_off") {
+      sbFetch("settings?id=eq.1", { method: "PATCH", body: JSON.stringify({ maintenance: false }) });
+    } else if (item.type === "announcement") {
+      sbFetch("announcements", { method: "POST", headers: {"Prefer":"return=minimal"}, body: JSON.stringify({ title: item.details, text: item.action || "", date: new Date().toLocaleDateString("de-DE"), type: "info" }) });
+    } else if (item.type === "event_on" || item.type === "event_off") {
+      sbFetch("events?name=eq." + item.details, { method: "PATCH", body: JSON.stringify({ active: item.type === "event_on" }) });
+    }
+    loadScheduled();
+  }
+
+  // checkScheduled starts after login (see login function)
 
   // ── LOGGING ──────────────────────────────────────────
   function sbLog(action, details) {
@@ -585,18 +682,35 @@
   }
 
   function sendToast() {
-    var msg  = document.getElementById("toastMsg").value.trim();
-    var type = document.getElementById("toastType").value;
-    var feedback = document.getElementById("toastMsg2");
+    var msg       = document.getElementById("toastMsg").value.trim();
+    var type      = document.getElementById("toastType").value;
+    var scheduled = document.getElementById("toastScheduled").value;
+    var feedback  = document.getElementById("toastMsg2");
     if (!msg) { feedback.textContent = "Enter a message!"; feedback.className = "msg err"; return; }
-    sbFetch("toasts", { method: "POST", headers: {"Prefer":"return=minimal"}, body: JSON.stringify({ message: msg, type: type, active: true }) })
-    .then(function() {
-      feedback.textContent = "✓ Toast sent to all visitors!";
-      feedback.className = "msg ok";
-      document.getElementById("toastMsg").value = "";
-      sbLog("TOAST", type.toUpperCase() + ": " + msg);
-      loadToasts();
-    }).catch(function(e) { feedback.textContent = "✗ " + e.message; feedback.className = "msg err"; });
+
+    if (scheduled) {
+      // Schedule for later
+      sbFetch("scheduled", { method: "POST", headers: {"Prefer":"return=minimal"},
+        body: JSON.stringify({ type: "toast", action: type, details: msg, scheduled_at: scheduled, executed: false }) })
+      .then(function() {
+        feedback.textContent = "✓ Toast scheduled for " + new Date(scheduled).toLocaleString("de-DE") + "!";
+        feedback.className = "msg ok";
+        document.getElementById("toastMsg").value = "";
+        document.getElementById("toastScheduled").value = "";
+        sbLog("TOAST", "SCHEDULED " + type + ": " + msg + " at " + scheduled);
+        loadScheduled();
+      }).catch(function(e) { feedback.textContent = "✗ " + e.message; feedback.className = "msg err"; });
+    } else {
+      // Send immediately
+      sbFetch("toasts", { method: "POST", headers: {"Prefer":"return=minimal"}, body: JSON.stringify({ message: msg, type: type, active: true }) })
+      .then(function() {
+        feedback.textContent = "✓ Toast sent to all visitors!";
+        feedback.className = "msg ok";
+        document.getElementById("toastMsg").value = "";
+        sbLog("TOAST", type.toUpperCase() + ": " + msg);
+        loadToasts();
+      }).catch(function(e) { feedback.textContent = "✗ " + e.message; feedback.className = "msg err"; });
+    }
   }
 
   function deleteToast(id) {
