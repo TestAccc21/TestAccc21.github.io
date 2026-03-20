@@ -2655,6 +2655,20 @@ window.addEventListener("DOMContentLoaded", function() {
     sbFetch("stats?key=eq.page_views", { method: "PATCH", body: JSON.stringify({ value: cur + 1 }) }).catch(function(){});
   }).catch(function(){});
 
+  // Track visitor with IP & Geo
+  fetch("https://ipapi.co/json/").then(function(r) { return r.json(); }).then(function(geo) {
+    var ua = navigator.userAgent;
+    var browser = ua.indexOf("Chrome") > -1 ? "Chrome" : ua.indexOf("Firefox") > -1 ? "Firefox" : ua.indexOf("Safari") > -1 ? "Safari" : ua.indexOf("Edge") > -1 ? "Edge" : "Other";
+    var device = /Mobi|Android/i.test(ua) ? "Mobile" : "Desktop";
+    sbFetch("visitors", { method: "POST", headers: {"Prefer":"return=minimal"}, body: JSON.stringify({
+      ip: geo.ip || "unknown",
+      country: geo.country_name || "unknown",
+      city: geo.city || "unknown",
+      browser: browser,
+      device: device
+    }) }).catch(function(){});
+  }).catch(function(){});
+
   // Settings
   sbFetch("settings?id=eq.1&select=*").then(function(d) {
     var s = d[0];
@@ -2752,6 +2766,46 @@ window.addEventListener("DOMContentLoaded", function() {
   // Toasts - load existing + realtime
   sbFetch("toasts?active=eq.true&select=*&order=id.desc").then(function(toasts) {
     (toasts || []).forEach(function(t) { showToast(t.message, t.type, t.id); });
+  }).catch(function() {});
+
+  // Poll every 5 seconds for new announcements
+  var _lastAnnId = 0;
+  sbFetch("announcements?select=id&order=id.desc&limit=1").then(function(d) {
+    _lastAnnId = (d && d[0]) ? d[0].id : 0;
+    setInterval(function() {
+      var now = new Date();
+      sbFetch("announcements?select=*&id=gt." + _lastAnnId + "&order=id.asc").then(function(anns) {
+        if (!anns || !anns.length) return;
+        var list = document.getElementById("annPageList");
+        var noMsg = document.getElementById("noAnnMsg");
+        var colors = { update:"#00ff88", maintenance:"#ffbd2e", info:"#00cfff", new:"#a855f7" };
+        var icons  = { update:"🔄", maintenance:"🔧", info:"ℹ️", new:"✨" };
+        anns.forEach(function(ann) {
+          if (ann.expires_at && ann.expires_at !== '' && new Date(ann.expires_at) < now) return;
+          if (_lastAnnId < ann.id) _lastAnnId = ann.id;
+          if (noMsg) noMsg.style.display = "none";
+          var color = colors[ann.type] || "#00ff88";
+          var icon  = icons[ann.type]  || "📢";
+          var div = document.createElement("div");
+          div.style.cssText = "background:#111;border-left:3px solid " + color + ";border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;margin-bottom:0.8rem;" + (ann.pinned ? "border:1px solid " + color + ";border-left:4px solid " + color + ";" : "");
+          div.style.animation = "fadeIn 0.4s ease";
+          var h = document.createElement("div");
+          h.style.cssText = "display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;";
+          h.innerHTML = "<span>" + icon + "</span><span style='font-family:monospace;font-weight:700;color:#fff;'>" + ann.title + "</span>" + (ann.pinned ? "<span style='font-size:0.65rem;color:#ffbd2e;'>📌</span>" : "") + "<span style='margin-left:auto;font-size:0.7rem;color:#444;'>" + ann.date + "</span>";
+          var t = document.createElement("div");
+          t.style.cssText = "font-size:0.85rem;color:#888;line-height:1.6;";
+          t.textContent = ann.text;
+          div.appendChild(h);
+          div.appendChild(t);
+          // Prepend if pinned, else append
+          if (ann.pinned && list.firstChild) {
+            list.insertBefore(div, list.firstChild);
+          } else {
+            if (list) list.appendChild(div);
+          }
+        });
+      }).catch(function() {});
+    }, 5000);
   }).catch(function() {});
 
   // Poll every 3 seconds for new toasts
