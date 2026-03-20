@@ -233,6 +233,7 @@
       <button class="sidebar-item" onclick="showPage('team')">👥 Team</button>
       <div class="sidebar-section">SYSTEM</div>
       <button class="sidebar-item" onclick="showPage('stats')">📊 Statistics</button>
+      <button class="sidebar-item" onclick="showPage('visitors')">🌍 Visitors</button>
       <button class="sidebar-item" onclick="showPage('toasts')">🔔 Toasts</button>
       <button class="sidebar-item" onclick="showPage('scheduled')">📅 Scheduled</button>
       <button class="sidebar-item" onclick="showPage('logs')">📜 Logs</button>
@@ -450,6 +451,34 @@
         </div>
       </div>
 
+      <!-- VISITORS PAGE -->
+      <div class="page" id="page_visitors">
+        <div class="page-title">&gt; VISITOR ANALYTICS</div>
+        <div class="page-sub">IP & Geo tracking of site visitors</div>
+        <div class="status-bar" id="visitorsStats">
+          <div class="status-item"><div class="status-item-val" id="vstat_total">...</div><div class="status-item-label">TOTAL VISITS</div></div>
+          <div class="status-item"><div class="status-item-val" id="vstat_countries">...</div><div class="status-item-label">COUNTRIES</div></div>
+          <div class="status-item"><div class="status-item-val" id="vstat_mobile">...</div><div class="status-item-label">MOBILE %</div></div>
+          <div class="status-item"><div class="status-item-val" id="vstat_top_country">...</div><div class="status-item-label">TOP COUNTRY</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">RECENT VISITORS</div>
+            <table class="table">
+              <thead><tr><th>TIME</th><th>COUNTRY</th><th>CITY</th><th>BROWSER</th><th>DEVICE</th></tr></thead>
+              <tbody id="visitorsTable"><tr><td colspan="5" style="color:#333;">Loading...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-title">TOP COUNTRIES</div>
+            <div id="countriesChart"></div>
+          </div>
+        </div>
+        <div style="margin-top:0.5rem;">
+          <button class="btn btn-red" onclick="clearVisitors()">🗑 CLEAR ALL VISITORS</button>
+        </div>
+      </div>
+
       <!-- LOGS PAGE -->
       <div class="page" id="page_logs">
         <div class="page-title">&gt; ACTIVITY LOGS</div>
@@ -516,7 +545,7 @@
     document.querySelectorAll('.sidebar-item').forEach(function(s) { s.classList.remove('active'); });
     document.getElementById('page_' + name).classList.add('active');
     event.currentTarget.classList.add('active');
-    var loaders = { announcements: loadAnnouncements, codes: loadCodes, changelog: loadChangelog, team: loadTeam, events: loadEvents, toasts: loadToasts, logs: loadLogs, stats: loadStats, scheduled: loadScheduled };
+    var loaders = { announcements: loadAnnouncements, codes: loadCodes, changelog: loadChangelog, team: loadTeam, events: loadEvents, toasts: loadToasts, logs: loadLogs, stats: loadStats, scheduled: loadScheduled, visitors: loadVisitors };
     if (loaders[name]) loaders[name]();
   }
 
@@ -533,7 +562,7 @@
     var val = document.getElementById('maintToggle').checked;
     var msg = document.getElementById('maintMsg');
     sbFetch('settings?id=eq.1', { method: 'PATCH', body: JSON.stringify({ maintenance: val }) })
-    .then(function() { msg.textContent = '✓ Saved!'; msg.className = 'msg ok'; setTimeout(function(){ msg.textContent=''; }, 2000); sbLog('MAINTENANCE', val ? 'Enabled' : 'Disabled'); })
+    .then(function() { msg.textContent = '✓ Saved!'; msg.className = 'msg ok'; setTimeout(function(){ msg.textContent=''; }, 2000); sbLog('MAINTENANCE', val ? 'Enabled' : 'Disabled'); sendDiscordWebhook(val ? '🔧 Maintenance Enabled' : '✅ Maintenance Disabled', val ? 'The website is now in maintenance mode.' : 'The website is back online.', val ? 16711680 : 65408); })
     .catch(function(e) { msg.textContent = '✗ ' + e.message; msg.className = 'msg err'; });
   }
   function toggleBuyButton() {
@@ -550,6 +579,90 @@
     newyear:"🎆 New Year", valentine:"💖 Valentine", summer:"☀️ Summer",
     winter:"❄️ Winter", easter:"🐣 Easter"
   };
+  // ── DISCORD WEBHOOK ─────────────────────────────────
+  var DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1484646326925787288/9fHKLgvjK9UhGejPBwx0D1a4LxnHUR71aTZNildoIhyJcMOSZgyL3LryTbMSt2acO7GB';
+
+  function sendDiscordWebhook(title, description, color) {
+    fetch(DISCORD_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        embeds: [{
+          title: title,
+          description: description,
+          color: color || 65408,
+          footer: { text: 'CMDR Admin Panel' },
+          timestamp: new Date().toISOString()
+        }]
+      })
+    }).catch(function() {});
+  }
+
+  // ── VISITORS ─────────────────────────────────────────
+  function loadVisitors() {
+    sbFetch('visitors?select=*&order=created_at.desc&limit=50').then(function(visitors) {
+      if (!visitors) return;
+
+      // Stats
+      document.getElementById('vstat_total').textContent = visitors.length;
+      var countries = {};
+      var mobileCount = 0;
+      visitors.forEach(function(v) {
+        countries[v.country] = (countries[v.country] || 0) + 1;
+        if (v.device === 'Mobile') mobileCount++;
+      });
+      document.getElementById('vstat_countries').textContent = Object.keys(countries).length;
+      document.getElementById('vstat_mobile').textContent = visitors.length ? Math.round(mobileCount / visitors.length * 100) + '%' : '0%';
+      var topCountry = Object.keys(countries).sort(function(a,b) { return countries[b]-countries[a]; })[0] || '-';
+      document.getElementById('vstat_top_country').textContent = topCountry;
+
+      // Table
+      var tbody = document.getElementById('visitorsTable');
+      tbody.innerHTML = '';
+      visitors.slice(0, 20).forEach(function(v) {
+        var tr = document.createElement('tr');
+        var time = new Date(v.created_at).toLocaleString('de-DE');
+        tr.innerHTML =
+          '<td style="color:#444;font-size:0.7rem;white-space:nowrap;">' + time + '</td>' +
+          '<td style="color:#e0e0e0;">' + (v.country || '-') + '</td>' +
+          '<td style="color:#888;">' + (v.city || '-') + '</td>' +
+          '<td><span class="badge badge-green">' + (v.browser || '-') + '</span></td>' +
+          '<td><span class="badge ' + (v.device === 'Mobile' ? 'badge-yellow' : 'badge-green') + '">' + (v.device || '-') + '</span></td>';
+        tbody.appendChild(tr);
+      });
+
+      // Countries chart
+      var chart = document.getElementById('countriesChart');
+      chart.innerHTML = '';
+      var sorted = Object.keys(countries).sort(function(a,b) { return countries[b]-countries[a]; }).slice(0,8);
+      var max = countries[sorted[0]] || 1;
+      sorted.forEach(function(country) {
+        var pct = Math.round(countries[country] / max * 100);
+        var row = document.createElement('div');
+        row.style.cssText = 'margin-bottom:0.5rem;';
+        row.innerHTML =
+          '<div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:0.2rem;">' +
+            '<span style="color:#ccc;">' + country + '</span>' +
+            '<span style="color:#444;">' + countries[country] + '</span>' +
+          '</div>' +
+          '<div style="background:#1a1a1a;border-radius:4px;height:6px;">' +
+            '<div style="background:#00ff88;width:' + pct + '%;height:6px;border-radius:4px;transition:width 0.5s;"></div>' +
+          '</div>';
+        chart.appendChild(row);
+      });
+    }).catch(function(e) {
+      document.getElementById('visitorsTable').innerHTML = '<tr><td colspan="5" style="color:#ff4444;">Error: ' + e.message + '</td></tr>';
+    });
+  }
+
+  function clearVisitors() {
+    if (!confirm('Clear all visitor data?')) return;
+    sbFetch('visitors?id=gt.0', { method: 'DELETE' }).then(function() {
+      sbLog('VISITORS', 'All visitor data cleared');
+      loadVisitors();
+    });
+  }
+
   // ── STATS ────────────────────────────────────────────
   function loadStats() {
     sbFetch("stats?select=*").then(function(stats) {
