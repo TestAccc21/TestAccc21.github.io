@@ -654,7 +654,7 @@
 
   // ── ANNOUNCEMENTS ─────────────────────────────────────
   function loadAnnouncements() {
-    sbFetch('announcements?select=*&order=pinned.desc,id.desc').then(function(anns) {
+    sbFetch('announcements?select=*&order=id.desc').then(function(anns) {
       var list = document.getElementById('annList');
       if (!anns || !anns.length) { list.innerHTML = '<div style="color:#333;font-size:0.78rem;">No announcements</div>'; return; }
       list.innerHTML = '';
