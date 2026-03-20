@@ -486,6 +486,24 @@
     });
   }
 
+  var ADMIN_PW = 'cmdr_admin_2026';
+
+  function login() {
+    var pw = document.getElementById('pwInput').value;
+    if (pw === ADMIN_PW) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadMaintenance();
+      loadEvents();
+      loadStats();
+      sbLog('LOGIN', 'Admin logged in');
+      setInterval(checkScheduled, 60000);
+      checkScheduled();
+    } else {
+      document.getElementById('loginErr').textContent = '✗ Wrong password';
+    }
+  }
+
   function logout() {
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
