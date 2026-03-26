@@ -641,26 +641,21 @@
   }
 
   // ── DISCORD WEBHOOK ─────────────────────────────────
-  var _w = ['https://disc', 'ord.com/api/', 'webhooks/148464632692578', '7288/', '9fHKLgvjK9UhGejPBwx0D1a4LxnHUR71aTZNildoIhyJcMOSZgyL3LryTbMSt2acO7GB'];
-  var DISCORD_WEBHOOK = _w.join('');
-
   function sendDiscordWebhook(title, description, color) {
-    var payload = JSON.stringify({
-      embeds: [{
-        title: title,
-        description: description,
-        color: color || 65408,
-        footer: { text: 'CMDR Admin Panel' },
-        timestamp: new Date().toISOString()
-      }]
-    });
-    // Use no-cors to bypass CORS restrictions
-    fetch(DISCORD_WEBHOOK, {
+    var edgeFn = SB_URL + '/functions/v1/discord-webhook';
+    console.log('Sending webhook to:', edgeFn);
+    fetch(edgeFn, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: payload,
-      mode: 'no-cors'
-    }).catch(function() {});
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + SB_KEY
+      },
+      body: JSON.stringify({ title: title, description: description, color: color || 65408 })
+    }).then(function(r) {
+      console.log('Webhook response:', r.status);
+    }).catch(function(e) {
+      console.log('Webhook error:', e);
+    });
   }
 
   // ── VISITORS ─────────────────────────────────────────
