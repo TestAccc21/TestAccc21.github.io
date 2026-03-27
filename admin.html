@@ -891,8 +891,11 @@
       .then(function() {
         feedback.textContent = "✓ Toast sent to all visitors!";
         feedback.className = "msg ok";
+        var sentMsg = msg;
+        var sentType = type;
         document.getElementById("toastMsg").value = "";
-        sbLog("TOAST", type.toUpperCase() + ": " + msg);
+        sbLog("TOAST", sentType.toUpperCase() + ": " + sentMsg);
+        sendDiscordWebhook("🔔 Toast Sent", "**Type:** " + sentType + "\n**Message:** " + sentMsg, 16776960);
         loadToasts();
       }).catch(function(e) { feedback.textContent = "✗ " + e.message; feedback.className = "msg err"; });
     }
