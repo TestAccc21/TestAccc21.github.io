@@ -1,3134 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cmdr System – Event DLC</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --primary: #00ff88;
-    --rbx: #e8562a;
-    --dark: #0a0a0a;
-    --card: #111;
-    --text: #e0e0e0;
-  }
-  body { font-family: 'Courier New', monospace; background: var(--dark); color: var(--text); }
-  nav, .hero, section, .discord-section, footer { position: relative; z-index: 1; }
-  #teamPage, #licensePage, #collaboratorPage, #announcementsPage, #eventPacksPage { z-index: 99999 !important; }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cmdr DLC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:      #00ff88;
+      --green-dim:  #00cc66;
+      --bg:         #060c08;
+      --card-bg:    #0b1a13;
+      --border:     rgba(0,255,136,0.20);
+      --text:       #d4ffe8;
+      --muted:      #3d7a5e;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      background:var(--bg); color:var(--text);
+      font-family:'Rajdhani',sans-serif;
+      min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden;
+    }
+    /* scanlines */
+    body::before {
+      content:''; position:fixed; inset:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.018) 2px,rgba(0,255,136,.018) 4px);
+      pointer-events:none; z-index:9997;
+    }
 
+    /* PARTICLES */
+    #particles { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
 
+    /* MAINTENANCE */
+    #maintenance {
+      display:none; position:fixed; inset:0; background:var(--bg);
+      z-index:9999; flex-direction:column; align-items:center;
+      justify-content:center; gap:1.8rem; text-align:center; padding:2rem;
+    }
+    #maintenance .icon { font-size:4rem; animation:glow-pulse 2s ease-in-out infinite; }
+    #maintenance h1 { font-family:'Share Tech Mono',monospace; font-size:clamp(1.6rem,5vw,2.8rem); color:var(--green); letter-spacing:.15em; }
+    #maintenance p { font-family:'Share Tech Mono',monospace; color:var(--muted); font-size:.9rem; letter-spacing:.08em; }
+    .mbar { width:280px; height:2px; background:#001a0d; border-radius:2px; overflow:hidden; }
+    .mbar-fill { height:100%; background:var(--green); width:0; animation:load 2.8s ease-in-out infinite; box-shadow:0 0 10px var(--green); }
 
+    /* NAV */
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1rem 2rem; border-bottom:1px solid var(--border);
+      background:rgba(6,12,8,.95); backdrop-filter:blur(10px);
+      position:sticky; top:0; z-index:100;
+    }
+    .logo { font-family:'Share Tech Mono',monospace; font-size:1.2rem; color:var(--green); text-shadow:0 0 14px var(--green); letter-spacing:.12em; text-decoration:none; display:flex; align-items:center; gap:.6rem; }
+    .logo span { color:var(--muted); }
+    .version-badge {
+      font-family:'Share Tech Mono',monospace; font-size:.6rem;
+      color:#060c08; background:var(--green);
+      padding:.15rem .45rem; letter-spacing:.08em;
+      font-weight:700; border-radius:2px;
+      text-shadow:none;
+    }
+    nav ul { list-style:none; display:flex; gap:1.8rem; align-items:center; }
+    nav a { color:var(--muted); text-decoration:none; font-size:.95rem; letter-spacing:.08em; text-transform:uppercase; font-weight:600; transition:color .2s; }
+    nav a:hover, nav a.active { color:var(--green); }
+    .nav-icon-link { font-size:1.1rem; transition:transform .2s, filter .2s; }
+    .nav-icon-link:hover { transform:scale(1.2); filter:drop-shadow(0 0 6px var(--green)); }
 
-  /* MAINTENANCE COUNTDOWN */
-  .m-countdown {
-    display: flex; gap: 1.5rem; justify-content: center;
-    margin-top: 1.5rem;
-  }
-  .m-countdown-box {
-    text-align: center; min-width: 60px;
-  }
-  .m-countdown-num {
-    font-size: 2.5rem; font-weight: 900; color: #ff2222;
-    font-family: 'Courier New', monospace; letter-spacing: 2px;
-    text-shadow: 0 0 20px rgba(255,34,34,0.5);
-    animation: mpulse 1.5s ease-in-out infinite;
-  }
-  .m-countdown-label {
-    font-size: 0.65rem; color: #555; letter-spacing: 2px;
-    font-family: 'Courier New', monospace; margin-top: 0.2rem;
-  }
-  .m-countdown-done {
-    font-size: 1rem; color: #00ff88; letter-spacing: 2px;
-    font-family: 'Courier New', monospace; margin-top: 1rem;
-    animation: mpulse 1.5s ease-in-out infinite;
-  }
+    /* MAIN */
+    main { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1.5rem; position:relative; z-index:1; }
 
-  /* LOADER */
-  #loader {
-    position: fixed; inset: 0; background: #0a0a0a;
-    z-index: 99999; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 1.5rem;
-  }
-  #loader .l-logo { font-size: 2rem; font-weight: 700; color: var(--primary); letter-spacing: 4px; }
-  #loader .l-bar-wrap {
-    width: 280px; height: 3px; background: #1a1a1a; border-radius: 2px; overflow: hidden;
-  }
-  #loader .l-bar { height: 100%; width: 0%; background: var(--primary); border-radius: 2px;
-    box-shadow: 0 0 10px rgba(0,255,136,0.6); transition: width 0.05s linear; }
-  #loader .l-text { font-size: 0.75rem; color: #555; letter-spacing: 2px; }
-  #loader .l-line { font-size: 0.78rem; color: #333; letter-spacing: 1px; min-height: 1.2rem; }
+    .eyebrow { font-family:'Share Tech Mono',monospace; font-size:.72rem; letter-spacing:.3em; color:var(--green); text-transform:uppercase; margin-bottom:2.5rem; opacity:.7; animation:fade-up .5s ease both; }
 
-  /* MAINTENANCE */
-  #maintenanceScreen {
-    display: none; position: fixed; inset: 0; z-index: 999999;
-    background: #0a0a0a; flex-direction: column;
-    align-items: center; justify-content: center; gap: 1.5rem;
-    text-align: center;
-  }
-  #maintenanceScreen .m-triangle {
-    font-size: 5rem; animation: mpulse 1.5s ease-in-out infinite;
-  }
-  #maintenanceScreen h1 {
-    font-size: 3.5rem; font-weight: 900; color: #ff2222;
-    letter-spacing: 6px; text-shadow: 0 0 30px rgba(255,34,34,0.6);
-    animation: mpulse 1.5s ease-in-out infinite;
-  }
-  #maintenanceScreen p {
-    color: #555; font-size: 0.9rem; letter-spacing: 2px;
-    font-family: 'Courier New', monospace;
-  }
-  #maintenanceScreen .m-border {
-    border: 2px solid #ff2222; border-radius: 12px;
-    padding: 3rem 4rem; box-shadow: 0 0 60px rgba(255,34,34,0.15);
-  }
-  @keyframes mpulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
+    /* COUNTDOWN */
+    .countdown-wrap {
+      margin-bottom:2rem;
+      animation:fade-up .55s .05s ease both;
+    }
+    .countdown-label {
+      font-family:'Share Tech Mono',monospace; font-size:.68rem;
+      letter-spacing:.25em; color:var(--muted); text-transform:uppercase;
+      text-align:center; margin-bottom:.6rem;
+    }
+    .countdown {
+      display:flex; gap:.8rem; justify-content:center;
+    }
+    .cd-block {
+      display:flex; flex-direction:column; align-items:center;
+      background:var(--card-bg); border:1px solid var(--border);
+      padding:.5rem .9rem; min-width:60px;
+    }
+    .cd-num {
+      font-family:'Share Tech Mono',monospace; font-size:1.6rem;
+      color:var(--green); text-shadow:0 0 12px rgba(0,255,136,.4);
+      line-height:1;
+    }
+    .cd-unit {
+      font-family:'Share Tech Mono',monospace; font-size:.55rem;
+      color:var(--muted); letter-spacing:.15em; text-transform:uppercase;
+      margin-top:.2rem;
+    }
+    .cd-expired {
+      font-family:'Share Tech Mono',monospace; font-size:.9rem;
+      color:var(--green); letter-spacing:.15em; text-align:center;
+    }
 
-  /* ADMIN PANEL */
+    /* CARD */
+    .card { width:100%; max-width:440px; background:var(--card-bg); border:1px solid var(--border); position:relative; overflow:hidden; animation:fade-up .6s .1s ease both; box-shadow:0 0 60px rgba(0,255,136,.06); }
+    .card::before, .card::after { content:''; position:absolute; width:20px; height:20px; border-color:var(--green); border-style:solid; opacity:.5; z-index:2; }
+    .card::before { top:10px; left:10px; border-width:2px 0 0 2px; }
+    .card::after  { bottom:10px; right:10px; border-width:0 2px 2px 0; }
 
-  nav {
-    display: flex !important; justify-content: space-between; align-items: center;
-    padding: 1.2rem 2rem; background: var(--card);
-    border-bottom: 1px solid var(--primary);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo { font-size: 1.4rem; font-weight: 700; color: var(--primary); letter-spacing: 2px; }
-  nav > div { display: none !important; }
-  nav a { display: none !important; }
-  .discord-nav { display: none !important; }
+    .card-img-wrap { width:100%; aspect-ratio:16/9; border-bottom:1px solid var(--border); overflow:hidden; background:#091510 repeating-linear-gradient(45deg,#091510,#091510 8px,rgba(0,255,136,.03) 8px,rgba(0,255,136,.03) 16px); display:flex; align-items:center; justify-content:center; }
+    .card-img-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+    .img-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; width:100%; height:100%; font-family:'Share Tech Mono',monospace; }
+    .img-placeholder .pi-icon { font-size:2.5rem; opacity:.2; }
+    .img-placeholder .pi-label { font-size:.7rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; }
 
-  .hero {
-    text-align: center; padding: 5rem 2rem 3rem;
-    background: radial-gradient(ellipse at center, #001a0d 0%, #0a0a0a 70%);
-    border-bottom: 1px solid #1a1a1a;
-  }
-  .tag {
-    display: inline-block; padding: 0.3rem 1rem;
-    border: 1px solid var(--primary); color: var(--primary);
-    border-radius: 50px; font-size: 0.75rem; margin-bottom: 1.5rem; letter-spacing: 2px;
-  }
-  .hero h1 { font-size: 2.8rem; margin-bottom: 1rem; line-height: 1.4; animation: float 3s ease-in-out infinite; }
-  .wave-word {
-    display: inline-block;
-    transition: color 0.4s, text-shadow 0.4s;
-    color: #e0e0e0;
-  }
-  .wave-word.green {
-    color: #00ff88;
-    text-shadow: 0 0 20px rgba(0,255,136,0.6);
-  }
-  @keyframes float {
-    0%   { transform: translateY(0px); }
-    50%  { transform: translateY(-14px); }
-    100% { transform: translateY(0px); }
-  }
-  .hero p { font-size: 1rem; color: #888; max-width: 520px; margin: 0 auto 0.6rem; font-family: 'Segoe UI', sans-serif; line-height: 1.6; }
-  .sub { font-size: 0.85rem !important; color: #555 !important; margin-bottom: 2rem !important; }
-  .btn-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-  .btn-rbx {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.9rem 2rem; background: var(--rbx); color: white;
-    border-radius: 4px; text-decoration: none; font-weight: 700;
-    transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 1px;
-    font-family: 'Courier New', monospace;
-  }
-  .btn-rbx:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(232,86,42,0.4); }
-  .btn-discord {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.9rem 2rem; background: #5865F2; color: white;
-    border-radius: 4px; text-decoration: none; font-weight: 700;
-    transition: all 0.2s; letter-spacing: 1px; font-family: 'Courier New', monospace;
-  }
-  .btn-discord:hover { background: #4752c4; transform: translateY(-2px); }
+    .card-body { padding:1.8rem 2rem 2rem; }
+    .card-title { font-family:'Share Tech Mono',monospace; font-size:1.55rem; color:var(--green); letter-spacing:.08em; text-shadow:0 0 18px rgba(0,255,136,.35); margin-bottom:.3rem; }
+    .card-subtitle { font-size:.85rem; color:var(--muted); letter-spacing:.12em; text-transform:uppercase; margin-bottom:1.6rem; }
+    .card-divider { width:100%; height:1px; background:var(--border); margin-bottom:1.4rem; }
 
-  /* TERMINAL */
-  .terminal {
-    background: #000; border: 1px solid #2a2a2a; border-radius: 8px;
-    max-width: 560px; margin: 3rem auto 0; text-align: left;
-    box-shadow: 0 0 40px rgba(0,255,136,0.08);
-  }
-  .terminal-bar {
-    background: #1a1a1a; padding: 0.6rem 1rem; border-radius: 8px 8px 0 0;
-    display: flex; align-items: center; gap: 0.5rem;
-  }
-  .dot { width: 11px; height: 11px; border-radius: 50%; }
-  .dot.r { background: #ff5f57; } .dot.y { background: #ffbd2e; } .dot.g { background: #28c940; }
-  .terminal-body { padding: 1.2rem 1.5rem; font-size: 0.82rem; line-height: 1.9; }
-  .cmd { color: var(--primary); } .out { color: #666; } .ok { color: #00ff88; } .warn { color: #ffbd2e; }
-  .cursor { display: inline-block; width: 7px; height: 13px; background: var(--primary); animation: blink 1s infinite; vertical-align: middle; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  @keyframes fadeIn { from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:translateY(0)} }
+    .features { list-style:none; display:flex; flex-direction:column; gap:.75rem; margin-bottom:1.6rem; }
+    .features li { display:flex; align-items:flex-start; gap:.8rem; font-size:1rem; line-height:1.4; }
+    .features li .icon { font-family:'Share Tech Mono',monospace; font-size:.8rem; color:var(--green); margin-top:.12rem; flex-shrink:0; }
+    .features li.warn .icon { color:#ffcc00; }
+    .features li.warn .label { color:#ffe9a0; }
+    .features li .label { color:var(--text); }
+    .features li .label span { color:var(--muted); font-size:.88rem; display:block; margin-top:.1rem; }
 
-  section { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
-  h2 { font-size: 1.6rem; margin-bottom: 2rem; text-align: center; letter-spacing: 2px; }
-  h2 span { color: var(--primary); }
+    .price-row { display:flex; align-items:center; gap:.8rem; margin-bottom:1rem; }
+    .price { font-family:'Share Tech Mono',monospace; font-size:1.5rem; color:var(--green); text-shadow:0 0 12px rgba(0,255,136,.4); }
+    .price-note { font-size:.8rem; color:var(--muted); font-family:'Share Tech Mono',monospace; letter-spacing:.08em; }
 
-  /* SINGLE PRODUCT CARD */
-  .product-card {
-    background: var(--card); border: 1px solid var(--primary);
-    border-radius: 12px; overflow: hidden; max-width: 500px; margin: 0 auto;
-    box-shadow: 0 0 40px rgba(0,255,136,0.1);
-  }
-  .product-top {
-    background: #0d0d0d; padding: 2rem; text-align: center;
-    border-bottom: 1px solid #1a1a1a;
-  }
-  .product-top .badge {
-    display: inline-block; padding: 0.25rem 0.8rem;
-    background: rgba(232,86,42,0.15); color: var(--rbx);
-    border-radius: 4px; font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 1rem;
-  }
-  .product-top h3 { font-size: 1.4rem; margin-bottom: 0.5rem; }
-  .product-top p { color: #666; font-size: 0.85rem; font-family: 'Segoe UI', sans-serif; }
-  .price-box { margin: 1.5rem 0 0; }
-  .price-box .price {
-    font-size: 2.2rem; font-weight: 700; color: var(--rbx);
-    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-  }
-  .price-box .price-sub { color: #555; font-size: 0.8rem; margin-top: 0.3rem; font-family: 'Segoe UI', sans-serif; }
+    /* BUTTON ROW */
+    .btn-row { display:flex; gap:.7rem; margin-bottom:0; }
+    .btn-buy { flex:1; display:block; padding:.95rem; background:var(--green); color:#060c08; font-family:'Share Tech Mono',monospace; font-size:.9rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; text-align:center; text-decoration:none; border:none; cursor:pointer; transition:background .2s,box-shadow .2s,transform .15s; }
+    .btn-buy:hover { background:var(--green-dim); box-shadow:0 0 28px rgba(0,255,136,.5); transform:translateY(-1px); }
+    .btn-buy:active { transform:translateY(0); }
+    .btn-discord { display:flex; align-items:center; justify-content:center; padding:.95rem 1rem; background:transparent; border:1px solid rgba(88,101,242,.6); color:#8891f2; font-family:'Share Tech Mono',monospace; font-size:.85rem; letter-spacing:.1em; text-decoration:none; text-transform:uppercase; transition:background .2s, box-shadow .2s, transform .15s; white-space:nowrap; }
+    .btn-discord:hover { background:rgba(88,101,242,.12); box-shadow:0 0 20px rgba(88,101,242,.3); transform:translateY(-1px); }
 
-  .product-body { padding: 1.8rem; font-family: 'Segoe UI', sans-serif; }
-  .feat-list { list-style: none; margin-bottom: 1.5rem; }
-  .feat-list li {
-    padding: 0.6rem 0; border-bottom: 1px solid #1a1a1a;
-    color: #aaa; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;
-  }
-  .feat-list li:last-child { border: none; }
-  .feat-list li::before { content: '✓'; color: var(--primary); font-weight: 700; }
+    .disclaimer { margin-top:1.1rem; font-family:'Share Tech Mono',monospace; font-size:.65rem; color:var(--muted); letter-spacing:.08em; text-align:center; line-height:1.7; }
+    .disclaimer a { color:var(--green); text-decoration:none; }
+    .disclaimer a:hover { text-decoration:underline; }
 
-  .warning-box {
-    background: rgba(255,189,46,0.07); border: 1px solid rgba(255,189,46,0.2);
-    border-radius: 6px; padding: 0.8rem 1rem; margin-bottom: 1.5rem;
-    font-size: 0.85rem; color: #ffbd2e; display: flex; gap: 0.5rem; align-items: flex-start;
-  }
+    /* SOCIAL ROW below card */
+    .social-row {
+      display:flex; gap:1rem; margin-top:1.4rem; justify-content:center;
+      animation:fade-up .6s .2s ease both;
+    }
+    .social-btn {
+      display:flex; align-items:center; gap:.5rem;
+      font-family:'Share Tech Mono',monospace; font-size:.72rem;
+      letter-spacing:.12em; text-transform:uppercase; text-decoration:none;
+      color:var(--muted); border:1px solid var(--border);
+      padding:.4rem 1rem; transition:color .2s, border-color .2s, box-shadow .2s;
+    }
+    .social-btn:hover { color:var(--green); border-color:var(--green); box-shadow:0 0 14px rgba(0,255,136,.2); }
 
-  .buy-btn {
-    display: block; text-align: center; padding: 0.9rem;
-    background: var(--rbx); color: white;
-    border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 1rem;
-    letter-spacing: 1px; transition: box-shadow 0.2s, transform 0.2s;
-    font-family: 'Courier New', monospace;
-  }
-  .buy-btn:hover { box-shadow: 0 4px 20px rgba(232,86,42,0.4); transform: translateY(-2px); }
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); padding:1.2rem 2rem; text-align:center; font-family:'Share Tech Mono',monospace; font-size:.72rem; color:var(--muted); letter-spacing:.08em; position:relative; z-index:1; }
+    footer a { color:var(--green); text-decoration:none; }
+    footer a:hover { text-decoration:underline; }
 
-  /* DISCOUNT CODE */
-  .discount-wrap {
-    margin-bottom: 1.2rem;
-  }
-  .discount-label {
-    font-size: 0.78rem; color: #555; letter-spacing: 1px; margin-bottom: 0.5rem;
-    font-family: 'Courier New', monospace; text-transform: uppercase;
-  }
-  .discount-row {
-    display: flex; gap: 0.5rem;
-  }
-  .discount-input {
-    flex: 1; padding: 0.7rem 1rem;
-    background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 6px;
-    color: var(--text); font-family: 'Courier New', monospace; font-size: 0.9rem;
-    outline: none; transition: border-color 0.2s; text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .discount-input:focus { border-color: var(--primary); }
-  .discount-input.valid { border-color: #00ff88; }
-  .discount-input.invalid { border-color: #ff4444; }
-  .discount-apply-btn {
-    padding: 0.7rem 1.2rem;
-    background: #1a1a1a; border: 1px solid #333; border-radius: 6px;
-    color: var(--text); font-family: 'Courier New', monospace; font-size: 0.85rem;
-    cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 1px;
-  }
-  .discount-apply-btn:hover { border-color: var(--primary); color: var(--primary); }
-  .discount-msg {
-    font-size: 0.8rem; margin-top: 0.5rem; font-family: 'Courier New', monospace;
-    min-height: 1.1rem; letter-spacing: 0.5px;
-  }
-  .discount-msg.success { color: #00ff88; }
-  .discount-msg.error   { color: #ff4444; }
-  .price-original {
-    text-decoration: line-through; color: #555; font-size: 1.4rem; margin-right: 0.3rem;
-  }
-  .price-discounted {
-    color: #00ff88 !important;
-  }
-
-  /* LICENSE */
-  .license-box {
-    background: #0d0d0d; border: 1px solid #222; border-radius: 8px;
-    padding: 2rem; font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;
-  }
-  .license-box h3 { color: var(--primary); margin-bottom: 1rem; font-family: 'Courier New', monospace; }
-  .license-box li { padding: 0.5rem 0; border-bottom: 1px solid #1a1a1a; color: #777; font-size: 0.88rem; list-style: none; }
-  .license-box li:last-child { border: none; }
-  .license-box li strong { color: var(--text); }
-
-  /* DISCORD */
-  .discord-section {
-    background: #0d0d0d; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
-    text-align: center; padding: 3rem 2rem;
-  }
-  .discord-card {
-    display: inline-flex; align-items: center; gap: 1rem;
-    background: #1a1c2e; border: 1px solid #5865F2; border-radius: 8px;
-    padding: 1rem 2rem; text-decoration: none; transition: all 0.2s; margin-top: 1rem;
-  }
-  .discord-card:hover { background: #252840; box-shadow: 0 8px 25px rgba(88,101,242,0.3); transform: translateY(-2px); }
-  .discord-card .d-icon { font-size: 2rem; }
-  .discord-card .d-text strong { display: block; color: white; font-size: 1rem; }
-  .discord-card .d-text span { color: #888; font-size: 0.8rem; font-family: 'Segoe UI', sans-serif; }
-
-
-
-
-
-  /* ═══════════════ TEAM ═══════════════ */
-  .team-grid {
-    display: flex; flex-wrap: wrap; gap: 1.5rem;
-    justify-content: center; max-width: 900px; margin: 0 auto;
-  }
-  .team-card {
-    background: var(--card); border: 1px solid #1a1a1a;
-    border-radius: 12px; padding: 1.5rem 1.2rem;
-    text-align: center; width: 150px;
-    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
-    cursor: default;
-  }
-  .team-card:hover {
-    border-color: var(--primary);
-    box-shadow: 0 0 20px rgba(0,255,136,0.1);
-    transform: translateY(-4px);
-  }
-  .team-avatar {
-    width: 80px; height: 80px; border-radius: 50%;
-    border: 2px solid #2a2a2a; margin: 0 auto 0.8rem;
-    object-fit: cover; display: block;
-    transition: border-color 0.3s;
-  }
-  .team-card:hover .team-avatar { border-color: var(--primary); }
-  .team-name {
-    font-family: 'Courier New', monospace; font-size: 0.95rem;
-    font-weight: 700; color: var(--text); margin-bottom: 0.3rem;
-    letter-spacing: 1px;
-  }
-  .team-role {
-    font-size: 0.72rem; letter-spacing: 1.5px;
-    font-family: 'Courier New', monospace; text-transform: uppercase;
-  }
-  .role-creator   { color: #00ff88; }
-  .role-cocreator { color: #00cfff; }
-  .role-developer { color: #ffbd2e; }
-  .role-moderator { color: #5865F2; }
-  .role-trial     { color: #aaa; }
-  .role-collaborator { color: #ff69b4; }
-
-  /* TEAM MODAL */
-  #teamModal {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85); z-index: 9000;
-    align-items: center; justify-content: center;
-    animation: fadeIn 0.2s ease;
-  }
-  #teamModal.open { display: flex; }
-  .team-modal-box {
-    background: #0d0d0d; border: 1px solid var(--primary);
-    border-radius: 12px; padding: 2rem; width: 340px; max-width: 90vw;
-    text-align: center; position: relative;
-    box-shadow: 0 0 40px rgba(0,255,136,0.15);
-  }
-  .team-modal-avatar {
-    width: 90px; height: 90px; border-radius: 50%;
-    border: 2px solid var(--primary); margin: 0 auto 1rem;
-    object-fit: cover; display: block;
-    box-shadow: 0 0 20px rgba(0,255,136,0.2);
-  }
-  .team-modal-name {
-    font-family: 'Courier New', monospace; font-size: 1.2rem;
-    font-weight: 700; color: var(--text); letter-spacing: 2px; margin-bottom: 0.3rem;
-  }
-  .team-modal-role {
-    font-size: 0.75rem; letter-spacing: 2px;
-    font-family: 'Courier New', monospace; margin-bottom: 1rem;
-  }
-  .team-modal-text {
-    color: #888; font-size: 0.88rem; font-family: 'Segoe UI', sans-serif;
-    line-height: 1.6; border-top: 1px solid #1a1a1a; padding-top: 1rem;
-  }
-  .team-modal-close {
-    position: absolute; top: 1rem; right: 1rem;
-    background: none; border: none; color: #555; cursor: pointer;
-    font-size: 1.1rem; transition: color 0.2s;
-  }
-  .team-modal-close:hover { color: var(--primary); }
-  .team-card { cursor: pointer; }
-  /* ═══════════════ THEMES ═══════════════ */
-
-  /* HALLOWEEN */
-  body.theme-halloween {
-    --primary: #ff6600;
-    --dark: #0a0000;
-    --card: #110500;
-  }
-  body.theme-halloween nav { border-bottom-color: #ff6600; }
-  body.theme-halloween .product-card { border-color: #ff6600; box-shadow: 0 0 40px rgba(255,102,0,0.2); }
-  body.theme-halloween .buy-btn { background: #ff6600; }
-  body.theme-halloween .btn-rbx { background: #ff6600; }
-  body.theme-halloween .tag { border-color: #ff6600; color: #ff6600; }
-  body.theme-halloween h2 span { color: #ff6600; }
-  body.theme-halloween .logo { color: #ff6600; }
-  body.theme-halloween .feat-list li::before { color: #ff6600; }
-  .halloween-particle {
-    position: fixed; pointer-events: none; z-index: 0;
-    font-size: 1.5rem; animation: fallDown linear infinite;
-    opacity: 0.4;
-  }
-  @keyframes fallDown {
-    0%   { transform: translateY(-50px) rotate(0deg); opacity: 0.4; }
-    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-  }
-
-  /* WINTER / CHRISTMAS */
-  body.theme-winter {
-    --primary: #00cfff;
-    --dark: #010a0f;
-    --card: #050f15;
-  }
-  body.theme-winter nav { border-bottom-color: #00cfff; }
-  body.theme-winter .product-card { border-color: #00cfff; box-shadow: 0 0 40px rgba(0,207,255,0.2); }
-  body.theme-winter .buy-btn { background: #0077aa; }
-  body.theme-winter .btn-rbx { background: #0077aa; }
-  body.theme-winter .tag { border-color: #00cfff; color: #00cfff; }
-  body.theme-winter h2 span { color: #00cfff; }
-  body.theme-winter .logo { color: #00cfff; }
-  body.theme-winter .feat-list li::before { color: #00cfff; }
-  .snow-particle {
-    position: fixed; pointer-events: none; z-index: 0;
-    font-size: 1rem; animation: snowFall linear infinite;
-    opacity: 0.6; color: white;
-  }
-  @keyframes snowFall {
-    0%   { transform: translateY(-30px) translateX(0px); opacity: 0.6; }
-    50%  { transform: translateY(50vh) translateX(20px); }
-    100% { transform: translateY(110vh) translateX(-10px); opacity: 0; }
-  }
-
-  /* CHRISTMAS */
-  body.theme-christmas {
-    --primary: #ff2222;
-    --dark: #020a02;
-    --card: #050f05;
-  }
-  body.theme-christmas nav { border-bottom-color: #ff2222; }
-  body.theme-christmas .product-card { border-color: #ff2222; box-shadow: 0 0 40px rgba(255,34,34,0.2); }
-  body.theme-christmas .buy-btn { background: #cc0000; }
-  body.theme-christmas .tag { border-color: #ff2222; color: #ff2222; }
-  body.theme-christmas h2 span { color: #ff2222; }
-  body.theme-christmas .logo { color: #ff2222; }
-  body.theme-christmas .feat-list li::before { color: #00ff44; }
-
-  /* SUMMER */
-  body.theme-summer {
-    --primary: #ffdd00;
-    --dark: #0a0800;
-    --card: #110f00;
-  }
-  body.theme-summer nav { border-bottom-color: #ffdd00; }
-  body.theme-summer .product-card { border-color: #ffdd00; box-shadow: 0 0 40px rgba(255,221,0,0.2); }
-  body.theme-summer .buy-btn { background: #ff9900; }
-  body.theme-summer .btn-rbx { background: #ff9900; }
-  body.theme-summer .tag { border-color: #ffdd00; color: #ffdd00; }
-  body.theme-summer h2 span { color: #ffdd00; }
-  body.theme-summer .logo { color: #ffdd00; }
-  body.theme-summer .feat-list li::before { color: #ffdd00; }
-
-  /* VALENTINE */
-  body.theme-valentine {
-    --primary: #ff69b4;
-    --dark: #0a0005;
-    --card: #110008;
-  }
-  body.theme-valentine nav { border-bottom-color: #ff69b4; }
-  body.theme-valentine .product-card { border-color: #ff69b4; box-shadow: 0 0 40px rgba(255,105,180,0.2); }
-  body.theme-valentine .buy-btn { background: #cc1177; }
-  body.theme-valentine .tag { border-color: #ff69b4; color: #ff69b4; }
-  body.theme-valentine h2 span { color: #ff69b4; }
-  body.theme-valentine .logo { color: #ff69b4; }
-  body.theme-valentine .feat-list li::before { color: #ff69b4; }
-  .heart-particle {
-    position: fixed; pointer-events: none; z-index: 0;
-    font-size: 1.2rem; animation: floatUp linear infinite; opacity: 0.5;
-  }
-  @keyframes floatUp {
-    0%   { transform: translateY(110vh); opacity: 0.5; }
-    100% { transform: translateY(-50px); opacity: 0; }
-  }
-
-  /* EASTER */
-  body.theme-easter {
-    --primary: #cc44ff;
-    --dark: #05000a;
-    --card: #0a0010;
-  }
-  body.theme-easter nav { border-bottom-color: #cc44ff; }
-  body.theme-easter .product-card { border-color: #cc44ff; box-shadow: 0 0 40px rgba(204,68,255,0.2); }
-  body.theme-easter .buy-btn { background: #9900cc; }
-  body.theme-easter .tag { border-color: #cc44ff; color: #cc44ff; }
-  body.theme-easter h2 span { color: #cc44ff; }
-  body.theme-easter .logo { color: #cc44ff; }
-  body.theme-easter .feat-list li::before { color: #cc44ff; }
-
-  /* THEME BANNER */
-  #themeBanner {
-    display: none; text-align: center; padding: 0.5rem;
-    font-family: 'Courier New', monospace; font-size: 0.85rem;
-    letter-spacing: 2px; position: relative; z-index: 200;
-  }
-  /* ANNOUNCEMENT BANNER */
-  #announcementBanner {
-    display: none; background: #0d0d0d;
-    border-bottom: 1px solid #333;
-    text-align: center; padding: 0.6rem 1rem;
-    font-family: 'Courier New', monospace;
-    font-size: 0.82rem; letter-spacing: 1px;
-    position: relative; z-index: 200;
-  }
-  #announcementBanner.type-maintenance {
-    border-bottom-color: #ffbd2e;
-    background: rgba(255,189,46,0.05);
-  }
-  #announcementBanner.type-update {
-    border-bottom-color: #00ff88;
-    background: rgba(0,255,136,0.05);
-  }
-  #announcementBanner.type-info {
-    border-bottom-color: #5865F2;
-    background: rgba(88,101,242,0.05);
-  }
-  #announcementBanner.type-warning {
-    border-bottom-color: #ff4444;
-    background: rgba(255,68,68,0.05);
-  }
-  #announcementBanner .ann-icon { margin-right: 0.5rem; }
-  #announcementBanner .ann-text { color: #aaa; }
-  #announcementBanner .ann-text strong { color: #fff; }
-  #announcementBanner .ann-time {
-    margin-left: 0.8rem; padding: 0.15rem 0.6rem;
-    border-radius: 4px; font-size: 0.75rem; font-weight: 700;
-  }
-  #announcementBanner.type-maintenance .ann-time { background: rgba(255,189,46,0.15); color: #ffbd2e; }
-  #announcementBanner.type-update .ann-time { background: rgba(0,255,136,0.15); color: #00ff88; }
-  #announcementBanner.type-info .ann-time { background: rgba(88,101,242,0.15); color: #5865F2; }
-  #announcementBanner.type-warning .ann-time { background: rgba(255,68,68,0.15); color: #ff4444; }
-  #announcementBanner .ann-close {
-    position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
-    background: none; border: none; color: #555; cursor: pointer;
-    font-size: 1rem; font-family: 'Courier New', monospace;
-    transition: color 0.2s;
-  }
-  #announcementBanner .ann-close:hover { color: #aaa; }
-  /* FIREWORKS */
-  .firework {
-    position: fixed; pointer-events: none; z-index: 99998;
-    width: 6px; height: 6px; border-radius: 50%;
-    animation: fireworkExplode 1s ease-out forwards;
-  }
-  @keyframes fireworkExplode {
-    0%   { transform: translate(0,0) scale(1); opacity: 1; }
-    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-  }
-  #fireworkCanvas {
-    position: fixed; inset: 0; pointer-events: none; z-index: 99997;
-  }
-  #newyearBanner {
-    display: none; position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-    z-index: 99999; background: linear-gradient(135deg, #1a0a00, #0a0a1a);
-    border: 1px solid gold; border-radius: 12px; padding: 0.8rem 2rem;
-    text-align: center; animation: fadeIn 0.5s ease;
-    box-shadow: 0 0 40px rgba(255,215,0,0.3);
-    width: 90%; max-width: 420px; pointer-events: none;
-  }
-  #newyearBanner h2 {
-    font-size: 1.3rem; color: gold; letter-spacing: 3px;
-    text-shadow: 0 0 20px rgba(255,215,0,0.8); margin-bottom: 0.2rem;
-  }
-  #newyearBanner p { color: #aaa; font-size: 0.8rem; letter-spacing: 2px; }
-
-  /* BLACK FRIDAY */
-  #blackFridayBanner {
-    display: none; background: #000; border-bottom: 2px solid #ff4400;
-    text-align: center; padding: 0.6rem; font-family: 'Courier New', monospace;
-    font-size: 0.85rem; letter-spacing: 2px; position: relative; z-index: 200;
-    animation: bfPulse 2s ease-in-out infinite;
-  }
-  #blackFridayBanner span { color: #ff4400; font-weight: 700; }
-  #blackFridayBanner .bf-badge {
-    background: #ff4400; color: #000; padding: 0.1rem 0.6rem;
-    border-radius: 4px; font-weight: 900; margin-right: 0.5rem;
-  }
-  @keyframes bfPulse {
-    0%, 100% { box-shadow: 0 0 10px rgba(255,68,0,0.3); }
-    50%       { box-shadow: 0 0 25px rgba(255,68,0,0.7); }
-  }
-  .thumb {
-    width: 100%; border-radius: 8px 8px 0 0; display: block;
-    transition: box-shadow 0.4s ease, transform 0.4s ease, filter 0.4s ease;
-    filter: brightness(0.95);
-  }
-  .thumb:hover {
-    box-shadow: 0 0 30px rgba(0,255,136,0.5), 0 0 60px rgba(0,255,136,0.2);
-    transform: scale(1.02);
-    filter: brightness(1.05);
-  }
-  footer { text-align: center; padding: 2rem; background: var(--card); color: #333; font-size: 0.8rem; border-top: 1px solid #1a1a1a; }
-  footer span { color: var(--primary); }
-
-  @keyframes menuSlideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to   { transform: translateX(0);    opacity: 1; }
-  }
-  @keyframes menuItemIn {
-    from { transform: translateX(20px); opacity: 0; }
-    to   { transform: translateX(0);    opacity: 1; }
-  }
-
-
-  /* ═══════════════ MOBILE RESPONSIVE ═══════════════ */
-  @media (max-width: 768px) {
-
-    /* Hero */
-    .hero { padding: 3rem 1.2rem 2rem; }
-    .hero h1 { font-size: 1.6rem; letter-spacing: 2px; }
-    .hero p { font-size: 0.88rem; }
-    .hero-badge { font-size: 0.7rem; padding: 0.4rem 0.9rem; }
-
-    /* Buttons */
-    .btn-discord { font-size: 0.85rem; padding: 0.8rem 1.5rem; }
-    .buy-btn { font-size: 0.9rem !important; padding: 0.9rem !important; }
-
-    /* Product Card */
-    .product-card { padding: 1.2rem; margin: 0 1rem; }
-    .product-card img { max-height: 180px; }
-    .price { font-size: 2rem !important; }
-
-    /* Sections */
-    section { padding: 2rem 1.2rem; }
-    h2 { font-size: 1.3rem; }
-
-    /* Terminal */
-    .terminal { margin: 0 1rem; font-size: 0.8rem; }
-
-    /* Code input */
-    .discount-row { flex-direction: column; gap: 0.5rem; }
-    .discount-input { width: 100% !important; font-size: 0.85rem; }
-    .discount-apply-btn { width: 100% !important; }
-
-    /* Footer */
-    footer { font-size: 0.75rem; padding: 1.5rem 1rem; }
-    footer p { text-align: center; }
-
-    /* Team modal */
-    .team-modal-box { width: 90vw !important; padding: 1.5rem !important; }
-
-    /* Warning modal */
-    .warning-modal-box { width: 90vw !important; padding: 1.5rem !important; }
-
-    /* Loader */
-    #loader .l-logo { font-size: 1.4rem; }
-
-    /* Support section */
-    .support-links { flex-direction: column; gap: 0.8rem; }
-
-    /* Discord join */
-    #discordJoin { margin: 0 1rem; }
-
-    /* Announcement banner */
-    #announcementBanner { font-size: 0.78rem; padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.3rem; }
-  }
-
-  @media (max-width: 480px) {
-    .hero h1 { font-size: 1.3rem; }
-    .product-card { padding: 1rem; margin: 0 0.5rem; }
-    .price { font-size: 1.7rem !important; }
-    section { padding: 1.5rem 0.8rem; }
-    h2 { font-size: 1.1rem; }
-  }
-
-
-  /* ── TOASTS ── */
-  #toastContainer {
-    position: fixed; bottom: 1.5rem; left: 1.5rem;
-    display: flex; flex-direction: column; gap: 0.5rem;
-    z-index: 999998; max-width: 320px;
-  }
-  .toast {
-    display: flex; align-items: flex-start; gap: 0.7rem;
-    background: #111; border-radius: 10px; padding: 0.9rem 1rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    animation: toastIn 0.3s ease;
-    font-family: 'Courier New', monospace; font-size: 0.8rem;
-    border-left: 3px solid #00ff88;
-  }
-  .toast.warning { border-left-color: #ffbd2e; }
-  .toast.error   { border-left-color: #ff4444; }
-  .toast.success { border-left-color: #00ff88; }
-  .toast.info    { border-left-color: #00cfff; }
-  .toast.admin   { border-left-color: #00ff88; animation: adminBorder 1s infinite; }
-  @keyframes adminBorder {
-    0%   { border-left-color: #00ff88; }
-    50%  { border-left-color: #000; box-shadow: 0 4px 20px rgba(0,255,136,0.4); }
-    100% { border-left-color: #00ff88; }
-  }
-  .toast-icon { font-size: 1rem; flex-shrink: 0; }
-  .toast-msg  { color: #e0e0e0; line-height: 1.4; flex: 1; }
-  .toast-close { background: none; border: none; color: #444; cursor: pointer; font-size: 0.9rem; padding: 0; flex-shrink: 0; }
-  .toast-close:hover { color: #888; }
-  @keyframes toastIn {
-    from { transform: translateX(-20px); opacity: 0; }
-    to   { transform: translateX(0);     opacity: 1; }
-  }
-
-
-  /* ── TEAM ROLE ANIMATIONS ── */
-  @keyframes borderCreatorBorder {
-    0%   { border-color: #ff9900; }
-    50%  { border-color: #ffdd00; }
-    100% { border-color: #ff9900; }
-  }
-  @keyframes borderDeveloperBorder {
-    0%   { border-color: #a855f7; }
-    50%  { border-color: #d8b4fe; }
-    100% { border-color: #a855f7; }
-  }
-  @keyframes borderModeratorBorder {
-    0%   { border-color: #00cfff; }
-    50%  { border-color: #00ffdd; }
-    100% { border-color: #00cfff; }
-  }
-  @keyframes borderTrialBorder {
-    0%   { border-color: #008080; }
-    50%  { border-color: #00b3a4; }
-    100% { border-color: #008080; }
-  }
-  @keyframes gradientCreator {
-    0%   { color: #ff9900; }
-    50%  { color: #ffdd00; }
-    100% { color: #ff9900; }
-  }
-  @keyframes gradientDeveloper {
-    0%   { color: #a855f7; }
-    50%  { color: #d8b4fe; }
-    100% { color: #a855f7; }
-  }
-  @keyframes gradientModerator {
-    0%   { color: #00cfff; }
-    50%  { color: #00ffdd; }
-    100% { color: #00cfff; }
-  }
-  @keyframes gradientTrial {
-    0%   { color: #008080; }
-    50%  { color: #00b3a4; }
-    100% { color: #008080; }
-  }
-  .tp-card.card-creator, .tp-card.card-cocreator {
-    animation: borderCreatorBorder 2s ease-in-out infinite !important;
-    border: 1px solid #ff9900 !important;
-    box-shadow: none !important;
-  }
-  .tp-card.card-developer {
-    animation: borderDeveloperBorder 2s ease-in-out infinite !important;
-    border: 1px solid #a855f7 !important;
-    box-shadow: none !important;
-  }
-  .tp-card.card-moderator {
-    animation: borderModeratorBorder 2s ease-in-out infinite !important;
-    border: 1px solid #00cfff !important;
-    box-shadow: none !important;
-  }
-  .tp-card.card-collaborator {
-    animation: borderCollaborator 2s ease-in-out infinite !important;
-    border: 1px solid #ff69b4 !important;
-    box-shadow: none !important;
-  }
-  .tp-card.card-collaborator {
-    animation: borderCollaborator 2s ease-in-out infinite !important;
-    border: 1px solid #ff69b4 !important;
-    box-shadow: none !important;
-  }
-  .tp-card.card-collaborator {
-    animation: borderCollaborator 2s ease-in-out infinite !important;
-    border: 1px solid #ff69b4 !important;
-    box-shadow: none !important;
-  }
-  .tp-card.card-trial {
-    animation: borderTrialBorder 2s ease-in-out infinite !important;
-    border: 1px solid #008080 !important;
-    box-shadow: none !important;
-  }
-  .name-creator, .name-cocreator {
-    background: linear-gradient(90deg, #ff9900, #ffdd00, #ff9900);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .name-developer {
-    background: linear-gradient(90deg, #a855f7, #d8b4fe, #a855f7);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .name-moderator {
-    background: linear-gradient(90deg, #00cfff, #00ffdd, #00cfff);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .name-collaborator {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .name-collaborator {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .name-trial {
-    background: linear-gradient(90deg, #008080, #00b3a4, #008080);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  @keyframes shimmerName {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
-  }
-
-
-  .role-creator, .role-cocreator {
-    background: linear-gradient(90deg, #ff9900, #ffdd00, #ff9900);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-developer {
-    background: linear-gradient(90deg, #a855f7, #d8b4fe, #a855f7);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-moderator {
-    background: linear-gradient(90deg, #00cfff, #00ffdd, #00cfff);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-collaborator {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-collaborator {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-collaborator {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-trial {
-    background: linear-gradient(90deg, #008080, #00b3a4, #008080);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .name-collab, .role-collab {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-
-
-  .role-creator, .role-cocreator {
-    background: linear-gradient(90deg, #ff9900, #ffdd00, #ff9900);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-developer {
-    background: linear-gradient(90deg, #a855f7, #d8b4fe, #a855f7);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-moderator {
-    background: linear-gradient(90deg, #00cfff, #00ffdd, #00cfff);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-collaborator {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-collaborator {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-collaborator {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .role-trial {
-    background: linear-gradient(90deg, #008080, #00b3a4, #008080);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-  .name-collab, .role-collab {
-    background: linear-gradient(90deg, #ff69b4, #ffb3d9, #ff69b4);
-    background-size: 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmerName 2s linear infinite;
-  }
-
-</style>
+    @keyframes fade-up { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes glow-pulse { 0%,100%{text-shadow:0 0 20px var(--green)} 50%{text-shadow:0 0 50px var(--green)} }
+    @keyframes load { 0%{width:0;opacity:1} 80%{width:100%;opacity:1} 100%{width:100%;opacity:0} }
+  </style>
 </head>
 <body>
 
-<!-- Nav Overlay -->
-<!-- Nav Overlay -->
-<div id="toastContainer"></div>
-<div id="navOverlay" onclick="closeBurger()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;"></div>
+  <!-- PARTICLES -->
+  <canvas id="particles"></canvas>
 
-<!-- Navbar -->
-<div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:#111;border-bottom:1px solid #00ff88;position:sticky;top:0;z-index:9999;">
-  <div style="font-size:1.4rem;font-weight:700;color:#00ff88;letter-spacing:2px;font-family:'Courier New',monospace;">&gt; CMDR</div>
-  <button id="burgerBtn" onclick="toggleBurger()" style="display:flex;flex-direction:column;justify-content:center;gap:5px;background:#1a1a1a;border:1px solid #333;border-radius:8px;cursor:pointer;padding:0.55rem 0.65rem;">
-    <span style="display:block;width:22px;height:2px;background:#00ff88;border-radius:2px;transition:all 0.3s;"></span>
-    <span style="display:block;width:22px;height:2px;background:#00ff88;border-radius:2px;transition:all 0.3s;"></span>
-    <span style="display:block;width:22px;height:2px;background:#00ff88;border-radius:2px;transition:all 0.3s;"></span>
-  </button>
-</div>
-
-<!-- Slide-in Menu -->
-<div id="navMenu" style="display:none;position:fixed;top:0;right:0;width:270px;height:100vh;background:#0d0d0d;border-left:1px solid #00ff88;z-index:99999;flex-direction:column;padding:4.5rem 1.2rem 2rem;overflow-y:auto;box-shadow:-10px 0 40px rgba(0,0,0,0.8);">
-  <button onclick="closeBurger();location.href='#product'" style="display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #1a1a1a;color:#e0e0e0;padding:1rem 0.8rem;font-family:'Courier New',monospace;font-size:0.9rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#00ff88';this.style.paddingLeft='1.3rem'" onmouseout="this.style.color='#e0e0e0';this.style.paddingLeft='0.8rem'" data-lang="navProduct">📦 Product</button>
-  <button onclick="closeBurger();openAnnouncementsPage()" style="display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #1a1a1a;color:#e0e0e0;padding:1rem 0.8rem;font-family:'Courier New',monospace;font-size:0.9rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#00ff88';this.style.paddingLeft='1.3rem'" onmouseout="this.style.color='#e0e0e0';this.style.paddingLeft='0.8rem'" data-lang="navAnnouncements">📢 Announcements</button>
-
-  <button onclick="closeBurger();openCollaboratorPage()" style="display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #1a1a1a;color:#e0e0e0;padding:1rem 0.8rem;font-family:'Courier New',monospace;font-size:0.9rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#ff69b4';this.style.paddingLeft='1.3rem'" onmouseout="this.style.color='#e0e0e0';this.style.paddingLeft='0.8rem'" data-lang="navCollaborators">🤝 Collaborators</button>
-  <button onclick="closeBurger();openLicensePage()" style="display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #1a1a1a;color:#e0e0e0;padding:1rem 0.8rem;font-family:'Courier New',monospace;font-size:0.9rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#00ff88';this.style.paddingLeft='1.3rem'" onmouseout="this.style.color='#e0e0e0';this.style.paddingLeft='0.8rem'" data-lang="navLicense">📄 License</button>
-  <button onclick="closeBurger();openChangelogPage()" style="display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #1a1a1a;color:#e0e0e0;padding:1rem 0.8rem;font-family:'Courier New',monospace;font-size:0.9rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#00ff88';this.style.paddingLeft='1.3rem'" onmouseout="this.style.color='#e0e0e0';this.style.paddingLeft='0.8rem'">📋 Changelog</button>
-  <button onclick="closeBurger();openSneakPeekPage()" style="display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #1a1a1a;color:#e0e0e0;padding:1rem 0.8rem;font-family:'Courier New',monospace;font-size:0.9rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#a855f7';this.style.paddingLeft='1.3rem'" onmouseout="this.style.color='#e0e0e0';this.style.paddingLeft='0.8rem'">👁️ Sneak Peek</button>
-  <button onclick="closeBurger();location.href='#support'" style="display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid #1a1a1a;color:#e0e0e0;padding:1rem 0.8rem;font-family:'Courier New',monospace;font-size:0.9rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#00ff88';this.style.paddingLeft='1.3rem'" onmouseout="this.style.color='#e0e0e0';this.style.paddingLeft='0.8rem'" data-lang="navSupport">🛠 Support</button>
-  <button onclick="closeBurger();openTeamPage()" style="display:block;width:100%;text-align:center;background:#00ff88;border:none;border-radius:8px;color:#000;padding:0.9rem;font-family:'Courier New',monospace;font-size:0.9rem;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:1rem;" data-lang="navTeam">👥 TeamList</button>
-  <button onclick="closeBurger();window.open('https://discord.gg/XaZSGVFvzV','_blank')" style="display:block;width:100%;text-align:center;background:#5865F2;border:none;border-radius:8px;color:#fff;padding:0.9rem;font-family:'Courier New',monospace;font-size:0.9rem;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:0.6rem;">💬 Discord</button>
-  <button id="langToggleBtn" onclick="toggleLanguage()" style="display:block;width:100%;text-align:center;background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#e0e0e0;padding:0.9rem;font-family:'Courier New',monospace;font-size:0.9rem;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:0.6rem;">🌐 DE</button>
-  <a href="admin.html" style="display:block;width:100%;text-align:center;padding:0.5rem;margin-top:0.3rem;border-radius:6px;font-family:'Courier New',monospace;font-size:0.65rem;letter-spacing:1px;cursor:pointer;text-decoration:none;color:transparent;background:transparent;border:1px solid transparent;transition:all 0.3s;" onmouseover="this.style.color='#333';this.style.borderColor='#222';" onmouseout="this.style.color='transparent';this.style.borderColor='transparent';">⚙ ADMIN</a>
-  
-</div>
-
-
-
-<!-- THEME BANNER -->
-<div id="themeBanner"></div>
-<!-- ANNOUNCEMENT BANNER -->
-<div id="announcementBanner">
-  <span class="ann-icon" id="annIcon">🔧</span>
-  <span class="ann-text" id="annText">Ankündigung</span>
-  <span class="ann-time" id="annTime"></span>
-  <button class="ann-close" onclick="document.getElementById('announcementBanner').style.display='none'">✕</button>
-</div>
-
-<!-- BLACK FRIDAY BANNER -->
-<div id="blackFridayBanner">
-  <span class="bf-badge">BLACK FRIDAY</span>
-  <span style="color:#fff">Exclusive deal active –</span>
-  <span style="color:#ff4400; font-weight:700"> 10% OFF · 113 Robux only!</span>
-</div>
-
-<!-- NEW YEAR BANNER -->
-<div id="newyearBanner">
-  <h2>🎆 HAPPY NEW YEAR! 🎆</h2>
-  <p>Happy New Year from CMDR SYSTEM! 🎉</p>
-</div>
-
-<div class="hero">
-  <div class="tag" id="heroBadge">🎮 ROBLOX DLC · EVENT SYSTEM</div>
-  <h1 id="heroTitle"><span class="wave-word">The</span> <span class="wave-word">Cmdr</span> <span class="wave-word">System</span> <span class="wave-word">V1</span> <span class="wave-word">DLC</span></h1>
-  <p id="heroSub">A powerful command extension for your Roblox Event System. Advanced controls, automation & more — one purchase, forever yours.</p>
-  <p class="sub" id="heroHint">Requires base Event System · Roblox Gamepass · One-time purchase</p>
-  <div class="btn-group">
-    <a href="https://discord.gg/XaZSGVFvzV" class="btn-discord" id="joinDiscordBtn">💬 Join Discord</a>
-    <div style="margin-top:0.6rem;font-family:'Courier New',monospace;font-size:0.75rem;color:#444;letter-spacing:1px;">
-      <span style="color:#00ff88;">●</span> <span id="discordMemberCount">...</span> members
-    </div>
+  <!-- MAINTENANCE -->
+  <div id="maintenance">
+    <div class="icon">⚙️</div>
+    <h1>Under Maintenance</h1>
+    <p>[ SYSTEM OFFLINE — STAND BY ]</p>
+    <div class="mbar"><div class="mbar-fill"></div></div>
+    <p style="font-size:.75rem">We'll be back soon. // Cmdr DLC</p>
   </div>
 
-  <div class="terminal">
-    <div class="terminal-bar">
-      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-      <span style="color:#444;font-size:0.78rem;margin-left:0.5rem">cmdr_v1.exe</span>
-    </div>
-    <div class="terminal-body">
-      <div><span class="cmd">&gt; cmdr-v1 --install</span></div>
-      <div><span class="out">Checking Event System... </span><span class="ok">found ✓</span></div>
-      <div><span class="out">Loading Cmdr V1 modules...</span></div>
-      <div><span class="ok">✓ Command layer active</span></div>
-      <div><span class="ok">✓ Event hooks registered</span></div>
-      <div><span class="ok">✓ Gamepass verified – Welcome!</span></div>
-      <div><span class="cmd">&gt; </span><span class="cursor"></span></div>
-    </div>
-  </div>
-</div>
-
-
-
-
-<!-- PRODUCT -->
-<section id="product">
-  <h2 id="dlcTitle">&gt; <span>THE DLC</span>_</h2>
-  <div class="product-card">
-    <img src="20260303_214049.jpg" class="thumb">
-    <div class="product-top">
-      <div class="badge" id="dlcBadge">ROBLOX GAMEPASS</div>
-      <h3 id="dlcName">Cmdr System V1</h3>
-      <p id="dlcDesc">The official command system DLC for the Event System.</p>
-      <div class="price-box">
-        <div class="price" id="priceDisplay2">🟠 125 <span style="font-size:1.2rem;color:#aaa">Robux</span></div>
-        <div class="price-sub" id="dlcPriceSub">One-time purchase · No subscription</div>
-        <div id="discountCountdown" style="display:none; margin-top:0.8rem; font-family:'Courier New',monospace; font-size:0.8rem; color:#555; letter-spacing:1px;">
-          &gt; Discount: <span style="color:#555; text-decoration:line-through;">125</span> &rarr; <span id="countdownPrice" style="color:#00ff88; font-weight:700">125</span> R$
-        </div>
-      </div>
-    </div>
-    <div class="product-body">
-      <ul class="feat-list">
-        <li id="feat1">Full Cmdr V1 command system</li>
-        <!-- <li>Event System integration</li> -->
-        <li id="feat2">Contact Support for Setup Video</li>
-        <li id="feat3">All future updates included</li>
-        <li id="feat4">Discord support included</li>
-        <li id="feat5">One-time payment – own it forever</li>
+  <div id="main-content">
+    <nav>
+      <a class="logo" href="index.html">
+        Cmdr<span> DLC</span>
+        <span class="version-badge">v1</span>
+      </a>
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="sneakpeek.html">Sneak Peek</a></li>
+        <li><a href="tos.html">ToS</a></li>
+        <li><a class="nav-icon-link" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener" title="Discord">💬</a></li>
+        <li><a class="nav-icon-link" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener" title="Roblox Profile">🎮</a></li>
       </ul>
-      <div class="warning-box">
-        ⚠️ <span id="dlcWarning">This is a <strong>one-time purchase</strong>. The gamepass cannot be transferred or refunded once activated.</span>
-      </div>
-      <!-- DISCOUNT CODE -->
-      <div class="discount-wrap">
-        <div class="discount-label" id="discountLabel">&gt; Discount Codes <span id="codeCounter" style="color:#555;font-size:0.75rem">(0/10 used)</span></div>
-        <div id="codeSlots"></div>
-        <button class="discount-apply-btn" id="addCodeBtn" onclick="addCodeSlot()" style="margin-top:0.5rem;width:100%">+ ADD CODE</button>
-      </div>
+    </nav>
 
-      <!-- DISCORD JOIN BOX (hidden until code valid) -->
-      <div id="discordJoin" style="display:none; align-items:center; gap:1rem;
-        background:#1a1a2e; border:1px solid #5865F2; border-radius:8px;
-        padding:1rem 1.2rem; margin-bottom:1.2rem; animation: fadeIn 0.4s ease;">
-        <div style="font-size:1.8rem">💬</div>
-        <div style="flex:1">
-          <div style="font-size:0.75rem; color:#5865F2; letter-spacing:1px; font-family:'Courier New',monospace; margin-bottom:0.2rem;">JOIN TO RECEIVE YOUR FILE</div>
-          <div style="font-size:0.85rem; color:#e0e0e0; font-family:'Segoe UI',sans-serif;">Join the Discord server to get your discounted file.</div>
+    <main>
+      <div class="eyebrow">// Roblox · Cmdr Admin Panel</div>
+
+      <!-- COUNTDOWN -->
+      <div class="countdown-wrap">
+        <div class="countdown-label">// Next Drop — 25 April 2026</div>
+        <div class="countdown" id="countdown">
+          <div class="cd-block"><span class="cd-num" id="cd-d">--</span><span class="cd-unit">Days</span></div>
+          <div class="cd-block"><span class="cd-num" id="cd-h">--</span><span class="cd-unit">Hours</span></div>
+          <div class="cd-block"><span class="cd-num" id="cd-m">--</span><span class="cd-unit">Min</span></div>
+          <div class="cd-block"><span class="cd-num" id="cd-s">--</span><span class="cd-unit">Sec</span></div>
         </div>
-        <a href="https://discord.gg/XaZSGVFvzV" target="_blank"
-          style="background:#5865F2; color:white; padding:0.6rem 1.2rem;
-          border-radius:6px; text-decoration:none; font-weight:700;
-          font-family:'Courier New',monospace; font-size:0.85rem; letter-spacing:1px;
-          white-space:nowrap; transition:background 0.2s;"
-          onmouseover="this.style.background='#4752c4'"
-          onmouseout="this.style.background='#5865F2'">JOIN NOW</a>
       </div>
 
-      <button id="buyBtn" class="buy-btn" style="width:100%;border:none;cursor:pointer;">🟠 BUY NOW ON ROBLOX – <span id="priceDisplay">125 R$</span></button>
-    </div>
+      <div class="card">
+        <div class="card-img-wrap">
+          <img src="Dlc.png" alt="Cmdr DLC"
+               onerror="this.style.display='none';document.getElementById('img-ph').style.display='flex'"/>
+          <div class="img-placeholder" id="img-ph" style="display:none">
+            <span class="pi-icon">🖼</span>
+            <span class="pi-label">Dlc.png</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="card-title">Cmdr DLC</div>
+          <div class="card-subtitle">Official Gamepass · Cmdr Admin Panel</div>
+          <div class="card-divider"></div>
+
+          <ul class="features">
+            <li>
+              <span class="icon">[+]</span>
+              <span class="label">Exclusive DLC Commands
+                <span>Unlock extended Cmdr commands only available in this DLC.</span>
+              </span>
+            </li>
+            <li>
+              <span class="icon">[+]</span>
+              <span class="label">One-Time Purchase
+                <span>Buy once, keep forever — no subscription, no hidden fees.</span>
+              </span>
+            </li>
+            <li>
+              <span class="icon">[+]</span>
+              <span class="label">Compatible with Cmdr Games
+                <span>Works in any game that has active Cmdr DLC gamepass support.</span>
+              </span>
+            </li>
+            <li class="warn">
+              <span class="icon">[!]</span>
+              <span class="label">No Refunds
+                <span>All purchases are final. Roblox does not refund gamepass purchases.</span>
+              </span>
+            </li>
+            <li class="warn">
+              <span class="icon">[!]</span>
+              <span class="label">Supported Games Only
+                <span>The DLC only works in games with active DLC integration enabled.</span>
+              </span>
+            </li>
+          </ul>
+
+          <div class="price-row">
+            <span class="price">125 R$</span>
+            <span class="price-note">// one-time purchase</span>
+          </div>
+
+          <div class="btn-row">
+            <a class="btn-buy"
+               href="https://www.roblox.com/de/game-pass/1738044254/125-Rbx"
+               target="_blank" rel="noopener noreferrer">
+              [ Buy Now ]
+            </a>
+            <a class="btn-discord"
+               href="https://discord.gg/XaZSGVFvzV"
+               target="_blank" rel="noopener noreferrer">
+              💬 Discord
+            </a>
+          </div>
+
+          <div class="disclaimer">
+            ⚠ No refund policy — gamepass purchases are non-refundable.<br/>
+            By purchasing you agree to our <a href="tos.html">Terms of Service</a> and the Roblox ToS.
+          </div>
+        </div>
+      </div>
+
+      <!-- SOCIAL ROW -->
+      <div class="social-row">
+        <a class="social-btn" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">
+          🎮 Roblox Profile
+        </a>
+        <a class="social-btn" href="tos.html">
+          📄 Terms of Service
+        </a>
+      </div>
+
+    </main>
+
+    <footer>
+      © 2026 Cmdr DLC — Not affiliated with Roblox Corporation &nbsp;|&nbsp;
+      <a href="tos.html">ToS</a> &nbsp;|&nbsp;
+      <a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Discord</a>
+    </footer>
   </div>
-</section>
 
+  <script>
+    // ┌─────────────────────────────────────────┐
+    // │  MAINTENANCE MODE                       │
+    // │  true  = show maintenance screen        │
+    // │  false = show normal page               │
+    // └─────────────────────────────────────────┘
+    const MAINTENANCE = true;
 
-
-
-
-
-<!-- DISCORD -->
-<div class="discord-section" id="support">
-  <h2>&gt; <span>SUPPORT</span>_</h2>
-  <p style="color:#666;font-family:'Segoe UI',sans-serif;max-width:420px;margin:0 auto;font-size:0.9rem">Got questions or need help setting up? Join the Discord server — fast support, updates & community.</p>
-  <a href="https://discord.gg/XaZSGVFvzV" class="discord-card">
-    <div class="d-icon">💬</div>
-    <div class="d-text">
-      <strong>Join the Support Server</strong>
-      <span>discord.gg/XaZSGVFvzV</span>
-    </div>
-  </a>
-</div>
-
-<footer>
-  <p>© 2026 <span>CMDR_SYSTEM</span> · Roblox DLC · Hosted on GitHub Pages · All rights reserved</p>
-</footer>
-
-<script>
-// ── SUPABASE (must be first) ─────────────────────────
-var SB_URL = "https://feladnkiczghtkyfvzcl.supabase.co";
-var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbGFkbmtpY3pnaHRreWZ2emNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0ODg5MjUsImV4cCI6MjA4OTA2NDkyNX0.usuu1QJdga5plabGq0KDImgSp3LJNHkdhLUgWqNJJqM";
-function sbFetch(path, opts) {
-  opts = opts || {};
-  opts.headers = Object.assign({ "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY, "Content-Type": "application/json" }, opts.headers || {});
-  return fetch(SB_URL + "/rest/v1/" + path, opts).then(function(r) {
-    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
-    return r.status === 204 ? {} : r.json().catch(function() { return {}; });
-  });
-}
-
-/* ╔══════════════════════════════════════════════════════════════╗
-   ║              ⚙️  SITE SETTINGS — EDIT HERE                   ║
-   ╠══════════════════════════════════════════════════════════════╣
-   ║  Alle Toggles für die Website sind hier oben.               ║
-   ║  true = aktiviert  |  false = deaktiviert                   ║
-   ╚══════════════════════════════════════════════════════════════╝ */
-
-// ┌─────────────────────────────────────────────────────────────┐
-// │  📢  ANKÜNDIGUNGEN  (neueste zuerst!)                        │
-// └─────────────────────────────────────────────────────────────┘
-var ANNOUNCEMENTS_LIST = [
-  // Beispiel — zum Aktivieren das // am Anfang entfernen:
-  // { title: 'Website Update', date: '13.03.2026', text: 'Neue Features hinzugefügt!', type: 'update' },
-  // { title: 'Wartung', date: '10.03.2026', text: 'Kurze Wartungsarbeiten.', type: 'maintenance' },
-  // Typen: 'update' | 'maintenance' | 'info' | 'new'
-];
-
-// ┌─────────────────────────────────────────────────────────────┐
-// │  🛒  SHOP                                                    │
-// └─────────────────────────────────────────────────────────────┘
-var DISABLE_BUY_BUTTON = false;  // true = Buy Button & Codes deaktivieren
-
-// ┌─────────────────────────────────────────────────────────────┐
-// │  🔧  MAINTENANCE & ANKÜNDIGUNGEN                            │
-// └─────────────────────────────────────────────────────────────┘
-var MAINTENANCE_MODE     = false;          // true = Wartungsseite anzeigen
-var MAINTENANCE_END      = '';             // Enddatum z.B. '2026/03/20 20:00:00'
-
-var ANNOUNCEMENT_ENABLED = false;          // true = Banner oben anzeigen
-var ANNOUNCEMENT_TYPE    = 'maintenance';  // maintenance | update | info | warning
-var ANNOUNCEMENT_ICON    = '🔧';
-var ANNOUNCEMENT_TEXT    = 'Scheduled Maintenance...';
-var ANNOUNCEMENT_TIME    = '01/01/2026 at 8:00 PM';
-
-// ┌─────────────────────────────────────────────────────────────┐
-// │  🎆  SAISONALE EVENTS                                        │
-// └─────────────────────────────────────────────────────────────┘
-var NEWYEAR_FIREWORKS = false;   // 🎆 Neujahr Feuerwerk & Banner
-var BLACK_FRIDAY      = false;   // 🖤 Black Friday Rabatt (113 Rbx)
-
-// ┌─────────────────────────────────────────────────────────────┐
-// │  🎨  THEMES  (nur EINES gleichzeitig aktivieren!)           │
-// └─────────────────────────────────────────────────────────────┘
-var THEME_HALLOWEEN  = false;   // 🎃 Orange & gruselig
-var THEME_WINTER     = false;   // ❄️  Eisblau & Schnee
-var THEME_CHRISTMAS  = false;   // 🎄 Rot & Grün
-var THEME_SUMMER     = false;   // ☀️  Gelb & warm
-var THEME_VALENTINE  = false;   // 💖 Pink & Herzen
-var THEME_EASTER     = false;   // 🐣 Lila & Pastell
-
-/* ══════════════════════════════════════════════════════════════ */
-
-  /* ── LANGUAGE ── */
-  var currentLang = 'en';
-
-  var TRANSLATIONS = {
-    en: {
-      badge: 'ROBLOX DLC · EVENT SYSTEM',
-      heroTitle: 'The Cmdr System V1 DLC',
-      heroSub: 'A powerful command extension for your Roblox Event System. Advanced controls, automation & more — one purchase, forever yours.',
-      heroHint: 'Requires base Event System · Roblox Gamepass · One-time purchase',
-      joinDiscord: '💬 Join Discord',
-      terminalTitle: '> THE DLC_',
-      buyBtn: '🟠 Buy Now',
-      applyBtn: 'Apply',
-      codePlaceholder: 'Enter code...',
-      navProduct: '📦 Product',
-      navAnnouncements: '📢 Announcements',
-      navCollaborators: '🤝 Collaborators',
-      navLicense: '📄 License',
-      navSupport: '🛠 Support',
-      navTeam: '👥 TeamList',
-      langBtn: '🌐 DE',
-      warnTitle: 'WARNING!',
-      warnText: 'IF YOU BUY IT NOW YOU WILL GET NO REFUND!',
-      warnBuyBtn: '🟠 BUY NOW',
-      warnCancelBtn: '✕ CANCEL',
-      dlcTitle: '> DAS DLC_',
-      dlcBadge: 'ROBLOX GAMEPASS',
-      dlcName: 'Cmdr System V1',
-      dlcDesc: 'Das offizielle Befehlssystem-DLC für das Event System.',
-      dlcPriceSub: 'Einmalige Zahlung · Kein Abo',
-      feat1: 'Vollständiges Cmdr V1 Befehlssystem',
-      feat2: 'Support für Setup-Video kontaktieren',
-      feat3: 'Alle zukünftigen Updates inklusive',
-      feat4: 'Discord-Support inklusive',
-      feat5: 'Einmalige Zahlung – für immer dein',
-      dlcWarning: 'Dies ist ein <strong>Einmalkauf</strong>. Der Gamepass kann nach der Aktivierung nicht übertragen oder erstattet werden.',
-      discountLabel: '> Rabattcodes',
-    },
-    de: {
-      badge: 'ROBLOX DLC · EVENT SYSTEM',
-      heroTitle: 'Das Cmdr System V1 DLC',
-      heroSub: 'Eine leistungsstarke Befehlserweiterung für dein Roblox Event System. Erweiterte Steuerung, Automatisierung & mehr — einmal kaufen, für immer nutzen.',
-      heroHint: 'Benötigt das Basis-Event-System · Roblox Gamepass · Einmalige Zahlung',
-      joinDiscord: '💬 Discord beitreten',
-      terminalTitle: '> DAS DLC_',
-      buyBtn: '🟠 Jetzt kaufen',
-      applyBtn: 'Anwenden',
-      codePlaceholder: 'Code eingeben...',
-      navProduct: '📦 Produkt',
-      navAnnouncements: '📢 Ankündigungen',
-      navCollaborators: '🤝 Kollaboratoren',
-      navLicense: '📄 Lizenz',
-      navSupport: '🛠 Support',
-      navTeam: '👥 Team',
-      langBtn: '🌐 EN',
-      warnTitle: 'WARNUNG!',
-      warnText: 'WENN DU JETZT KAUFST, GIBT ES KEINE RÜCKERSTATTUNG!',
-      warnBuyBtn: '🟠 JETZT KAUFEN',
-      warnCancelBtn: '✕ ABBRECHEN',
-      dlcTitle: '> DAS DLC_',
-      dlcBadge: 'ROBLOX GAMEPASS',
-      dlcName: 'Cmdr System V1',
-      dlcDesc: 'Das offizielle Befehlssystem-DLC für das Event System.',
-      dlcPriceSub: 'Einmalige Zahlung · Kein Abo',
-      feat1: 'Vollständiges Cmdr V1 Befehlssystem',
-      feat2: 'Support für Setup-Video kontaktieren',
-      feat3: 'Alle zukünftigen Updates inklusive',
-      feat4: 'Discord-Support inklusive',
-      feat5: 'Einmalige Zahlung – für immer dein',
-      dlcWarning: 'Dies ist ein <strong>Einmalkauf</strong>. Der Gamepass kann nach der Aktivierung nicht übertragen oder erstattet werden.',
-      discountLabel: '> Rabattcodes',
+    if (MAINTENANCE) {
+      document.getElementById('maintenance').style.display = 'flex';
+      document.getElementById('main-content').style.display = 'none';
     }
-  };
 
-  function toggleLanguage() {
-    currentLang = currentLang === 'en' ? 'de' : 'en';
-    var t = TRANSLATIONS[currentLang];
-
-    // Update lang btn
-    var btn = document.getElementById('langToggleBtn');
-    if (btn) btn.textContent = t.langBtn;
-
-    // Hero
-    var badge = document.getElementById('heroBadge');
-    var heroTitle = document.getElementById('heroTitle');
-    var heroSub = document.getElementById('heroSub');
-    var heroHint = document.getElementById('heroHint');
-    var joinBtn = document.getElementById('joinDiscordBtn');
-    if (badge) badge.textContent = t.badge;
-    if (heroTitle) {
-      var spans = heroTitle.querySelectorAll('.wave-word');
-      var words = t.heroTitle.split(' ');
-      spans.forEach(function(span, i) {
-        if (words[i]) span.textContent = words[i];
-      });
-      // If more words than spans, add extra spans
-      if (words.length > spans.length) {
-        for (var i = spans.length; i < words.length; i++) {
-          var s = document.createElement('span');
-          s.className = 'wave-word';
-          s.textContent = words[i];
-          heroTitle.appendChild(document.createTextNode(' '));
-          heroTitle.appendChild(s);
-        }
+    /* ── COUNTDOWN ─────────────────────────────── */
+    const TARGET = new Date('2026-04-25T00:00:00');
+    function updateCountdown() {
+      const diff = TARGET - Date.now();
+      if (diff <= 0) {
+        document.getElementById('countdown').innerHTML = '<div class="cd-expired">[ DLC IS LIVE ]</div>';
+        return;
       }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
+      document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+      document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+      document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
     }
-    if (heroSub) heroSub.textContent = t.heroSub;
-    if (heroHint) heroHint.textContent = t.heroHint;
-    if (joinBtn) joinBtn.textContent = t.joinDiscord;
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 
-    // Buy button
-    var buyBtn = document.getElementById('buyBtnText');
-    if (buyBtn) buyBtn.textContent = t.buyBtn;
+    /* ── PARTICLE SYSTEM ────────────────────────── */
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
 
-    // Code input
-    var codeInput = document.getElementById('codeInput');
-    var applyBtn = document.getElementById('applyCodeBtn');
-    if (codeInput) codeInput.placeholder = t.codePlaceholder;
-    if (applyBtn) applyBtn.textContent = t.applyBtn;
-
-    // Burger menu buttons
-    var menuBtns = document.querySelectorAll('#navMenu button[data-lang]');
-    menuBtns.forEach(function(b) {
-      var key = b.getAttribute('data-lang');
-      if (t[key]) b.textContent = t[key];
-    });
-
-    // DLC section
-    var ids = ['dlcBadge','dlcName','dlcDesc','dlcPriceSub','feat1','feat2','feat3','feat4','feat5','discountLabel'];
-    ids.forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el && t[id]) el.textContent = t[id];
-    });
-    var dlcTitle = document.getElementById('dlcTitle');
-    if (dlcTitle) dlcTitle.innerHTML = t.dlcTitle ? '&gt; <span>' + t.dlcTitle.replace('> ','').replace('_','') + '</span>_' : dlcTitle.innerHTML;
-    var dlcWarning = document.getElementById('dlcWarning');
-    if (dlcWarning && t.dlcWarning) dlcWarning.innerHTML = t.dlcWarning;
-
-    // Warning modal
-    var warnTitle = document.getElementById('warnTitle');
-    var warnText = document.getElementById('warnText');
-    var warnBuyBtn = document.getElementById('warnBuyBtn');
-    var warnCancelBtn = document.getElementById('warnCancelBtn');
-    if (warnTitle && t.warnTitle) warnTitle.textContent = t.warnTitle;
-    if (warnText && t.warnText) warnText.textContent = t.warnText;
-    if (warnBuyBtn && t.warnBuyBtn) warnBuyBtn.textContent = t.warnBuyBtn;
-    if (warnCancelBtn && t.warnCancelBtn) warnCancelBtn.textContent = t.warnCancelBtn;
-
-    // Chatbot language update
-    var chatInput = document.getElementById('chatInput');
-    var chatHeader = document.querySelector('#chatbotWindow .chat-subtitle');
-    if (chatInput) chatInput.placeholder = currentLang === 'de' ? 'Frage stellen...' : 'Ask a question...';
-
-    // Update welcome message if not yet interacted
-    if (!chatWelcomeDone) {
-      var welcomeEl = document.getElementById('chatWelcome');
-      if (welcomeEl) welcomeEl.textContent = '';
-    } else {
-      var welcomeEl = document.getElementById('chatWelcome');
-      if (welcomeEl) {
-        welcomeEl.textContent = '';
-        var welcomeText = currentLang === 'de'
-          ? '👋 Hi! Ich bin der CMDR Assistant. Frag mich alles über das CMDR System V1 DLC!'
-          : '👋 Hi! I\'m the CMDR Assistant. Ask me anything about the CMDR System V1 DLC!';
-        var i = 0;
-        var tw = setInterval(function() {
-          welcomeEl.textContent += welcomeText[i++];
-          if (i >= welcomeText.length) clearInterval(tw);
-        }, 28);
-      }
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
     }
-
-    // Update chatbot subtitle
-    var subtitle = document.getElementById('chatSubtitle');
-    if (subtitle) subtitle.textContent = currentLang === 'de' ? 'Beantwortet CMDR Fragen' : 'Answers CMDR questions';
-  }
-
-
-  /* ── TOASTS ── */
-  function showToast(message, type, id) {
-    var container = document.getElementById("toastContainer");
-    if (!container) return;
-    var icons = { warning: "⚠️", info: "ℹ️", success: "✅", error: "❌", admin: "⚙️" };
-    var toast = document.createElement("div");
-    toast.className = "toast " + (type || "info");
-    toast.innerHTML =
-      '<span class="toast-icon">' + (icons[type] || "🔔") + '</span>' +
-      '<span class="toast-msg">' + message + '</span>' +
-      '<button class="toast-close" onclick="removeToast(this.parentElement,' + (id || 0) + ')">✕</button>';
-    container.appendChild(toast);
-
-    // Auto-remove after 30 seconds (visually + from Supabase)
-    setTimeout(function() {
-      removeToast(toast, id || 0);
-    }, 30000);
-  }
-
-  function removeToast(el, id) {
-    if (!el || !el.parentElement) return;
-    el.style.transition = "opacity 0.4s, transform 0.4s";
-    el.style.opacity = "0";
-    el.style.transform = "translateX(-20px)";
-    setTimeout(function() {
-      if (el.parentElement) el.parentElement.removeChild(el);
-    }, 400);
-    // Delete from Supabase permanently
-    if (id) {
-      sbFetch("toasts?id=eq." + id, { method: "DELETE" }).catch(function() {});
-    }
-  }
-
-  /* ── MAINTENANCE DISABLE ── */
-  function adminDisableMaintenance() {
-    if (!confirm('Disable maintenance for everyone?')) return;
-    if (typeof sbSetSettings === 'function') {
-      sbSetSettings({ id: 1, maintenance: false, disable_buy_button: false })
-      .then(function() {
-        document.getElementById('maintenanceScreen').style.display = 'none';
-        document.getElementById('maintenanceAdminBtn').style.display = 'none';
-        alert('✓ Maintenance disabled for everyone!');
-      }).catch(function(e) {
-        alert('✗ Error: ' + e.message);
-      });
-    } else {
-      // Fallback: just hide locally
-      document.getElementById('maintenanceScreen').style.display = 'none';
-      alert('✓ Maintenance hidden (not saved globally - Supabase not loaded yet)');
-    }
-  }
-
-  /* ── PAGE OPEN/CLOSE FUNCTIONS ── */
-  function openTeamPage() {
-    var el = document.getElementById('teamPage');
-    if (el) { el.style.cssText = 'display:block!important;position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;overflow-y:auto!important;background:#0a0a0a!important;'; document.body.style.overflow = 'hidden'; }
-  }
-  function closeTeamPage() {
-    var el = document.getElementById('teamPage');
-    if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
-  }
-  function openSneakPeekPage() {
-    var el = document.getElementById('sneakPeekPage');
-    if (el) { el.style.cssText = 'display:block!important;position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;overflow-y:auto!important;background:#0a0a0a!important;'; document.body.style.overflow = 'hidden'; }
-  }
-  function closeSneakPeekPage() {
-    var el = document.getElementById('sneakPeekPage');
-    if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
-  }
-  function openChangelogPage() {
-    var el = document.getElementById('changelogPage');
-    if (el) { el.style.cssText = 'display:block!important;position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;overflow-y:auto!important;background:#0a0a0a!important;'; document.body.style.overflow = 'hidden'; }
-  }
-  function closeChangelogPage() {
-    var el = document.getElementById('changelogPage');
-    if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
-  }
-  function openLicensePage() {
-    var el = document.getElementById('licensePage');
-    if (el) { el.style.cssText = 'display:block!important;position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;overflow-y:auto!important;background:#0a0a0a!important;'; document.body.style.overflow = 'hidden'; }
-  }
-  function closeLicensePage() {
-    var el = document.getElementById('licensePage');
-    if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
-  }
-  function openCollaboratorPage() {
-    var el = document.getElementById('collaboratorPage');
-    if (el) { el.style.cssText = 'display:block!important;position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;overflow-y:auto!important;background:#0a0a0a!important;'; document.body.style.overflow = 'hidden'; }
-  }
-  function closeCollaboratorPage() {
-    var el = document.getElementById('collaboratorPage');
-    if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
-  }
-  function openAnnouncementsPage() {
-    var el = document.getElementById('announcementsPage');
-    if (el) { el.style.cssText = 'display:block!important;position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;overflow-y:auto!important;background:#0a0a0a!important;'; document.body.style.overflow = 'hidden'; }
-  }
-  function closeAnnouncementsPage() {
-    var el = document.getElementById('announcementsPage');
-    if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
-  }
-  function openEventPacksPage() {
-    var el = document.getElementById('eventPacksPage');
-    if (el) { el.style.cssText = 'display:block!important;position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;overflow-y:auto!important;background:#0a0a0a!important;'; document.body.style.overflow = 'hidden'; }
-  }
-  function closeEventPacksPage() {
-    var el = document.getElementById('eventPacksPage');
-    if (el) { el.style.display = 'none'; document.body.style.overflow = ''; }
-  }
-
-
-
-
-
-  /* ── BURGER MENU ── */
-  function toggleBurger() {
-    var btn = document.getElementById('burgerBtn');
-    var menu = document.getElementById('navMenu');
-    var overlay = document.getElementById('navOverlay');
-    var isOpen = menu.style.display === 'flex';
-    if (isOpen) {
-      menu.style.animation = 'none';
-      menu.style.transform = 'translateX(100%)';
-      menu.style.opacity = '0';
-      setTimeout(function() {
-        menu.style.display = 'none';
-        menu.style.transform = '';
-        menu.style.opacity = '';
-      }, 200);
-      overlay.style.display = 'none';
-      btn.classList.remove('open');
-      document.body.style.overflow = '';
-    } else {
-      menu.style.display = 'flex';
-      menu.style.flexDirection = 'column';
-      menu.style.animation = 'menuSlideIn 0.3s cubic-bezier(0.4,0,0.2,1) forwards';
-      overlay.style.display = 'block';
-      overlay.style.animation = 'fadeIn 0.3s ease';
-      btn.classList.add('open');
-      document.body.style.overflow = 'hidden';
-      // Animate each menu item
-      var items = menu.querySelectorAll('button');
-      items.forEach(function(item, i) {
-        item.style.animation = 'none';
-        item.style.opacity = '0';
-        setTimeout(function() {
-          item.style.animation = 'menuItemIn 0.25s ease forwards';
-          item.style.opacity = '';
-        }, 80 + i * 40);
-      });
-    }
-  }
-  function closeBurger() {
-    var menu = document.getElementById('navMenu');
-    var overlay = document.getElementById('navOverlay');
-    var btn = document.getElementById('burgerBtn');
-    if (menu) menu.style.display = 'none';
-    if (overlay) overlay.style.display = 'none';
-    if (btn) btn.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  var buyUrl = 'https://www.roblox.com/de/game-pass/1738044254/125';
-  function openWarningModal() {
-    // Track buy click
-    if (typeof sbFetch === "function") {
-      sbFetch("stats?key=eq.buy_clicks&select=*").then(function(d) {
-        var cur = (d && d[0]) ? d[0].value : 0;
-        sbFetch("stats?key=eq.buy_clicks", { method: "PATCH", body: JSON.stringify({ value: cur + 1 }) }).catch(function(){});
-      }).catch(function(){});
-    }
-    var modal = document.getElementById('warningModal');
-    modal.style.display = 'flex';
-  }
-  function closeWarningModal() {
-    var modal = document.getElementById('warningModal');
-    modal.style.display = 'none';
-  }
-  function confirmBuy() {
-    closeWarningModal();
-    window.open(buyUrl, '_blank');
-  }
-  // Attach buy button click after DOM loads
-  document.addEventListener('DOMContentLoaded', function() {
-    var btn = document.getElementById('buyBtn');
-    if (btn) btn.addEventListener('click', function() {
-      if (btn.style.pointerEvents !== 'none') openWarningModal();
-    });
-  });
-
-  /* Page functions loaded from pages.js */
-
-  const MAX_CODES = 10;
-  const usedCodes = [];
-
-  window.CODES = {
-    'CMDREVENT': function() {
-      const BASE = 125, DISC = 5;
-      const discounted = Math.round(BASE * (1 - DISC / 100));
-      document.getElementById('priceDisplay').innerHTML =
-        `<span class="price-original">${BASE} R$</span><span class="price-discounted">${discounted} R$</span>`;
-      document.getElementById('priceDisplay2').innerHTML =
-        `🟠 <span class="price-original" style="font-size:1.6rem">${BASE}</span> <span class="price-discounted" style="font-size:2.2rem;font-weight:700">${discounted}</span> <span style="font-size:1.2rem;color:#aaa">Robux</span>`;
-      document.getElementById('buyBtn').href = 'https://www.roblox.com/de/game-pass/1735695643/119-Rbx';
-      buyUrl = 'https://www.roblox.com/de/game-pass/1735695643/119-Rbx';
-      // Countdown animation 125 -> 119
-      const cdEl = document.getElementById('discountCountdown');
-      const cdPrice = document.getElementById('countdownPrice');
-      cdPrice.textContent = '125';
-      cdEl.style.display = 'block';
-      let cdVal = 125;
-      const cdTimer = setInterval(() => {
-        cdVal--;
-        cdPrice.textContent = cdVal;
-        if (cdVal <= 119) clearInterval(cdTimer);
-      }, 80);
-      return '✓ Code accepted! 5% discount applied.';
-    },
-    'TAZZFREECMDR': function() {
-      try {
-        if (localStorage.getItem('tazzfreecmdr_used')) {
-          return '✗ This code has already been used on this device!';
-        }
-        localStorage.setItem('tazzfreecmdr_used', '1');
-      } catch(e) {}
-      document.getElementById('discordJoin').style.display = 'flex';
-      return '✓ Code accepted! GO IN THE SUPPORT FOR THE FREE CMDR EVENT PANEL!';
-    }
-  };
-
-  function updateCounter() {
-    document.getElementById('codeCounter').textContent = `(${usedCodes.length}/${MAX_CODES} used)`;
-  }
-
-  function addCodeSlot() {
-    if (usedCodes.length >= MAX_CODES) return;
-    const slots = document.getElementById('codeSlots');
-    const id = 'slot_' + Date.now();
-    const div = document.createElement('div');
-    div.className = 'discount-row';
-    div.style.marginBottom = '0.4rem';
-    div.id = id;
-    div.innerHTML = `
-      <input type="text" class="discount-input" placeholder="ENTER CODE..." maxlength="20"
-        onkeydown="if(event.key==='Enter') applyCode('${id}')" />
-      <button class="discount-apply-btn" onclick="applyCode('${id}')">APPLY</button>
-      <div class="discount-msg" id="msg_${id}" style="display:none;margin-top:0"></div>`;
-    slots.appendChild(div);
-
-    const row = div;
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'discount-msg';
-    msgDiv.id = 'msg_' + id;
-    msgDiv.style.marginBottom = '0.4rem';
-    slots.appendChild(msgDiv);
-
-    div.querySelector('.discount-msg').remove();
-
-    if (slots.children.length / 2 >= MAX_CODES) {
-      document.getElementById('addCodeBtn').style.display = 'none';
-    }
-  }
-
-  function applyCode(slotId) {
-    const slot = document.getElementById(slotId);
-    const input = slot.querySelector('input');
-    const msg = document.getElementById('msg_' + slotId);
-    const code = input.value.trim().toUpperCase();
-
-    if (input.disabled) {
-      msg.textContent = '✓ Already applied!';
-      msg.className = 'discount-msg success';
-      return;
-    }
-
-    if (code === '') {
-      msg.textContent = '⚠ Please enter a code.';
-      msg.className = 'discount-msg error';
-      return;
-    }
-
-    if (usedCodes.includes(code)) {
-      msg.textContent = '✗ This code was already used.';
-      msg.className = 'discount-msg error';
-      input.classList.add('invalid');
-      setTimeout(() => input.classList.remove('invalid'), 1500);
-      return;
-    }
-
-    if (window.CODES[code]) {
-      const resultMsg = window.CODES[code]();
-      usedCodes.push(code);
-      input.classList.add('valid');
-      input.disabled = true;
-      slot.querySelector('button').disabled = true;
-      slot.querySelector('button').style.opacity = '0.4';
-      msg.textContent = resultMsg;
-      msg.className = 'discount-msg success';
-      updateCounter();
-    } else {
-      input.classList.remove('valid');
-      input.classList.add('invalid');
-      msg.textContent = '✗ Invalid code. Please try again.';
-      msg.className = 'discount-msg error';
-      setTimeout(() => input.classList.remove('invalid'), 1500);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    addCodeSlot();
-
-    // Zahl-Hochzähl-Animation für Preis
-    function animateCounter(el, target, duration) {
-      let start = 0;
-      const step = target / (duration / 16);
-      const timer = setInterval(() => {
-        start += step;
-        if (start >= target) { start = target; clearInterval(timer); }
-        el.textContent = Math.floor(start);
-      }, 16);
-    }
-    var checkLoader = setInterval(function() {
-      var ld = document.getElementById("loader");
-      if (!ld || ld.style.display === "none" || ld.style.opacity === "0") {
-        clearInterval(checkLoader);
-        var finalPrice = BLACK_FRIDAY ? 113 : 125;
-        document.getElementById("priceDisplay").innerHTML = "<span id=\"ap1\">0</span> R$";
-        document.getElementById("priceDisplay2").innerHTML = "🟠 <span id=\"ap2\">0</span> <span style=\"font-size:1.2rem;color:#aaa\">Robux</span>";
-        animateCounter(document.getElementById("ap1"), finalPrice, 1500);
-        animateCounter(document.getElementById("ap2"), finalPrice, 1500);
-        setTimeout(function() {
-          if (DISABLE_BUY_BUTTON) {
-  // Disable Buy Button
-  var btn = document.getElementById('buyBtn');
-  btn.style.opacity = '0.4';
-  btn.style.pointerEvents = 'none';
-  btn.style.cursor = 'not-allowed';
-  btn.textContent = '🚫 CURRENTLY UNAVAILABLE';
-
-  // Block applyCode function entirely
-  window.applyCode = function(slotId) {
-    var msg = document.getElementById('msg_' + slotId);
-    if (msg) {
-      msg.textContent = '🚫 Codes are currently disabled.';
-      msg.className = 'discount-msg err';
-      msg.style.display = 'block';
-    }
-  };
-
-  // Hide the add code button
-  var addBtn = document.getElementById('addCodeBtn');
-  if (addBtn) {
-    addBtn.style.opacity = '0.4';
-    addBtn.style.pointerEvents = 'none';
-    addBtn.style.cursor = 'not-allowed';
-  }
-}
-
-if (BLACK_FRIDAY) {
-            document.getElementById("priceDisplay").innerHTML = "<span class=\"price-original\">125 R$</span><span class=\"price-discounted\">113 R$</span>";
-            document.getElementById("priceDisplay2").innerHTML = "🟠 <span class=\"price-original\" style=\"font-size:1.6rem\">125</span> <span class=\"price-discounted\" style=\"font-size:2.2rem;font-weight:700\">113</span> <span style=\"font-size:1.2rem;color:#aaa\">Robux</span>";
-          } else {
-            document.getElementById("priceDisplay").innerHTML = "125 R$";
-            document.getElementById("priceDisplay2").innerHTML = "🟠 125 <span style=\"font-size:1.2rem;color:#aaa\">Robux</span>";
-          }
-        }, 1600);
-      }
-    }, 200);
-
-    const words = document.querySelectorAll('.wave-word');
-    const total = words.length;
-    let t = 0;
-
-    function animateWave() {
-      words.forEach((w, i) => {
-        const val = (Math.sin(t + (i / total) * Math.PI * 2) + 1) / 2;
-        const g = Math.round(val * 255);
-        const r = Math.round(224 - val * 224);
-        const b = Math.round(224 - val * 224);
-        const glow = val * 25;
-        w.style.color = `rgb(${r},${Math.max(g, 224 - Math.round(val*224))},${b})`;
-        w.style.textShadow = val > 0.7 ? `0 0 ${glow}px rgba(0,255,136,${val})` : 'none';
-        w.style.color = `rgb(${Math.round(224*(1-val) + 0*val)}, ${Math.round(224*(1-val) + 255*val)}, ${Math.round(224*(1-val) + 136*val)})`;
-      });
-      t -= 0.055;
-      requestAnimationFrame(animateWave);
-    }
-    animateWave();
-  });
-</script>
-<!-- MAINTENANCE -->
-<div id="maintenanceScreen">
-  <div class="m-border">
-    <div class="m-triangle">⚠️</div>
-    <h1>! MAINTENANCE !</h1>
-    <p>This site is currently under maintenance.<br>Please check back later.</p>
-    <div class="m-countdown" id="mCountdown" style="display:none">
-      <div class="m-countdown-box">
-        <div class="m-countdown-num" id="mDays">00</div>
-        <div class="m-countdown-label">DAYS</div>
-      </div>
-      <div class="m-countdown-box">
-        <div class="m-countdown-num" id="mHours">00</div>
-        <div class="m-countdown-label">HOURS</div>
-      </div>
-      <div class="m-countdown-box">
-        <div class="m-countdown-num" id="mMinutes">00</div>
-        <div class="m-countdown-label">MINUTES</div>
-      </div>
-      <div class="m-countdown-box">
-        <div class="m-countdown-num" id="mSeconds">00</div>
-        <div class="m-countdown-label">SECONDS</div>
-      </div>
-    </div>
-    <div class="m-countdown-done" id="mCountdownDone" style="display:none">✓ Maintenance complete – please refresh!</div>
-    <div id="maintenanceAdminBtn" style="display:none;margin-top:1.5rem;flex-direction:column;align-items:center;gap:0.5rem;">
-      <button onclick="adminDisableMaintenance()" style="background:#ff2222;color:#fff;border:none;border-radius:8px;padding:0.7rem 1.5rem;font-family:'Courier New',monospace;font-size:0.85rem;font-weight:700;letter-spacing:1px;cursor:pointer;">⚠ DISABLE MAINTENANCE</button>
-      <div style="font-family:'Courier New',monospace;font-size:0.65rem;color:#444;letter-spacing:1px;">Admin bypass active</div>
-    </div>
-  </div>
-</div>
-
-<!-- LOADER -->
-<div id="loader">
-  <div class="l-logo">CMDR_SYSTEM</div>
-  <div class="l-bar-wrap"><div class="l-bar" id="lBar"></div></div>
-  <div class="l-line" id="lLine">&gt; Initializing...</div>
-  <div class="l-text">V1 DLC</div>
-</div>
-
-<canvas id="fireworkCanvas"></canvas>
-<canvas id="particles" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.4"></canvas>
-
-<script>
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let W, H, dots = [];
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-
-  function randomDot() {
-    return {
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 1.5 + 0.4,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      alpha: Math.random() * 0.6 + 0.2
-    };
-  }
-
-  function init() {
     resize();
-    dots = Array.from({ length: 120 }, randomDot);
-  }
+    window.addEventListener('resize', resize);
 
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
+    function rand(a, b) { return a + Math.random() * (b - a); }
 
-    for (let i = 0; i < dots.length; i++) {
-      for (let j = i + 1; j < dots.length; j++) {
-        const dx = dots[i].x - dots[j].x;
-        const dy = dots[i].y - dots[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(0,255,136,${0.12 * (1 - dist/120)})`;
-          ctx.lineWidth = 0.5;
-          ctx.moveTo(dots[i].x, dots[i].y);
-          ctx.lineTo(dots[j].x, dots[j].y);
-          ctx.stroke();
-        }
-      }
+    function spawnParticle() {
+      return {
+        x: rand(0, W),
+        y: rand(0, H),
+        r: rand(0.6, 2.2),
+        vx: rand(-0.15, 0.15),
+        vy: rand(-0.35, -0.08),
+        alpha: rand(0.2, 0.7),
+        fade: rand(0.002, 0.005)
+      };
     }
 
-    dots.forEach(d => {
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0,255,136,${d.alpha})`;
-      ctx.fill();
+    for (let i = 0; i < 120; i++) particles.push(spawnParticle());
 
-      d.x += d.vx;
-      d.y += d.vy;
+    function drawParticles() {
+      ctx.clearRect(0, 0, W, H);
+      for (let p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,255,136,${p.alpha})`;
+        ctx.shadowColor = '#00ff88';
+        ctx.shadowBlur = 4;
+        ctx.fill();
 
-      if (d.x < 0 || d.x > W) d.vx *= -1;
-      if (d.y < 0 || d.y > H) d.vy *= -1;
-    });
-
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', () => { resize(); });
-  init();
-  draw();
-</script>
-
-<script>
-/* ── CURSOR GLOW ── */
-const glowEl = document.createElement('div');
-glowEl.style.cssText = `
-  position: fixed; pointer-events: none; z-index: 9999;
-  width: 380px; height: 380px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(0,255,136,0.08) 0%, rgba(0,255,136,0) 70%);
-  transform: translate(-50%, -50%);
-  mix-blend-mode: screen;
-  will-change: left, top;
-`;
-document.body.appendChild(glowEl);
-
-document.addEventListener('mousemove', e => {
-  glowEl.style.left = e.clientX + 'px';
-  glowEl.style.top  = e.clientY + 'px';
-});
-
-/* ── LOADER ── */
-(function() {
-  var loaderLines = [
-    '> Booting CMDR_SYSTEM...',
-    '> Loading modules...',
-    '> Verifying gamepass data...',
-    '> Connecting to Discord API...',
-    '> Rendering interface...',
-    '> Done.'
-  ];
-
-  function startLoader() {
-    var bar  = document.getElementById('lBar');
-    var line = document.getElementById('lLine');
-    if (!bar || !line) return;
-    var progress = 0;
-    var lineIdx  = 0;
-
-    var interval = setInterval(function() {
-      progress += Math.random() * 18 + 6;
-      if (progress >= 100) progress = 100;
-      bar.style.width = progress + '%';
-
-      if (lineIdx < loaderLines.length) {
-        line.textContent = loaderLines[lineIdx++];
-      }
-
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(function() {
-          var ld = document.getElementById('loader');
-          if (!ld) return;
-          ld.style.transition = 'opacity 0.6s';
-          ld.style.opacity = '0';
-          setTimeout(function() { ld.style.display = 'none'; }, 600);
-        }, 400);
-      }
-    }, 220);
-  }
-
-  // Start immediately - don't wait for full page load
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startLoader);
-  } else {
-    startLoader();
-  }
-})();
-
-/* ── ADMIN PANEL ── */
-const _0x4a2f=['63','6d','64','72','5f','61','64','6d','69','6e','5f','32','30','32','36'];
-const _0x8c3d=_0x4a2f.map(h=>String.fromCharCode(parseInt(h,16))).join('');
-let adminLoggedIn = false;
-
-
-
-
-
-
-/* ══════════════════════════════════════════════════════
-   🎨 THEMES — set one to true to activate
-   Only ONE theme should be active at a time!
-   ══════════════════════════════════════════════════════ */
-// (THEMES moved to top settings)
-
-(function applyTheme() {
-  const body = document.body;
-  const banner = document.getElementById('themeBanner');
-
-  if (THEME_HALLOWEEN) {
-    body.classList.add('theme-halloween');
-    banner.style.display = 'block';
-    banner.style.background = 'rgba(255,102,0,0.1)';
-    banner.style.borderBottom = '1px solid #ff6600';
-    banner.innerHTML = '🎃 Happy Halloween! 🎃';
-    banner.style.color = '#ff6600';
-    // Spawn Halloween particles
-    const emojis = ['🎃','👻','🦇','🕷️','💀'];
-    for (let i = 0; i < 15; i++) {
-      const el = document.createElement('div');
-      el.className = 'halloween-particle';
-      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.animationDuration = (Math.random() * 6 + 4) + 's';
-      el.style.animationDelay = (Math.random() * 5) + 's';
-      document.body.appendChild(el);
-    }
-  }
-
-  if (THEME_WINTER) {
-    body.classList.add('theme-winter');
-    banner.style.display = 'block';
-    banner.style.background = 'rgba(0,207,255,0.05)';
-    banner.style.borderBottom = '1px solid #00cfff';
-    banner.innerHTML = '❄️ Happy Winter! ❄️';
-    banner.style.color = '#00cfff';
-    // Spawn snowflakes
-    for (let i = 0; i < 20; i++) {
-      const el = document.createElement('div');
-      el.className = 'snow-particle';
-      el.textContent = '❄';
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.animationDuration = (Math.random() * 6 + 5) + 's';
-      el.style.animationDelay = (Math.random() * 8) + 's';
-      document.body.appendChild(el);
-    }
-  }
-
-  if (THEME_CHRISTMAS) {
-    body.classList.add('theme-christmas');
-    banner.style.display = 'block';
-    banner.style.background = 'rgba(255,34,34,0.05)';
-    banner.style.borderBottom = '1px solid #ff2222';
-    banner.innerHTML = '🎄 Merry Christmas! 🎁';
-    banner.style.color = '#ff2222';
-    // Spawn snowflakes
-    for (let i = 0; i < 20; i++) {
-      const el = document.createElement('div');
-      el.className = 'snow-particle';
-      el.textContent = ['❄','⛄','🎅'][Math.floor(Math.random()*3)];
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.animationDuration = (Math.random() * 6 + 5) + 's';
-      el.style.animationDelay = (Math.random() * 8) + 's';
-      document.body.appendChild(el);
-    }
-  }
-
-  if (THEME_SUMMER) {
-    body.classList.add('theme-summer');
-    banner.style.display = 'block';
-    banner.style.background = 'rgba(255,221,0,0.05)';
-    banner.style.borderBottom = '1px solid #ffdd00';
-    banner.innerHTML = '☀️ Happy Summer! 🌊';
-    banner.style.color = '#ffdd00';
-  }
-
-  if (THEME_VALENTINE) {
-    body.classList.add('theme-valentine');
-    banner.style.display = 'block';
-    banner.style.background = 'rgba(255,105,180,0.05)';
-    banner.style.borderBottom = '1px solid #ff69b4';
-    banner.innerHTML = '💖 Happy Valentines Day! 💖';
-    banner.style.color = '#ff69b4';
-    // Spawn hearts
-    for (let i = 0; i < 15; i++) {
-      const el = document.createElement('div');
-      el.className = 'heart-particle';
-      el.textContent = ['💖','💕','❤️','💝'][Math.floor(Math.random()*4)];
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.animationDuration = (Math.random() * 5 + 4) + 's';
-      el.style.animationDelay = (Math.random() * 6) + 's';
-      document.body.appendChild(el);
-    }
-  }
-
-  if (THEME_EASTER) {
-    body.classList.add('theme-easter');
-    banner.style.display = 'block';
-    banner.style.background = 'rgba(204,68,255,0.05)';
-    banner.style.borderBottom = '1px solid #cc44ff';
-    banner.innerHTML = '🐣 Happy Easter! 🌸';
-    banner.style.color = '#cc44ff';
-  }
-})();
-
-/* ══════════════════════════════════════════════════════
-   📢 ANKÜNDIGUNG / ANNOUNCEMENT BANNER
-   
-   ANNOUNCEMENT_ENABLED  — true = show banner
-   ANNOUNCEMENT_TYPE     — 'maintenance' | 'update' | 'info' | 'warning'
-   ANNOUNCEMENT_TEXT     — your announcement text
-   ANNOUNCEMENT_TIME     — date/time (e.g. "01/01/2026 at 8:00 PM")
-   
-   Examples:
-   🔧 Maintenance:  type='maintenance', icon='🔧'
-   🆕 Update:       type='update',      icon='🆕'
-   ℹ️  Info:         type='info',        icon='ℹ️'
-   ⚠️  Warning:      type='warning',     icon='⚠️'
-   ══════════════════════════════════════════════════════ */
-
-// (ANNOUNCEMENT_ENABLED moved to top settings)
-// (Announcement settings moved to top settings block)
-
-if (ANNOUNCEMENT_ENABLED) {
-  const annBanner = document.getElementById('announcementBanner');
-  annBanner.className = 'type-' + ANNOUNCEMENT_TYPE;
-  annBanner.style.display = 'block';
-  document.getElementById('annIcon').textContent = ANNOUNCEMENT_ICON;
-  document.getElementById('annText').innerHTML = ANNOUNCEMENT_TEXT;
-  document.getElementById('annTime').textContent = ANNOUNCEMENT_TIME;
-}
-
-/* ══════════════════════════════════════════
-   🎆 NEW YEAR FIREWORKS — true = active
-   🖤 BLACK FRIDAY        — true = active
-   ══════════════════════════════════════════ */
-// (moved to settings)
-
-// (DISABLE_BUY_BUTTON moved to top settings)
-
-// ── BLACK FRIDAY LOGIC ──
-if (DISABLE_BUY_BUTTON) {
-  // Disable Buy Button
-  var btn = document.getElementById('buyBtn');
-  btn.style.opacity = '0.4';
-  btn.style.pointerEvents = 'none';
-  btn.style.cursor = 'not-allowed';
-  btn.textContent = '🚫 CURRENTLY UNAVAILABLE';
-
-  // Block applyCode function entirely
-  window.applyCode = function(slotId) {
-    var msg = document.getElementById('msg_' + slotId);
-    if (msg) {
-      msg.textContent = '🚫 Codes are currently disabled.';
-      msg.className = 'discount-msg err';
-      msg.style.display = 'block';
-    }
-  };
-
-  // Hide the add code button
-  var addBtn = document.getElementById('addCodeBtn');
-  if (addBtn) {
-    addBtn.style.opacity = '0.4';
-    addBtn.style.pointerEvents = 'none';
-    addBtn.style.cursor = 'not-allowed';
-  }
-}
-
-if (BLACK_FRIDAY) {
-  document.getElementById('blackFridayBanner').style.display = 'block';
-  // Apply discount automatically
-  document.getElementById('priceDisplay').innerHTML =
-    '<span class="price-original">125 R$</span><span class="price-discounted">113 R$</span>';
-  document.getElementById('priceDisplay2').innerHTML =
-    '🟠 <span class="price-original" style="font-size:1.6rem">125</span> <span class="price-discounted" style="font-size:2.2rem;font-weight:700">113</span> <span style="font-size:1.2rem;color:#aaa">Robux</span>';
-  buyUrl = 'https://www.roblox.com/de/game-pass/1737709642/113-Rbx';
-}
-
-// ── NEWYEAR FIREWORKS LOGIC ──
-if (NEWYEAR_FIREWORKS) {
-  document.getElementById('newyearBanner').style.display = 'block';
-  const fwCanvas = document.getElementById('fireworkCanvas');
-  const fwCtx = fwCanvas.getContext('2d');
-  fwCanvas.width = window.innerWidth;
-  fwCanvas.height = window.innerHeight;
-  window.addEventListener('resize', () => {
-    fwCanvas.width = window.innerWidth;
-    fwCanvas.height = window.innerHeight;
-  });
-
-  const fireworks = [];
-  const fwColors = ['#ff4444','#ffbd2e','#00ff88','#5865F2','#ff69b4','gold','#fff'];
-
-  function launchFirework() {
-    const x = Math.random() * fwCanvas.width;
-    const y = Math.random() * fwCanvas.height * 0.6;
-    const color = fwColors[Math.floor(Math.random() * fwColors.length)];
-    const fwParticles = [];
-    for (let i = 0; i < 60; i++) {
-      const angle = (Math.PI * 2 / 60) * i;
-      const speed = Math.random() * 4 + 2;
-      fwParticles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        alpha: 1,
-        color
-      });
-    }
-    fireworks.push(fwParticles);
-  }
-
-  function drawFireworks() {
-    fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
-    for (let i = fireworks.length - 1; i >= 0; i--) {
-      const particles = fireworks[i];
-      for (let j = particles.length - 1; j >= 0; j--) {
-        const p = particles[j];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.05;
-        p.alpha -= 0.018;
-        if (p.alpha <= 0) { particles.splice(j, 1); continue; }
-        fwCtx.beginPath();
-        fwCtx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        fwCtx.fillStyle = p.color;
-        fwCtx.globalAlpha = p.alpha;
-        fwCtx.fill();
-        fwCtx.globalAlpha = 1;
-      }
-      if (particles.length === 0) fireworks.splice(i, 1);
-    }
-    requestAnimationFrame(drawFireworks);
-  }
+        p.alpha -= p.fade;
 
-  drawFireworks();
-  // Launch fireworks every 800ms
-  setInterval(launchFirework, 800);
-  // First burst immediately
-  for (let i = 0; i < 5; i++) setTimeout(launchFirework, i * 200);
-}
-
-
-</script>
-
-
-
-
-<!-- LICENSE PAGE -->
-<div id="licensePage" style="display:none;position:fixed;inset:0;background:#0a0a0a;z-index:5000;overflow-y:auto;font-family:'Courier New',monospace;">
-
-  <!-- Nav -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2rem;background:#111;border-bottom:1px solid #00ff88;position:sticky;top:0;z-index:100;">
-    <div style="font-size:1.4rem;font-weight:700;color:#00ff88;letter-spacing:2px;">&gt; CMDR</div>
-    <button onclick="closeLicensePage()" style="background:none;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:0.5rem 1rem;font-family:'Courier New',monospace;font-size:0.85rem;cursor:pointer;letter-spacing:1px;">← Back</button>
-  </div>
-
-  <!-- Hero -->
-  <div style="text-align:center;padding:3rem 2rem 2rem;background:radial-gradient(ellipse at center,#001a0d 0%,#0a0a0a 70%);border-bottom:1px solid #1a1a1a;">
-    <h1 style="font-size:2rem;margin-bottom:0.5rem;">&gt; <span style="color:#00ff88">LICENSE</span>_</h1>
-    <p style="color:#555;font-size:0.85rem;letter-spacing:2px;">Terms of Purchase</p>
-  </div>
-
-  <!-- Content -->
-  <div style="max-width:700px;margin:0 auto;padding:2.5rem 2rem;">
-    <div style="background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:2rem;">
-
-      <div style="display:flex;flex-direction:column;gap:0;">
-
-        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
-          <span style="color:#00ff88;font-size:1.2rem;margin-top:0.1rem;">📄</span>
-          <div>
-            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">One-time Purchase</div>
-            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">Pay once, use forever. No recurring fees.</div>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
-          <span style="color:#00ff88;font-size:1.2rem;margin-top:0.1rem;">👤</span>
-          <div>
-            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">Personal Use Only</div>
-            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">The gamepass is tied to your Roblox account.</div>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
-          <span style="color:#ff4444;font-size:1.2rem;margin-top:0.1rem;">🚫</span>
-          <div>
-            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">No Redistribution</div>
-            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">You may not share or resell the DLC or its files.</div>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
-          <span style="color:#ff4444;font-size:1.2rem;margin-top:0.1rem;">💸</span>
-          <div>
-            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">No Refunds</div>
-            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">All sales are final due to the digital nature of the product.</div>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:1px solid #1a1a1a;">
-          <span style="color:#00ff88;font-size:1.2rem;margin-top:0.1rem;">🔄</span>
-          <div>
-            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">Updates</div>
-            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">All future Cmdr V1 updates are free for existing owners.</div>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;">
-          <span style="color:#5865F2;font-size:1.2rem;margin-top:0.1rem;">💬</span>
-          <div>
-            <div style="color:#fff;font-weight:700;margin-bottom:0.3rem;letter-spacing:1px;">Support</div>
-            <div style="color:#666;font-size:0.88rem;font-family:'Segoe UI',sans-serif;line-height:1.5;">Join the Discord server for help and bug reports.</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Discord Button -->
-    <a href="https://discord.gg/XaZSGVFvzV" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:0.8rem;margin-top:1.5rem;padding:1rem;background:#1a1c2e;border:1px solid #5865F2;border-radius:8px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#252840'" onmouseout="this.style.background='#1a1c2e'">
-      <span style="font-size:1.5rem;">💬</span>
-      <div>
-        <div style="color:#fff;font-weight:700;font-family:'Courier New',monospace;letter-spacing:1px;">Join Support Server</div>
-        <div style="color:#888;font-size:0.8rem;font-family:'Segoe UI',sans-serif;">discord.gg/XaZSGVFvzV</div>
-      </div>
-    </a>
-  </div>
-</div>
-
-<!-- WARNING MODAL -->
-<div id="warningModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9500;align-items:center;justify-content:center;" onclick="if(event.target===this)document.getElementById('warningModal').style.display='none'">
-  <div class="warning-modal-box">
-    <div class="w-icon">⚠️</div>
-    <h3 id="warnTitle">WARNING!</h3>
-    <p id="warnText">IF YOU BUY IT NOW YOU WILL GET NO REFUND!</p>
-    <div style="display:flex;gap:0.8rem;margin-top:0.5rem;">
-      <button onclick="closeWarningModal()" style="flex:1;padding:0.8rem;background:none;border:1px solid #444;border-radius:8px;color:#aaa;cursor:pointer;font-family:'Courier New',monospace;font-size:0.85rem;letter-spacing:1px;transition:all 0.2s;" onmouseover="this.style.borderColor='#888';this.style.color='#fff'" onmouseout="this.style.borderColor='#444';this.style.color='#aaa'" id="warnCancelBtn">✕ CANCEL</button>
-      <button onclick="confirmBuy()" style="flex:2;padding:0.8rem;background:linear-gradient(135deg,#e8562a,#ff7043);border:none;border-radius:8px;color:white;cursor:pointer;font-family:'Courier New',monospace;font-size:0.95rem;font-weight:700;letter-spacing:1px;transition:all 0.2s;box-shadow:0 4px 15px rgba(232,86,42,0.4);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(232,86,42,0.6)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(232,86,42,0.4)'" id="warnBuyBtn">🟠 BUY NOW</button>
-    </div>
-  </div>
-</div>
-
-<!-- TEAM PAGE -->
-<div id="teamPage" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:99999;overflow-y:auto;">
-
-  <style>
-    .tp-nav { display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:#111111;border-bottom:1px solid #00ff88;position:sticky;top:0;z-index:10; }
-    .tp-title { text-align:center;padding:3rem 1rem 2rem;background:radial-gradient(ellipse at center,#001f0f 0%,#0a0a0a 70%); }
-    .tp-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;max-width:980px;margin:0 auto;padding:2rem; }
-    .tp-card { background:#111;border:1px solid #1e1e1e;border-radius:14px;padding:1.4rem;display:flex;flex-direction:column;align-items:flex-start;gap:0.8rem;cursor:pointer;transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s; }
-    .tp-card:hover { transform:translateY(-3px); }
-    .tp-card img { width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #2a2a2a; }
-    .tp-card .tp-name { font-family:'Courier New',monospace;font-weight:700;font-size:1rem;letter-spacing:1px;background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:nameGlow 2s linear infinite; }
-    .tp-card .tp-role { font-family:'Courier New',monospace;font-size:0.68rem;letter-spacing:2px;margin-top:-0.4rem; }
-    .tp-card .tp-bio { font-family:'Segoe UI',sans-serif;font-size:0.8rem;color:#666;line-height:1.5; }
-
-    /* Name gradient animations */
-    .name-creator   { background-image:linear-gradient(90deg,#ff8c00,#ffd700,#ff8c00); }
-    .name-cocreator { background-image:linear-gradient(90deg,#ff8c00,#ffd700,#ff8c00); }
-    .name-developer { background-image:linear-gradient(90deg,#a855f7,#d8b4fe,#a855f7); }
-    .name-moderator { background-image:linear-gradient(90deg,#00cfff,#00e5cc,#00cfff); }
-    .name-trial     { background-image:linear-gradient(90deg,#0d9488,#2dd4bf,#0d9488); }
-    .name-collab    { background-image:linear-gradient(90deg,#ff69b4,#ffb3d9,#ff69b4); }
-
-    /* Border glow animations */
-    .tp-card.card-creator   { animation:borderCreator 2s linear infinite; }
-    .tp-card.card-cocreator { animation:borderCreator 2s linear infinite; }
-    .tp-card.card-developer { animation:borderDev 2s linear infinite; }
-    .tp-card.card-moderator { animation:borderMod 2s linear infinite; }
-    .tp-card.card-trial     { animation:borderTrial 2s linear infinite; }
-    .tp-card.card-collab    { animation:borderCollab 2s linear infinite; }
-
-    @keyframes nameGlow { 0%{background-position:0% center} 100%{background-position:200% center} }
-    @keyframes borderCreator  { 0%,100%{border-color:#ff8c00;box-shadow:0 0 12px #ff8c0044} 50%{border-color:#ffd700;box-shadow:0 0 20px #ffd70066} }
-    @keyframes borderDev      { 0%,100%{border-color:#a855f7;box-shadow:0 0 12px #a855f744} 50%{border-color:#d8b4fe;box-shadow:0 0 20px #d8b4fe66} }
-    @keyframes borderMod      { 0%,100%{border-color:#00cfff;box-shadow:0 0 12px #00cfff44} 50%{border-color:#00e5cc;box-shadow:0 0 20px #00e5cc66} }
-    @keyframes borderTrial    { 0%,100%{border-color:#0d9488;box-shadow:0 0 12px #0d948844} 50%{border-color:#2dd4bf;box-shadow:0 0 20px #2dd4bf66} }
-    @keyframes borderCollab   { 0%,100%{border-color:#ff69b4;box-shadow:0 0 12px #ff69b444} 50%{border-color:#ffb3d9;box-shadow:0 0 20px #ffb3d966} }
-
-    @media(max-width:900px){ .tp-grid{ grid-template-columns:repeat(2,1fr); } } @media(max-width:600px){ .tp-grid{ grid-template-columns:1fr;padding:1rem; } }
-  </style>
-
-  <div class="tp-nav">
-    <div style="font-size:1.2rem;font-weight:700;color:#00ff88;font-family:'Courier New',monospace;letter-spacing:2px;">&gt; CMDR_</div>
-    <button onclick="closeTeamPage()" style="background:none;border:1px solid #444;border-radius:6px;color:#ccc;padding:0.45rem 1.1rem;font-family:'Courier New',monospace;font-size:0.82rem;cursor:pointer;">← Back</button>
-  </div>
-
-  <div class="tp-title">
-    <div style="font-size:2rem;font-weight:700;font-family:'Courier New',monospace;letter-spacing:4px;">&gt; <span style="color:#00ff88;">THE TEAM</span>_</div>
-    <div style="color:#444;font-size:0.78rem;letter-spacing:3px;margin-top:0.6rem;font-family:'Courier New',monospace;">MEET THE PEOPLE BEHIND CMDR_SYSTEM</div>
-  </div>
-
-  <div class="tp-grid">
-
-    <div class="tp-card card-creator" onclick="openTeamModal('Max','✦ Creator','role-creator','max.png','Max','Creator of this Website and of Cmdr')">
-      <img src="max.png" onerror="this.src='https://ui-avatars.com/api/?name=Max&background=00ff88&color=000&size=64&bold=true'" alt="Max">
-      <div class="tp-name name-creator">Max</div>
-      <div class="tp-role role-creator">✦ CREATOR</div>
-      <div class="tp-bio">Creator of this Website and of Cmdr</div>
-    </div>
-
-    <div class="tp-card card-cocreator" onclick="openTeamModal('Batman','✦ Co-Creator','role-cocreator','batman.png','Batman','Co-Creator of CMDR System')">
-      <img src="batman.png" onerror="this.src='https://ui-avatars.com/api/?name=Batman&background=ff9900&color=000&size=64&bold=true'" alt="Batman">
-      <div class="tp-name name-cocreator">Batman</div>
-      <div class="tp-role role-cocreator">✦ CO-CREATOR</div>
-      <div class="tp-bio">Co-Creator of CMDR System</div>
-    </div>
-
-    <div class="tp-card card-developer" onclick="openTeamModal('Bobasimi','✦ Developer','role-developer','bobasimi.png','Bobasimi','Hi im the Developer for the Server')">
-      <img src="bobasimi.png" onerror="this.src='https://ui-avatars.com/api/?name=Bobasimi&background=ffbd2e&color=000&size=64&bold=true'" alt="Bobasimi">
-      <div class="tp-name name-developer">Bobasimi</div>
-      <div class="tp-role role-developer">✦ DEVELOPER</div>
-      <div class="tp-bio">Hi im the Developer for the Server</div>
-    </div>
-
-    <div class="tp-card card-moderator" onclick="openTeamModal('Levi','✦ Moderator','role-moderator','levi.png','Levi','Im here for the Cmdr Website')">
-      <img src="levi.png" onerror="this.src='https://ui-avatars.com/api/?name=Levi&background=00cfff&color=000&size=64&bold=true'" alt="Levi">
-      <div class="tp-name name-moderator">Levi</div>
-      <div class="tp-role role-moderator">✦ MODERATOR</div>
-      <div class="tp-bio">Im here for the Cmdr Website</div>
-    </div>
-
-    <div class="tp-card card-moderator" onclick="openTeamModal('Kyle','✦ Moderator','role-moderator','kyle.png','Kyle','Moderator of CMDR System')">
-      <img src="kyle.png" onerror="this.src='https://ui-avatars.com/api/?name=Kyle&background=008080&color=fff&size=64&bold=true'" alt="Kyle">
-      <div class="tp-name name-moderator">Kyle</div>
-      <div class="tp-role role-moderator">✦ MODERATOR</div>
-      <div class="tp-bio">Moderator of CMDR System</div>
-    </div>
-
-    <div class="tp-card card-collab" onclick="openTeamModal('Roky','✦ Collaborator','role-collaborator','roky.png','Roky','Buy from me the Events! Gold, Silver and Bronze')">
-      <img src="roky.png" onerror="this.src='https://ui-avatars.com/api/?name=Roky&background=ff69b4&color=fff&size=64&bold=true'" alt="Roky">
-      <div class="tp-name name-collab">Roky</div>
-      <div class="tp-role role-collab">✦ COLLABORATOR</div>
-      <div class="tp-bio">Buy from me the Events! Gold, Silver and Bronze</div>
-    </div>
-
-</div>
-
-<!-- TEAM MODAL -->
-<div id="teamModal" onclick="if(event.target===this)closeTeamModal()">
-  <div class="team-modal-box">
-    <button class="team-modal-close" onclick="closeTeamModal()">✕</button>
-    <img id="tmAvatar" src="" class="team-modal-avatar" alt="">
-    <div class="team-modal-name" id="tmName"></div>
-    <div class="team-modal-role" id="tmRole"></div>
-    <div class="team-modal-text" id="tmText"></div>
-  </div>
-</div>
-
-<script>
-
-
-/* ── TEAM MODAL ── */
-function openTeamModal(name, role, roleClass, img, avatarName, text) {
-  var fallback = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(avatarName) + '&background=00ff88&color=000&size=90&font-size=0.4&bold=true';
-  var avatar = document.getElementById('tmAvatar');
-  avatar.src = img;
-  avatar.onerror = function() { this.src = fallback; };
-  document.getElementById('tmName').textContent = name;
-  var roleEl = document.getElementById('tmRole');
-  roleEl.textContent = role;
-  roleEl.className = 'team-modal-role ' + roleClass;
-  document.getElementById('tmText').textContent = text;
-  document.getElementById('teamModal').classList.add('open');
-}
-
-function closeTeamModal() {
-  document.getElementById('teamModal').classList.remove('open');
-}
-</script>
-
-<script src="pages.js"></script>
-<script>
-  // Load external page HTML files
-  function loadPage(file, containerId) {
-    fetch(file)
-      .then(function(r) { return r.text(); })
-      .then(function(html) {
-        var div = document.createElement('div');
-        div.innerHTML = html;
-        document.body.appendChild(div.firstElementChild);
-      });
-  }
-</script>
-
-<!-- COLLABORATOR PAGE -->
-<div id="collaboratorPage" style="display:none;">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:#111;border-bottom:1px solid #ff69b4;position:sticky;top:0;z-index:100;">
-    <div style="font-size:1.2rem;font-weight:700;color:#ff69b4;font-family:'Courier New',monospace;letter-spacing:2px;">&gt; CMDR_</div>
-    <button onclick="closeCollaboratorPage()" style="background:none;border:1px solid #444;border-radius:6px;color:#ccc;padding:0.4rem 1rem;font-family:'Courier New',monospace;font-size:0.8rem;cursor:pointer;">← Back</button>
-  </div>
-  <div style="text-align:center;padding:2.5rem 1rem 2rem;background:radial-gradient(ellipse at center,#1a0010 0%,#0a0a0a 70%);">
-    <div style="font-size:1.8rem;font-weight:700;font-family:'Courier New',monospace;letter-spacing:3px;color:#fff;">&gt; <span style="color:#ff69b4;">COLLABORATORS</span>_</div>
-    <div style="color:#444;font-size:0.78rem;letter-spacing:2px;margin-top:0.5rem;font-family:'Courier New',monospace;">OFFICIAL PARTNERS</div>
-  </div>
-  <div style="max-width:700px;margin:2rem auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1rem;">
-    <div style="background:#111;border:1px solid #2a1a2a;border-radius:12px;padding:1.5rem;display:flex;align-items:center;gap:1.2rem;" onmouseover="this.style.borderColor='#ff69b4'" onmouseout="this.style.borderColor='#2a1a2a'">
-      <img src="roky.png" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #ff69b4;" onerror="this.src='https://ui-avatars.com/api/?name=Roky&background=ff69b4&color=fff&size=72&bold=true'" alt="Roky">
-      <div>
-        <div style="font-size:1.1rem;font-weight:700;color:#fff;font-family:'Courier New',monospace;letter-spacing:1px;">Roky</div>
-        <div style="font-size:0.7rem;color:#ff69b4;letter-spacing:2px;font-family:'Courier New',monospace;margin:0.3rem 0;">✦ EVENT PACK SELLER</div>
-        <div style="font-size:0.85rem;color:#666;font-family:'Segoe UI',sans-serif;line-height:1.5;">Sells exclusive Event Packs – Gold, Silver and Bronze. Visit his shop for the best deals!</div>
-        <a href="https://rokyshop.github.io/index.html" target="_blank" style="display:inline-block;margin-top:0.7rem;padding:0.4rem 1rem;background:#ff69b4;color:#000;border-radius:6px;font-family:'Courier New',monospace;font-size:0.78rem;font-weight:700;text-decoration:none;letter-spacing:1px;">Visit Shop →</a>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ANNOUNCEMENTS PAGE -->
-<div id="announcementsPage" style="display:none;">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:#111;border-bottom:1px solid #00ff88;position:sticky;top:0;z-index:100;">
-    <div style="font-size:1.2rem;font-weight:700;color:#00ff88;font-family:'Courier New',monospace;letter-spacing:2px;">&gt; CMDR_</div>
-    <button onclick="closeAnnouncementsPage()" style="background:none;border:1px solid #444;border-radius:6px;color:#ccc;padding:0.4rem 1rem;font-family:'Courier New',monospace;font-size:0.8rem;cursor:pointer;">← Back</button>
-  </div>
-  <div style="text-align:center;padding:2.5rem 1rem 2rem;background:radial-gradient(ellipse at center,#001a0d 0%,#0a0a0a 70%);">
-    <div style="font-size:1.8rem;font-weight:700;font-family:'Courier New',monospace;letter-spacing:3px;color:#fff;">&gt; <span style="color:#00ff88;">ANNOUNCEMENTS</span>_</div>
-    <div style="color:#444;font-size:0.78rem;letter-spacing:2px;margin-top:0.5rem;font-family:'Courier New',monospace;">LATEST UPDATES</div>
-  </div>
-
-  <div id="annPageList" style="max-width:700px;margin:2rem auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:0.8rem;">
-    <div id="noAnnMsg" style="color:#444;font-family:'Courier New',monospace;text-align:center;padding:3rem;">Keine Ankündigungen vorhanden.</div>
-  </div>
-</div>
-
-<script>
-(function renderAnnouncements() {
-  if (typeof ANNOUNCEMENTS_LIST === 'undefined' || !ANNOUNCEMENTS_LIST.length) return;
-  var list = document.getElementById('annPageList');
-  var noMsg = document.getElementById('noAnnMsg');
-  if (!list) return;
-  if (noMsg) noMsg.style.display = 'none';
-
-  var colors = {
-    update:      '#00ff88',
-    maintenance: '#ffbd2e',
-    info:        '#00cfff',
-    new:         '#a855f7'
-  };
-  var icons = {
-    update:      '🔄',
-    maintenance: '🔧',
-    info:        'ℹ️',
-    new:         '✨'
-  };
-
-  ANNOUNCEMENTS_LIST.forEach(function(ann) {
-    var color = colors[ann.type] || '#00ff88';
-    var icon  = icons[ann.type]  || '📢';
-    var div = document.createElement('div');
-    div.style.cssText = 'background:#111;border-left:3px solid ' + color + ';border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;';
-    div.innerHTML =
-      '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">' +
-        '<span style="font-size:1rem;">' + icon + '</span>' +
-        '<span style="font-family:monospace;font-weight:700;color:#fff;font-size:0.92rem;letter-spacing:1px;">' + ann.title + '</span>' +
-        '<span style="margin-left:auto;font-size:0.7rem;color:#444;font-family:monospace;">' + ann.date + '</span>' +
-      '</div>' +
-      '<div style="font-size:0.85rem;color:#888;line-height:1.6;">' + ann.text + '</div>';
-    list.appendChild(div);
-  });
-})();
-</script>
-
-<!-- CHANGELOG PAGE -->
-<div id="changelogPage" style="display:none;">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:#111;border-bottom:1px solid #00ff88;position:sticky;top:0;z-index:100;">
-    <div style="font-size:1.2rem;font-weight:700;color:#00ff88;font-family:'Courier New',monospace;letter-spacing:2px;">&gt; CMDR_</div>
-    <button onclick="closeChangelogPage()" style="background:none;border:1px solid #444;border-radius:6px;color:#ccc;padding:0.4rem 1rem;font-family:'Courier New',monospace;font-size:0.8rem;cursor:pointer;">← Back</button>
-  </div>
-  <div style="text-align:center;padding:2.5rem 1rem 2rem;background:radial-gradient(ellipse at center,#001a0d 0%,#0a0a0a 70%);">
-    <div style="font-size:1.8rem;font-weight:700;font-family:'Courier New',monospace;letter-spacing:3px;color:#fff;">&gt; <span style="color:#00ff88;">CHANGELOG</span>_</div>
-    <div style="color:#444;font-size:0.78rem;letter-spacing:2px;margin-top:0.5rem;font-family:'Courier New',monospace;">PATCH NOTES & UPDATES</div>
-  </div>
-  <div style="max-width:700px;margin:2rem auto;padding:0 2rem 4rem;display:flex;flex-direction:column;gap:1.2rem;">
-
-    <!-- ╔═══════════════════════════════════════════╗ -->
-    <!-- ║   📋 CHANGELOG EINTRÄGE HIER HINZUFÜGEN  ║ -->
-    <!-- ║   Neueste Version zuerst!                ║ -->
-    <!-- ╚═══════════════════════════════════════════╝ -->
-
-    <div style="background:#111;border:1px solid #1a2a1a;border-radius:12px;padding:1.4rem;">
-      <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding-bottom:0.8rem;border-bottom:1px solid #1a1a1a;">
-        <span style="background:#00ff88;color:#000;font-family:'Courier New',monospace;font-size:0.72rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:4px;letter-spacing:1px;">v1.0.0</span>
-        <span style="font-family:'Courier New',monospace;font-weight:700;color:#fff;font-size:0.95rem;">Initial Release</span>
-        <span style="margin-left:auto;font-size:0.72rem;color:#444;font-family:'Courier New',monospace;">2026-03-01</span>
-      </div>
-      <ul style="list-style:none;display:flex;flex-direction:column;gap:0.5rem;">
-        <li style="font-size:0.85rem;color:#888;font-family:'Segoe UI',sans-serif;display:flex;gap:0.6rem;"><span style="color:#00ff88;flex-shrink:0;">+</span> CMDR System V1 DLC veröffentlicht</li>
-        <li style="font-size:0.85rem;color:#888;font-family:'Segoe UI',sans-serif;display:flex;gap:0.6rem;"><span style="color:#00ff88;flex-shrink:0;">+</span> Event System Integration</li>
-        <li style="font-size:0.85rem;color:#888;font-family:'Segoe UI',sans-serif;display:flex;gap:0.6rem;"><span style="color:#00ff88;flex-shrink:0;">+</span> Discord Support verfügbar</li>
-      </ul>
-    </div>
-
-  </div>
-</div>
-
- (FAQ-based, no API needed) ───────────────
-  var FAQ = [
-    // Price
-    { q: ['price','cost','how much','robux','preis','kosten','wie viel','was kostet','how expensive'], a: { en: '💰 CMDR System V1 DLC costs **125 Robux** — one-time purchase, own it forever!', de: '💰 CMDR System V1 DLC kostet **125 Robux** — einmalige Zahlung, für immer dein!' } },
-    // Buy
-    { q: ['buy','purchase','kaufen','kaufe','get it','erwerben','where to buy','wo kaufen','link','gamepass link'], a: { en: '🛒 Hit the **Buy Now** button on the main page — it takes you straight to the Roblox gamepass!', de: '🛒 Klicke auf **Jetzt kaufen** auf der Hauptseite — du wirst direkt zum Roblox Gamepass weitergeleitet!' } },
-    // Refund
-    { q: ['refund','rückerstattung','money back','geld zurück','zurückgeben','return'], a: { en: '❌ All sales are final — **no refunds** due to the digital nature of the product.', de: '❌ Alle Verkäufe sind endgültig — **keine Rückerstattungen** aufgrund der digitalen Natur des Produkts.' } },
-    // Setup
-    { q: ['setup','install','installier','einrichten','how to use','wie benutze','configure','anfangen','start','begin','tutorial'], a: { en: '⚙️ Join our Discord and message support — you will get a full **setup video**! discord.gg/XaZSGVFvzV', de: '⚙️ Tritt unserem Discord bei und schreibe dem Support — du bekommst ein vollständiges **Setup-Video**! discord.gg/XaZSGVFvzV' } },
-    // Discord
-    { q: ['discord','server','community','join','beitreten'], a: { en: '💬 Join our Discord: **discord.gg/XaZSGVFvzV** — support, updates & community await!', de: '💬 Tritt unserem Discord bei: **discord.gg/XaZSGVFvzV** — Support, Updates & Community warten auf dich!' } },
-    // Features
-    { q: ['feature','what does','was kann','function','funktion','command','befehl','include','beinhaltet','what is in it'], a: { en: '✨ CMDR V1 includes: Full command system, Event hooks, Automation, Discord support & all future updates — free!', de: '✨ CMDR V1 beinhaltet: Vollständiges Befehlssystem, Event-Hooks, Automatisierung, Discord-Support & alle künftigen Updates kostenlos!' } },
-    // Updates
-    { q: ['update','updates','zukunft','future','new version','neue version'], a: { en: '🔄 All future CMDR V1 updates are **completely free** for existing owners — forever!', de: '🔄 Alle künftigen CMDR V1 Updates sind für Käufer **komplett kostenlos** — für immer!' } },
-    // Codes
-    { q: ['code','discount','rabatt','coupon','promo','rabattcode'], a: { en: '🎟️ Got a code? Enter it in the product section using the **+ ADD CODE** button on the main page!', de: '🎟️ Hast du einen Code? Gib ihn im Produktbereich mit dem **+ CODE HINZUFÜGEN** Button ein!' } },
-    // Support
-    { q: ['support','help','hilfe','problem','issue','bug','error','fehler','stuck'], a: { en: '🛠️ Need help? Join our Discord and open a ticket: **discord.gg/XaZSGVFvzV** — we respond fast!', de: '🛠️ Brauchst du Hilfe? Tritt unserem Discord bei und öffne ein Ticket: **discord.gg/XaZSGVFvzV** — wir antworten schnell!' } },
-    // Roblox
-    { q: ['roblox','gamepass','game pass'], a: { en: '🎮 CMDR V1 is a **Roblox Gamepass**. You need the base Event System to use it.', de: '🎮 CMDR V1 ist ein **Roblox Gamepass**. Du benötigst das Basis-Event-System zur Nutzung.' } },
-    // What is CMDR
-    { q: ['what is cmdr','was ist cmdr','cmdr system','about cmdr','über cmdr','explain'], a: { en: '🤖 CMDR System V1 is a powerful **command extension DLC** for the Roblox Event System — advanced controls, automation & more!', de: '🤖 CMDR System V1 ist eine leistungsstarke **Befehlserweiterungs-DLC** für das Roblox Event System — erweiterte Steuerung, Automatisierung & mehr!' } },
-    // Team
-    { q: ['team','who made','wer hat','who built','wer gebaut'], a: { en: '👥 CMDR was built by **Max** (Creator) & **Batman** (Co-Creator), with Bobasimi (Developer) and our moderation team!', de: '👥 CMDR wurde von **Max** (Creator) & **Batman** (Co-Creator) gebaut, mit Bobasimi (Entwickler) und unserem Moderationsteam!' } },
-    // Safe
-    { q: ['safe','legit','trust','sicher','seriös','scam','betrug','real'], a: { en: '✅ CMDR V1 is **100% legitimate** — you buy directly through Roblox, completely safe!', de: '✅ CMDR V1 ist **100% legitim** — du kaufst direkt über Roblox, völlig sicher!' } },
-    // Free
-    { q: ['free','kostenlos','gratis','for free','ist es kostenlos'], a: { en: '💸 CMDR V1 costs **125 Robux** — but all future updates are free for buyers!', de: '💸 CMDR V1 kostet **125 Robux** — aber alle künftigen Updates sind für Käufer kostenlos!' } },
-    // Transfer
-    { q: ['transfer','share','teilen','weitergeben','friend','freund','give'], a: { en: '🔒 The gamepass is tied to your **Roblox account** — it cannot be transferred or shared.', de: '🔒 Der Gamepass ist an dein **Roblox-Konto** gebunden — er kann nicht übertragen oder geteilt werden.' } },
-    // Event Packs
-    { q: ['event pack','eventpack','gold','silver','bronze','roky','pack'], a: { en: '🎁 Event Packs (Gold, Silver, Bronze) are sold by our collaborator **Roky**. Visit the Collaborators page!', de: '🎁 Event Packs (Gold, Silber, Bronze) werden von unserem Partner **Roky** verkauft. Schau auf der Kollaboratoren-Seite!' } },
-    // Hello
-    { q: ['hello','hi','hey','hallo','guten tag','sup','yo','whats up'], a: { en: '👋 Hey! Ask me anything about **CMDR System V1 DLC** — I am here to help!', de: '👋 Hey! Frag mich alles über das **CMDR System V1 DLC** — ich bin hier zum Helfen!' } },
-    // Thanks
-    { q: ['thank','thanks','danke','thx','ty','appreciate'], a: { en: '😊 You are welcome! Feel free to ask more questions anytime!', de: '😊 Gern geschehen! Frag jederzeit weitere Fragen!' } },
-    // Compatible
-    { q: ['works','work','compatible','funktioniert','kompatibel','which game','welches spiel'], a: { en: '🎮 CMDR V1 works with the **Roblox Event System**. Make sure you own the base system first!', de: '🎮 CMDR V1 funktioniert mit dem **Roblox Event System**. Stelle sicher, dass du zuerst das Basissystem besitzt!' } },
-    // Lifetime
-    { q: ['how long','wie lange','lifetime','lebensdauer','expire','ablaufen','forever'], a: { en: '♾️ CMDR V1 is a **lifetime purchase** — never expires, never needs renewal!', de: '♾️ CMDR V1 ist ein **lebenslanger Kauf** — läuft nie ab, muss nie erneuert werden!' } },
-    // Version
-    { q: ['version','v1','newest','neueste','latest','current'], a: { en: '📦 Current version: **CMDR System V1**. All future versions & updates are free for buyers!', de: '📦 Aktuelle Version: **CMDR System V1**. Alle künftigen Versionen & Updates sind für Käufer kostenlos!' } },
-    // Get file
-    { q: ['file','datei','download','get the file','wie bekomme','how do i get'], a: { en: '📁 After purchase, join Discord and contact support — you will receive your setup file & video!', de: '📁 Nach dem Kauf tritt dem Discord bei und kontaktiere den Support — du erhältst deine Setup-Datei & das Video!' } },
-    // Payment
-    { q: ['pay','payment','zahlung','bezahlen','how to pay','wie zahle'], a: { en: '💳 Payment via **Roblox** using Robux — fully safe & secure!', de: '💳 Zahlung über **Roblox** mit Robux — vollständig sicher!' } },
-    // Max
-    { q: ['max','wer ist max','who is max'], a: { en: '👑 Max is the **Creator** of CMDR System and this website — he leads the entire project!', de: '👑 Max ist der **Creator** des CMDR Systems und dieser Website — er leitet das gesamte Projekt!' } },
-    // Batman
-    { q: ['batman','co creator','co-creator'], a: { en: '🦇 Batman is the **Co-Creator** of CMDR — he helps lead and manage the project!', de: '🦇 Batman ist der **Co-Creator** von CMDR — er hilft das Projekt zu leiten und zu verwalten!' } },
-    // Bobasimi
-    { q: ['bobasimi'], a: { en: '💻 Bobasimi is the **Developer** of the CMDR server system!', de: '💻 Bobasimi ist der **Entwickler** des CMDR-Server-Systems!' } },
-    // Levi
-    { q: ['levi'], a: { en: '🛡️ Levi is a **Moderator** on the CMDR team — keeping things running smoothly!', de: '🛡️ Levi ist ein **Moderator** im CMDR-Team — hält alles am Laufen!' } },
-    // Kyle
-    { q: ['kyle'], a: { en: '🛡️ Kyle is a **Moderator** on the CMDR team — helping keep the community safe!', de: '🛡️ Kyle ist ein **Moderator** im CMDR-Team — hilft die Community sicher zu halten!' } },
-    // Worth it
-    { q: ['worth','lohnt','is it worth','gut','good','recommend'], a: { en: '⭐ Absolutely worth it! **125 Robux** for a lifetime command system with free updates & full Discord support!', de: '⭐ Absolut lohnenswert! **125 Robux** für ein lebenslanges Befehlssystem mit kostenlosen Updates & vollem Discord-Support!' } },
-    // Maintenance
-    { q: ['maintenance','wartung','offline','down','site down'], a: { en: '🔧 Site in maintenance? Check our Discord for updates: **discord.gg/XaZSGVFvzV**', de: '🔧 Seite in Wartung? Schau in unserem Discord nach Updates: **discord.gg/XaZSGVFvzV**' } },
-    // Announcements
-    { q: ['announcement','ankündigung','news','neuigkeiten'], a: { en: '📢 Check the **Announcements** page for the latest CMDR news & updates!', de: '📢 Schau auf der **Ankündigungen**-Seite nach den neuesten CMDR-Nachrichten!' } },
-    // Changelog
-    { q: ['changelog','patch','patch notes','changes','änderungen','whats new'], a: { en: '📋 See all patch notes on the **Changelog** page in the menu!', de: '📋 Alle Patch Notes findest du auf der **Changelog**-Seite im Menü!' } },
-    // License
-    { q: ['license','lizenz','terms','bedingungen','rules'], a: { en: '📄 See the **License** page for full terms. Key: no refunds, personal use only, no redistribution.', de: '📄 Schau auf der **Lizenz**-Seite für alle Bedingungen. Wichtig: Keine Rückerstattungen, nur persönliche Nutzung.' } },
-    // V2
-    { q: ['v2','version 2','next version','upcoming'], a: { en: '🔮 CMDR V2 is in development! Check the **Sneak Peek** page for exclusive previews!', de: '🔮 CMDR V2 ist in Entwicklung! Schau auf der **Sneak Peek**-Seite für exklusive Vorschauen!' } },
-    // Already bought
-    { q: ['already bought','already purchased','schon gekauft','i bought','i have it'], a: { en: '✅ Awesome! Join Discord and contact support to get your setup: **discord.gg/XaZSGVFvzV**', de: '✅ Super! Tritt dem Discord bei und kontaktiere den Support: **discord.gg/XaZSGVFvzV**' } },
-    // Not working
-    { q: ['not working','broken','doesnt work','after buy','funktioniert nicht nach kauf'], a: { en: '🛠️ Sorry! Join our Discord and open a support ticket: **discord.gg/XaZSGVFvzV**', de: '🛠️ Das tut uns leid! Tritt dem Discord bei und öffne ein Ticket: **discord.gg/XaZSGVFvzV**' } },
-    // Collaborators
-    { q: ['collaborat','kooperat','partner','collab','roky'], a: { en: '🤝 Our collaborator is **Roky** — he sells Event Packs (Gold, Silver, Bronze). Check the Collaborators page!', de: '🤝 Unser Partner ist **Roky** — er verkauft Event Packs (Gold, Silber, Bronze). Schau auf der Kollaboratoren-Seite!' } },
-    // Bye
-    { q: ['bye','goodbye','tschüss','ciao','see you','bis dann'], a: { en: '👋 Goodbye! Come back anytime if you have more questions about CMDR!', de: '👋 Auf Wiedersehen! Komm jederzeit wieder wenn du weitere Fragen zu CMDR hast!' } },
-    // How to contact
-    { q: ['contact','kontakt','reach','erreichen','talk to'], a: { en: '📩 Best way to reach us is via Discord: **discord.gg/XaZSGVFvzV** — our team is active daily!', de: '📩 Der beste Weg uns zu erreichen ist über Discord: **discord.gg/XaZSGVFvzV** — unser Team ist täglich aktiv!' } },
-    // Price change
-    { q: ['price change','cheaper','sale','rabatt aktion','sale price'], a: { en: '💰 Keep an eye on the **Announcements** page for any special deals or discount codes!', de: '💰 Schau auf der **Ankündigungen**-Seite nach Sonderangeboten oder Rabattcodes!' } },
-    // How many members
-    { q: ['how many members','wie viele mitglieder','discord members','server size'], a: { en: '👥 Check our Discord server to see the current member count: **discord.gg/XaZSGVFvzV**', de: '👥 Schau auf unserem Discord-Server die aktuelle Mitgliederanzahl an: **discord.gg/XaZSGVFvzV**' } },
-  ];
-
-    var chatWelcomeDone = false;
-  function toggleChatbot() {
-    var w = document.getElementById('chatbotWindow');
-    w.style.display = w.style.display === 'none' ? 'block' : 'none';
-    if (w.style.display === 'block') {
-      document.getElementById('chatInput').focus();
-      if (!chatWelcomeDone) {
-        chatWelcomeDone = true;
-        var el = document.getElementById('chatWelcome');
-        var text = '👋 Hi! I\'m the CMDR Assistant. Ask me anything about the CMDR System V1 DLC!';
-        var i = 0;
-        el.textContent = '';
-        var t = setInterval(function() {
-          el.textContent += text[i++];
-          if (i >= text.length) clearInterval(t);
-        }, 28);
-      }
-    }
-  }
-
-  function sendChatMessage() {
-    var input = document.getElementById('chatInput');
-    var msg = input.value.trim();
-    if (!msg) return;
-    input.value = '';
-
-    var msgs = document.getElementById('chatMessages');
-    var lang = (typeof currentLang !== 'undefined' && currentLang === 'de') ? 'de' : 'en';
-
-    // User message
-    msgs.innerHTML += '<div style="background:#1a2a1a;border:1px solid #2a3a2a;border-radius:8px;padding:0.7rem 0.9rem;font-size:0.8rem;color:#e0e0e0;line-height:1.5;margin-left:20%;word-break:break-word;overflow-wrap:break-word;">' + msg + '</div>';
-    msgs.scrollTop = msgs.scrollHeight;
-
-    // Find answer
-    var lower = msg.toLowerCase();
-    var reply = null;
-    for (var i = 0; i < FAQ.length; i++) {
-      for (var j = 0; j < FAQ[i].q.length; j++) {
-        if (lower.indexOf(FAQ[i].q[j]) !== -1) {
-          reply = FAQ[i].a[lang];
-          break;
+        if (p.alpha <= 0 || p.y < -10) {
+          Object.assign(p, spawnParticle());
+          p.y = H + 5;
+          p.alpha = rand(0.2, 0.7);
         }
       }
-      if (reply) break;
+      requestAnimationFrame(drawParticles);
     }
-
-    if (!reply) {
-      reply = lang === 'de'
-        ? '⛔ Ich beantworte nur Fragen über das CMDR System V1 DLC. Frag mich z.B. nach Preis, Features oder Setup!'
-        : '⛔ I only answer questions about the CMDR System V1 DLC. Try asking about price, features or setup!';
-    }
-
-    // Format bold
-    reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    setTimeout(function() {
-      var replyId = 'reply_' + Date.now();
-      msgs.innerHTML += '<div id="' + replyId + '" style="background:#0d1a0d;border:1px solid #1a2a1a;border-radius:8px;padding:0.7rem 0.9rem;font-size:0.8rem;color:#aaa;line-height:1.6;word-break:break-word;overflow-wrap:anywhere;white-space:normal;max-width:100%;box-sizing:border-box;"></div>';
-      msgs.scrollTop = msgs.scrollHeight;
-      // Strip HTML for typewriter, then set innerHTML at end
-      var plainText = reply.replace(/<strong>(.*?)<\/strong>/g, '$1');
-      var el = document.getElementById(replyId);
-      var i = 0;
-      var t = setInterval(function() {
-        plainText += '';
-        el.textContent += plainText[i++];
-        msgs.scrollTop = msgs.scrollHeight;
-        if (i >= plainText.length) {
-          clearInterval(t);
-          el.innerHTML = reply; // set formatted version at end
-        }
-      }, 18);
-    }, 400);
-  }
-
-  // ── DISCORD MEMBER COUNT ─────────────────────────────
-  fetch('https://discord.com/api/guilds/1467303301321326764/widget.json')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var el = document.getElementById('discordMemberCount');
-      if (el && data.presence_count !== undefined) {
-        el.textContent = data.presence_count;
-      }
-    })
-    .catch(function() {
-      var el = document.getElementById('discordMemberCount');
-      if (el) el.textContent = '–';
-    });
-</script>
-
-<!-- SNEAK PEEK PAGE -->
-<div id="sneakPeekPage" style="display:none;">
-
-  <!-- Topbar -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:#111;border-bottom:1px solid #a855f7;position:sticky;top:0;z-index:100;">
-    <div style="font-size:1.2rem;font-weight:700;color:#a855f7;font-family:'Courier New',monospace;letter-spacing:2px;">&gt; CMDR_</div>
-    <button onclick="closeSneakPeekPage()" style="background:none;border:1px solid #444;border-radius:6px;color:#ccc;padding:0.4rem 1rem;font-family:'Courier New',monospace;font-size:0.8rem;cursor:pointer;" onmouseover="this.style.borderColor='#a855f7'" onmouseout="this.style.borderColor='#444'">← Back</button>
-  </div>
-
-  <!-- Hero -->
-  <div style="text-align:center;padding:3rem 1rem 2.5rem;background:radial-gradient(ellipse at center,#180a28 0%,#0a0a0a 70%);border-bottom:1px solid #1a1a2a;">
-    <div style="font-size:0.72rem;font-family:'Courier New',monospace;color:#a855f7;letter-spacing:4px;margin-bottom:0.8rem;opacity:0.7;">👁️ EXCLUSIVE PREVIEW</div>
-    <div style="font-size:2rem;font-weight:700;font-family:'Courier New',monospace;letter-spacing:4px;color:#fff;">&gt; <span style="color:#a855f7;">SNEAK PEEK</span>_</div>
-    <div style="color:#444;font-size:0.75rem;letter-spacing:2px;margin-top:0.6rem;font-family:'Courier New',monospace;">COMING SOON — EXCLUSIVE PREVIEW</div>
-  </div>
-
-  <!-- Grid -->
-  <div style="max-width:960px;margin:2rem auto;padding:0 2rem 4rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;">
-
-      <div style="position:relative;background:#0f0f0f;border:1px solid #2a1a3a;border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.25s;" onmouseover="this.style.borderColor='#a855f7';this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 30px rgba(168,85,247,0.2)'" onmouseout="this.style.borderColor='#2a1a3a';this.style.transform='translateY(0)';this.style.boxShadow='none'" onclick="openSneakModal('sneakpeek1.png','Sneak Peek #1')">
-        <div style="aspect-ratio:16/9;overflow:hidden;background:#0a0a0a;position:relative;display:flex;align-items:center;justify-content:center;">
-          <img src="sneakpeek1.png" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'" onerror="this.style.display='none';document.getElementById('sp1ph').style.display='flex'">
-          <div id="sp1ph" style="display:none;width:100%;height:100%;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;">
-            <div style="font-size:2rem;opacity:0.15;">👁️</div>
-            <div style="font-family:'Courier New',monospace;font-size:0.72rem;color:#333;letter-spacing:1px;">sneakpeek1.png</div>
-          </div>
-        </div>
-        <div style="padding:0.9rem 1.1rem;background:#0d0d0d;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div style="font-family:'Courier New',monospace;font-size:0.8rem;color:#a855f7;letter-spacing:1.5px;font-weight:700;">SNEAK PEEK #1</div>
-            <div style="font-family:'Courier New',monospace;font-size:0.65rem;color:#333;letter-spacing:1px;margin-top:0.2rem;">Click to view</div>
-          </div>
-          <div style="width:28px;height:28px;border-radius:50%;background:#1a0a2a;border:1px solid #a855f7;display:flex;align-items:center;justify-content:center;font-size:0.75rem;">🔍</div>
-        </div>
-      </div>
-      <div style="position:relative;background:#0f0f0f;border:1px solid #2a1a3a;border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.25s;" onmouseover="this.style.borderColor='#a855f7';this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 30px rgba(168,85,247,0.2)'" onmouseout="this.style.borderColor='#2a1a3a';this.style.transform='translateY(0)';this.style.boxShadow='none'" onclick="openSneakModal('sneakpeek2.png','Sneak Peek #2')">
-        <div style="aspect-ratio:16/9;overflow:hidden;background:#0a0a0a;position:relative;display:flex;align-items:center;justify-content:center;">
-          <img src="sneakpeek2.png" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'" onerror="this.style.display='none';document.getElementById('sp2ph').style.display='flex'">
-          <div id="sp2ph" style="display:none;width:100%;height:100%;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;">
-            <div style="font-size:2rem;opacity:0.15;">👁️</div>
-            <div style="font-family:'Courier New',monospace;font-size:0.72rem;color:#333;letter-spacing:1px;">sneakpeek2.png</div>
-          </div>
-        </div>
-        <div style="padding:0.9rem 1.1rem;background:#0d0d0d;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div style="font-family:'Courier New',monospace;font-size:0.8rem;color:#a855f7;letter-spacing:1.5px;font-weight:700;">SNEAK PEEK #2</div>
-            <div style="font-family:'Courier New',monospace;font-size:0.65rem;color:#333;letter-spacing:1px;margin-top:0.2rem;">Click to view</div>
-          </div>
-          <div style="width:28px;height:28px;border-radius:50%;background:#1a0a2a;border:1px solid #a855f7;display:flex;align-items:center;justify-content:center;font-size:0.75rem;">🔍</div>
-        </div>
-      </div>
-      <div style="position:relative;background:#0f0f0f;border:1px solid #2a1a3a;border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.25s;" onmouseover="this.style.borderColor='#a855f7';this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 30px rgba(168,85,247,0.2)'" onmouseout="this.style.borderColor='#2a1a3a';this.style.transform='translateY(0)';this.style.boxShadow='none'" onclick="openSneakModal('sneakpeek3.png','Sneak Peek #3')">
-        <div style="aspect-ratio:16/9;overflow:hidden;background:#0a0a0a;position:relative;display:flex;align-items:center;justify-content:center;">
-          <img src="sneakpeek3.png" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'" onerror="this.style.display='none';document.getElementById('sp3ph').style.display='flex'">
-          <div id="sp3ph" style="display:none;width:100%;height:100%;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;">
-            <div style="font-size:2rem;opacity:0.15;">👁️</div>
-            <div style="font-family:'Courier New',monospace;font-size:0.72rem;color:#333;letter-spacing:1px;">sneakpeek3.png</div>
-          </div>
-        </div>
-        <div style="padding:0.9rem 1.1rem;background:#0d0d0d;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div style="font-family:'Courier New',monospace;font-size:0.8rem;color:#a855f7;letter-spacing:1.5px;font-weight:700;">SNEAK PEEK #3</div>
-            <div style="font-family:'Courier New',monospace;font-size:0.65rem;color:#333;letter-spacing:1px;margin-top:0.2rem;">Click to view</div>
-          </div>
-          <div style="width:28px;height:28px;border-radius:50%;background:#1a0a2a;border:1px solid #a855f7;display:flex;align-items:center;justify-content:center;font-size:0.75rem;">🔍</div>
-        </div>
-      </div>
-      <div style="position:relative;background:#0f0f0f;border:1px solid #2a1a3a;border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.25s;" onmouseover="this.style.borderColor='#a855f7';this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 30px rgba(168,85,247,0.2)'" onmouseout="this.style.borderColor='#2a1a3a';this.style.transform='translateY(0)';this.style.boxShadow='none'" onclick="openSneakModal('sneakpeek4.png','Sneak Peek #4')">
-        <div style="aspect-ratio:16/9;overflow:hidden;background:#0a0a0a;position:relative;display:flex;align-items:center;justify-content:center;">
-          <img src="sneakpeek4.png" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'" onerror="this.style.display='none';document.getElementById('sp4ph').style.display='flex'">
-          <div id="sp4ph" style="display:none;width:100%;height:100%;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;">
-            <div style="font-size:2rem;opacity:0.15;">👁️</div>
-            <div style="font-family:'Courier New',monospace;font-size:0.72rem;color:#333;letter-spacing:1px;">sneakpeek4.png</div>
-          </div>
-        </div>
-        <div style="padding:0.9rem 1.1rem;background:#0d0d0d;border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div style="font-family:'Courier New',monospace;font-size:0.8rem;color:#a855f7;letter-spacing:1.5px;font-weight:700;">SNEAK PEEK #4</div>
-            <div style="font-family:'Courier New',monospace;font-size:0.65rem;color:#333;letter-spacing:1px;margin-top:0.2rem;">Click to view</div>
-          </div>
-          <div style="width:28px;height:28px;border-radius:50%;background:#1a0a2a;border:1px solid #a855f7;display:flex;align-items:center;justify-content:center;font-size:0.75rem;">🔍</div>
-        </div>
-      </div>
-  </div>
-</div>
-
-<!-- SNEAK PEEK MODAL -->
-<div id="sneakModal" onclick="if(event.target===this)closeSneakModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999999;align-items:center;justify-content:center;padding:2rem;">
-  <div style="max-width:960px;width:100%;position:relative;">
-    <button onclick="closeSneakModal()" style="position:absolute;top:-2.5rem;right:0;background:none;border:1px solid #444;border-radius:6px;color:#888;font-size:0.82rem;padding:0.3rem 0.7rem;cursor:pointer;font-family:'Courier New',monospace;">✕ ESC</button>
-    <img id="sneakModalImg" src="" style="width:100%;border-radius:14px;border:1px solid #a855f7;box-shadow:0 0 40px rgba(168,85,247,0.2);">
-    <div id="sneakModalTitle" style="text-align:center;margin-top:1rem;font-family:'Courier New',monospace;color:#a855f7;letter-spacing:3px;font-size:0.82rem;"></div>
-    <div style="text-align:center;margin-top:0.4rem;font-family:'Courier New',monospace;font-size:0.65rem;color:#333;letter-spacing:1px;">← → Arrow keys to navigate</div>
-  </div>
-</div>
-
-<script>
-  var sneakImages = ['sneakpeek1.png','sneakpeek2.png','sneakpeek3.png','sneakpeek4.png'];
-  var sneakCurrent = 0;
-  function openSneakModal(src, title) {
-    sneakCurrent = sneakImages.indexOf(src);
-    document.getElementById('sneakModalImg').src = src;
-    document.getElementById('sneakModalTitle').textContent = title;
-    var modal = document.getElementById('sneakModal');
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-  function closeSneakModal() {
-    document.getElementById('sneakModal').style.display = 'none';
-    document.body.style.overflow = '';
-  }
-  document.addEventListener('keydown', function(e) {
-    var modal = document.getElementById('sneakModal');
-    if (modal.style.display !== 'flex') return;
-    if (e.key === 'Escape') { closeSneakModal(); return; }
-    if (e.key === 'ArrowRight') sneakCurrent = (sneakCurrent + 1) % sneakImages.length;
-    if (e.key === 'ArrowLeft') sneakCurrent = (sneakCurrent - 1 + sneakImages.length) % sneakImages.length;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-      document.getElementById('sneakModalImg').src = sneakImages[sneakCurrent];
-      document.getElementById('sneakModalTitle').textContent = 'Sneak Peek #' + (sneakCurrent + 1);
-    }
-  });
-</script>
-
-<script>
-var SB_URL = "https://feladnkiczghtkyfvzcl.supabase.co";
-var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbGFkbmtpY3pnaHRreWZ2emNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0ODg5MjUsImV4cCI6MjA4OTA2NDkyNX0.usuu1QJdga5plabGq0KDImgSp3LJNHkdhLUgWqNJJqM";
-
-function sbFetch(path, opts) {
-  opts = opts || {};
-  opts.headers = Object.assign({
-    "apikey": SB_KEY,
-    "Authorization": "Bearer " + SB_KEY,
-    "Content-Type": "application/json"
-  }, opts.headers || {});
-  return fetch(SB_URL + "/rest/v1/" + path, opts).then(function(r) {
-    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
-    return r.status === 204 ? {} : r.json().catch(function() { return {}; });
-  });
-}
-
-function jsonbinGet() {
-  return sbFetch("settings?id=eq.1&select=*").then(function(d) {
-    var s = d[0] || {};
-    return { maintenance: s.maintenance || false, disableBuyButton: s.disable_buy_button || false };
-  });
-}
-function jsonbinSet(data) {
-  return sbFetch("settings?id=eq.1", { method: "PATCH", body: JSON.stringify({ maintenance: data.maintenance || false, disable_buy_button: data.disableBuyButton || false }) });
-}
-function adminDisableMaintenance() {
-  if (!confirm("Disable maintenance for everyone?")) return;
-  maintenanceActive = false;
-  sbFetch("settings?id=eq.1", { method: "PATCH", body: JSON.stringify({ maintenance: false }) }).then(function() {
-    document.getElementById("maintenanceScreen").style.display = "none";
-    var btn = document.getElementById("maintenanceAdminBtn");
-    if (btn) btn.style.display = "none";
-    alert("Maintenance disabled!");
-  }).catch(function(e) { alert("Error: " + e.message); });
-}
-
-window.addEventListener("DOMContentLoaded", function() {
-  // Track page view
-  sbFetch("stats?key=eq.page_views&select=*").then(function(d) {
-    var cur = (d && d[0]) ? d[0].value : 0;
-    sbFetch("stats?key=eq.page_views", { method: "PATCH", body: JSON.stringify({ value: cur + 1 }) }).catch(function(){});
-  }).catch(function(){});
-
-  // Track visitor with IP & Geo
-  fetch("https://ipapi.co/json/").then(function(r) { return r.json(); }).then(function(geo) {
-    var ua = navigator.userAgent;
-    var browser = ua.indexOf("Chrome") > -1 ? "Chrome" : ua.indexOf("Firefox") > -1 ? "Firefox" : ua.indexOf("Safari") > -1 ? "Safari" : ua.indexOf("Edge") > -1 ? "Edge" : "Other";
-    var device = /Mobi|Android/i.test(ua) ? "Mobile" : "Desktop";
-    sbFetch("visitors", { method: "POST", headers: {"Prefer":"return=minimal"}, body: JSON.stringify({
-      ip: geo.ip || "unknown",
-      country: geo.country_name || "unknown",
-      city: geo.city || "unknown",
-      browser: browser,
-      device: device
-    }) }).catch(function(){});
-  }).catch(function(){});
-
-  // Settings
-  sbFetch("settings?id=eq.1&select=*").then(function(d) {
-    var s = d[0];
-    if (!s) return;
-    var bypass = new URLSearchParams(window.location.search).get("bypass");
-    if (s.maintenance && bypass !== "CmdrDLC") {
-      var ms = document.getElementById("maintenanceScreen");
-      if (ms) ms.style.display = "flex";
-    }
-    if (s.maintenance && bypass === "CmdrDLC") {
-      var ab = document.getElementById("maintenanceAdminBtn");
-      if (ab) ab.style.display = "flex";
-    }
-    if (s.disable_buy_button) {
-      document.querySelectorAll(".buy-btn").forEach(function(b) { b.disabled = true; b.style.opacity = "0.4"; });
-    }
-  }).catch(function() {});
-
-  // Events / Themes
-  sbFetch("events?select=*").then(function(events) {
-    var map = { halloween: "theme-halloween", christmas: "theme-christmas", winter: "theme-winter", summer: "theme-summer", valentine: "theme-valentine", easter: "theme-easter" };
-    (events || []).forEach(function(ev) {
-      if (!ev.active) return;
-      if (map[ev.name]) document.body.classList.add(map[ev.name]);
-      if (ev.name === "blackfriday") { var b = document.getElementById("blackFridayBanner"); if (b) b.style.display = "block"; }
-      if (ev.name === "newyear") { var n = document.getElementById("newyearBanner"); if (n) n.style.display = "block"; }
-    });
-  }).catch(function() {});
-
-  // Announcements (pinned first, filter expired)
-  sbFetch("announcements?select=*&order=id.desc").then(function(anns) {
-    if (!anns || !anns.length) return;
-    var now = new Date();
-    var list = document.getElementById("annPageList");
-    var noMsg = document.getElementById("noAnnMsg");
-    var colors = { update: "#00ff88", maintenance: "#ffbd2e", info: "#00cfff", new: "#a855f7" };
-    var icons  = { update: "🔄", maintenance: "🔧", info: "ℹ️", new: "✨" };
-    var shown = 0;
-    (anns || []).forEach(function(ann) {
-      // Skip expired
-      if (ann.expires_at && new Date(ann.expires_at) < now) return;
-      shown++;
-      if (noMsg) noMsg.style.display = "none";
-      var color = (ann.type === 'custom' && ann.custom_color) ? ann.custom_color : (colors[ann.type] || "#00ff88");
-      var icon  = icons[ann.type]  || "📢";
-      var div = document.createElement("div");
-      div.style.cssText = "background:#111;border-left:3px solid " + color + ";border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;margin-bottom:0.8rem;" + (ann.pinned ? "border:1px solid " + color + ";border-left:4px solid " + color + ";" : "");
-      var h = document.createElement("div");
-      h.style.cssText = "display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;";
-      h.innerHTML = "<span>" + icon + "</span><span style='font-family:monospace;font-weight:700;color:#fff;'>" + ann.title + "</span>" + (ann.pinned ? "<span style='font-size:0.65rem;color:#ffbd2e;'>📌</span>" : "") + "<span style='margin-left:auto;font-size:0.7rem;color:#444;'>" + ann.date + "</span>";
-      var t = document.createElement("div");
-      t.style.cssText = "font-size:0.85rem;color:#888;line-height:1.6;";
-      t.textContent = ann.text;
-      div.appendChild(h);
-      div.appendChild(t);
-      if (list) list.appendChild(div);
-    });
-  }).catch(function() {});
-
-  // Team
-  sbFetch("team?select=*&order=sort_order.asc").then(function(members) {
-    var grid = document.getElementById("teamGrid");
-    if (!grid || !members || !members.length) return;
-    grid.innerHTML = "";
-    (members || []).forEach(function(m) {
-      var c = m.color || "#00ff88";
-      var card = document.createElement("div");
-      card.style.cssText = "background:#111;border:1px solid #1e1e1e;border-radius:14px;padding:1.2rem 1.4rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:border-color 0.2s;";
-      card.onmouseover = function() { this.style.borderColor = c; };
-      card.onmouseout  = function() { this.style.borderColor = "#1e1e1e"; };
-      card.onclick = function() { openTeamModal(m.name, "✦ " + m.role, "role", m.image || "", m.name, m.bio || ""); };
-      var img = document.createElement("img");
-      img.src = m.image || "";
-      img.style.cssText = "width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #2a2a2a;";
-      img.onerror = function() { this.style.display = "none"; };
-      var info = document.createElement("div");
-      var name = document.createElement("div");
-      name.style.cssText = "font-weight:700;color:#e0e0e0;font-size:0.95rem;margin-bottom:0.2rem;";
-      name.textContent = m.name;
-      var role = document.createElement("div");
-      role.style.cssText = "font-size:0.7rem;letter-spacing:1.5px;margin-bottom:0.5rem;color:" + c + ";";
-      role.textContent = "✦ " + (m.role || "").toUpperCase();
-      var bio = document.createElement("div");
-      bio.style.cssText = "font-size:0.8rem;color:#666;";
-      bio.textContent = m.bio || "";
-      info.appendChild(name);
-      info.appendChild(role);
-      info.appendChild(bio);
-      card.appendChild(img);
-      card.appendChild(info);
-      grid.appendChild(card);
-    });
-  }).catch(function() {});
-
-  // Toasts - load existing + realtime
-  sbFetch("toasts?active=eq.true&select=*&order=id.desc").then(function(toasts) {
-    (toasts || []).forEach(function(t) { showToast(t.message, t.type, t.id); });
-  }).catch(function() {});
-
-  // Poll every 5 seconds for new announcements
-  var _lastAnnId = 0;
-  sbFetch("announcements?select=id&order=id.desc&limit=1").then(function(d) {
-    _lastAnnId = (d && d[0]) ? d[0].id : 0;
-    setInterval(function() {
-      var now = new Date();
-      sbFetch("announcements?select=*&id=gt." + _lastAnnId + "&order=id.asc").then(function(anns) {
-        if (!anns || !anns.length) return;
-        var list = document.getElementById("annPageList");
-        var noMsg = document.getElementById("noAnnMsg");
-        var colors = { update:"#00ff88", maintenance:"#ffbd2e", info:"#00cfff", new:"#a855f7" };
-        var icons  = { update:"🔄", maintenance:"🔧", info:"ℹ️", new:"✨" };
-        anns.forEach(function(ann) {
-          if (ann.expires_at && ann.expires_at !== '' && new Date(ann.expires_at) < now) return;
-          if (_lastAnnId < ann.id) _lastAnnId = ann.id;
-          if (noMsg) noMsg.style.display = "none";
-          var color = (ann.type === 'custom' && ann.custom_color) ? ann.custom_color : (colors[ann.type] || "#00ff88");
-          var icon  = icons[ann.type]  || "📢";
-          var div = document.createElement("div");
-          div.style.cssText = "background:#111;border-left:3px solid " + color + ";border-radius:0 10px 10px 0;padding:1.2rem 1.4rem;margin-bottom:0.8rem;" + (ann.pinned ? "border:1px solid " + color + ";border-left:4px solid " + color + ";" : "");
-          div.style.animation = "fadeIn 0.4s ease";
-          var h = document.createElement("div");
-          h.style.cssText = "display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;";
-          h.innerHTML = "<span>" + icon + "</span><span style='font-family:monospace;font-weight:700;color:#fff;'>" + ann.title + "</span>" + (ann.pinned ? "<span style='font-size:0.65rem;color:#ffbd2e;'>📌</span>" : "") + "<span style='margin-left:auto;font-size:0.7rem;color:#444;'>" + ann.date + "</span>";
-          var t = document.createElement("div");
-          t.style.cssText = "font-size:0.85rem;color:#888;line-height:1.6;";
-          t.textContent = ann.text;
-          div.appendChild(h);
-          div.appendChild(t);
-          // Prepend if pinned, else append
-          if (ann.pinned && list.firstChild) {
-            list.insertBefore(div, list.firstChild);
-          } else {
-            if (list) list.appendChild(div);
-          }
-        });
-      }).catch(function() {});
-    }, 5000);
-  }).catch(function() {});
-
-  // Poll every 3 seconds for new toasts
-  var _lastToastId = 0;
-  // First: get current highest ID so we don't show old toasts
-  sbFetch("toasts?select=id&order=id.desc&limit=1").then(function(d) {
-    _lastToastId = (d && d[0]) ? d[0].id : 0;
-    // Now start polling
-    setInterval(function() {
-      sbFetch("toasts?active=eq.true&id=gt." + _lastToastId + "&select=*&order=id.asc").then(function(toasts) {
-        if (!toasts || !toasts.length) return;
-        toasts.forEach(function(t) {
-          showToast(t.message, t.type, t.id);
-          if (t.id > _lastToastId) _lastToastId = t.id;
-        });
-      }).catch(function() {});
-    }, 3000);
-  }).catch(function() {
-    setInterval(function() {
-      sbFetch("toasts?active=eq.true&id=gt." + _lastToastId + "&select=*&order=id.asc").then(function(toasts) {
-        if (!toasts || !toasts.length) return;
-        toasts.forEach(function(t) {
-          showToast(t.message, t.type, t.id);
-          if (t.id > _lastToastId) _lastToastId = t.id;
-        });
-      }).catch(function() {});
-    }, 3000);
-  });
-
-  // Changelog
-  sbFetch("changelog?select=*&order=id.desc").then(function(entries) {
-    var container = document.querySelector("#changelogPage .cl-list");
-    if (!container || !entries || !entries.length) return;
-    container.innerHTML = "";
-    (entries || []).forEach(function(e) {
-      var items = e.items ? e.items.split("\n") : [];
-      var div = document.createElement("div");
-      div.style.cssText = "background:#111;border:1px solid #1a2a1a;border-radius:12px;padding:1.4rem;margin-bottom:0.8rem;";
-      var header = document.createElement("div");
-      header.style.cssText = "display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding-bottom:0.8rem;border-bottom:1px solid #1a1a1a;";
-      header.innerHTML = "<span style='background:#00ff88;color:#000;font-size:0.72rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:4px;'>" + e.version + "</span><span style='color:#fff;font-weight:700;'>" + e.title + "</span><span style='margin-left:auto;color:#444;font-size:0.72rem;'>" + e.date + "</span>";
-      var ul = document.createElement("ul");
-      ul.style.cssText = "list-style:none;display:flex;flex-direction:column;gap:0.5rem;";
-      items.forEach(function(item) {
-        if (!item.trim()) return;
-        var li = document.createElement("li");
-        li.style.cssText = "font-size:0.85rem;color:#888;display:flex;gap:0.6rem;";
-        li.innerHTML = "<span style='color:#00ff88;flex-shrink:0;'>+</span>" + item.trim();
-        ul.appendChild(li);
-      });
-      div.appendChild(header);
-      div.appendChild(ul);
-      container.appendChild(div);
-    });
-  }).catch(function() {});
-});
-</script>
-
-<!-- AI CHATBOT -->
-<div id="chatbotWidget" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:2147483647;font-family:'Courier New',monospace;max-width:calc(100vw - 3rem);">
-  <!-- Toggle Button -->
-  <button id="chatbotToggle" onclick="toggleChatbot()" style="width:54px;height:54px;border-radius:50%;background:#00ff88;border:none;cursor:pointer;font-size:1.4rem;box-shadow:0 4px 20px rgba(0,255,136,0.4);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</button>
-
-  <!-- Chat Window -->
-  <div id="chatbotWindow" style="display:none;position:fixed;bottom:80px;right:1.5rem;width:min(380px,calc(100vw - 3rem));background:#111;border:1px solid #00ff88;border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,255,136,0.15);z-index:2147483647;">
-    <!-- Header -->
-    <div style="background:#0d1a0d;padding:0.8rem 1rem;border-bottom:1px solid #1a2a1a;display:flex;align-items:center;gap:0.6rem;">
-      <span style="color:#00ff88;font-size:1rem;">🤖</span>
-      <div>
-        <div style="color:#00ff88;font-size:0.82rem;font-weight:700;letter-spacing:1px;">CMDR Assistant</div>
-        <div id="chatSubtitle" style="color:#444;font-size:0.65rem;letter-spacing:1px;">Answers CMDR questions</div>
-      </div>
-      <button onclick="toggleChatbot()" style="margin-left:auto;background:none;border:none;color:#444;cursor:pointer;font-size:1rem;padding:0.2rem;">✕</button>
-    </div>
-
-    <!-- Messages -->
-    <div id="chatMessages" style="height:280px;overflow-y:auto;overflow-x:hidden;padding:0.8rem;display:flex;flex-direction:column;gap:0.6rem;box-sizing:border-box;">
-      <div id="chatWelcome" style="background:#0d1a0d;border:1px solid #1a2a1a;border-radius:8px;padding:0.7rem 0.9rem;font-size:0.8rem;color:#aaa;line-height:1.6;word-break:break-word;overflow-wrap:anywhere;white-space:normal;max-width:100%;box-sizing:border-box;"></div>
-    </div>
-
-    <!-- Input -->
-    <div style="padding:0.8rem;border-top:1px solid #1a1a1a;display:flex;gap:0.5rem;">
-      <input id="chatInput" type="text" placeholder="Ask a question..." onkeydown="if(event.key==='Enter')sendChatMessage()" style="flex:1;background:#0a0a0a;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:0.5rem 0.7rem;font-family:'Courier New',monospace;font-size:0.78rem;outline:none;">
-      <button onclick="sendChatMessage()" style="background:#00ff88;border:none;border-radius:6px;color:#000;padding:0.5rem 0.8rem;cursor:pointer;font-weight:700;font-size:0.8rem;">→</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  // ── CHATBOT
+    drawParticles();
+  </script>
 </body>
 </html>
