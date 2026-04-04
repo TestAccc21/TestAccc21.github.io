@@ -6,388 +6,170 @@
   <title>Cmdr DLC</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --green:      #00ff88;
-      --green-dim:  #00cc66;
-      --bg:         #060c08;
-      --card-bg:    #0b1a13;
-      --border:     rgba(0,255,136,0.20);
-      --text:       #d4ffe8;
-      --muted:      #3d7a5e;
-    }
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html, body { height:100%; }
-    body {
-      background:var(--bg); color:var(--text);
-      font-family:'Rajdhani',sans-serif;
-      min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden;
-    }
-    /* scanlines */
-    body::before {
-      content:''; position:fixed; inset:0;
-      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.018) 2px,rgba(0,255,136,.018) 4px);
-      pointer-events:none; z-index:9997;
-    }
-
-    /* PARTICLES */
-    #particles { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
-
-    /* MAINTENANCE */
-    #maintenance {
-      display:none; position:fixed; inset:0; background:var(--bg);
-      z-index:9999; flex-direction:column; align-items:center;
-      justify-content:center; gap:1.8rem; text-align:center; padding:2rem;
-    }
-    #maintenance .icon { font-size:4rem; animation:glow-pulse 2s ease-in-out infinite; }
-    #maintenance h1 { font-family:'Share Tech Mono',monospace; font-size:clamp(1.6rem,5vw,2.8rem); color:var(--green); letter-spacing:.15em; }
-    #maintenance p { font-family:'Share Tech Mono',monospace; color:var(--muted); font-size:.9rem; letter-spacing:.08em; }
-    .mbar { width:280px; height:2px; background:#001a0d; border-radius:2px; overflow:hidden; }
-    .mbar-fill { height:100%; background:var(--green); width:0; animation:load 2.8s ease-in-out infinite; box-shadow:0 0 10px var(--green); }
-
-    /* NAV */
-    nav {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:1rem 2rem; border-bottom:1px solid var(--border);
-      background:rgba(6,12,8,.95); backdrop-filter:blur(10px);
-      position:sticky; top:0; z-index:100;
-    }
-    .logo { font-family:'Share Tech Mono',monospace; font-size:1.2rem; color:var(--green); text-shadow:0 0 14px var(--green); letter-spacing:.12em; text-decoration:none; display:flex; align-items:center; gap:.6rem; }
-    .logo span { color:var(--muted); }
-    .version-badge {
-      font-family:'Share Tech Mono',monospace; font-size:.6rem;
-      color:#060c08; background:var(--green);
-      padding:.15rem .45rem; letter-spacing:.08em;
-      font-weight:700; border-radius:2px;
-      text-shadow:none;
-    }
-    nav ul { list-style:none; display:flex; gap:1.8rem; align-items:center; }
-    nav a { color:var(--muted); text-decoration:none; font-size:.95rem; letter-spacing:.08em; text-transform:uppercase; font-weight:600; transition:color .2s; }
-    nav a:hover, nav a.active { color:var(--green); }
-    .nav-icon-link { font-size:1.1rem; transition:transform .2s, filter .2s; }
-    .nav-icon-link:hover { transform:scale(1.2); filter:drop-shadow(0 0 6px var(--green)); }
-
-    /* MAIN */
-    main { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4rem 1.5rem; position:relative; z-index:1; }
-
-    .eyebrow { font-family:'Share Tech Mono',monospace; font-size:.72rem; letter-spacing:.3em; color:var(--green); text-transform:uppercase; margin-bottom:2.5rem; opacity:.7; animation:fade-up .5s ease both; }
-
-    /* COUNTDOWN */
-    .countdown-wrap {
-      margin-bottom:2rem;
-      animation:fade-up .55s .05s ease both;
-    }
-    .countdown-label {
-      font-family:'Share Tech Mono',monospace; font-size:.68rem;
-      letter-spacing:.25em; color:var(--muted); text-transform:uppercase;
-      text-align:center; margin-bottom:.6rem;
-    }
-    .countdown {
-      display:flex; gap:.8rem; justify-content:center;
-    }
-    .cd-block {
-      display:flex; flex-direction:column; align-items:center;
-      background:var(--card-bg); border:1px solid var(--border);
-      padding:.5rem .9rem; min-width:60px;
-    }
-    .cd-num {
-      font-family:'Share Tech Mono',monospace; font-size:1.6rem;
-      color:var(--green); text-shadow:0 0 12px rgba(0,255,136,.4);
-      line-height:1;
-    }
-    .cd-unit {
-      font-family:'Share Tech Mono',monospace; font-size:.55rem;
-      color:var(--muted); letter-spacing:.15em; text-transform:uppercase;
-      margin-top:.2rem;
-    }
-    .cd-expired {
-      font-family:'Share Tech Mono',monospace; font-size:.9rem;
-      color:var(--green); letter-spacing:.15em; text-align:center;
-    }
-
-    /* CARD */
-    .card { width:100%; max-width:440px; background:var(--card-bg); border:1px solid var(--border); position:relative; overflow:hidden; animation:fade-up .6s .1s ease both; box-shadow:0 0 60px rgba(0,255,136,.06); }
-    .card::before, .card::after { content:''; position:absolute; width:20px; height:20px; border-color:var(--green); border-style:solid; opacity:.5; z-index:2; }
-    .card::before { top:10px; left:10px; border-width:2px 0 0 2px; }
-    .card::after  { bottom:10px; right:10px; border-width:0 2px 2px 0; }
-
-    .card-img-wrap { width:100%; aspect-ratio:16/9; border-bottom:1px solid var(--border); overflow:hidden; background:#091510 repeating-linear-gradient(45deg,#091510,#091510 8px,rgba(0,255,136,.03) 8px,rgba(0,255,136,.03) 16px); display:flex; align-items:center; justify-content:center; }
-    .card-img-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
-    .img-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; width:100%; height:100%; font-family:'Share Tech Mono',monospace; }
-    .img-placeholder .pi-icon { font-size:2.5rem; opacity:.2; }
-    .img-placeholder .pi-label { font-size:.7rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; }
-
-    .card-body { padding:1.8rem 2rem 2rem; }
-    .card-title { font-family:'Share Tech Mono',monospace; font-size:1.55rem; color:var(--green); letter-spacing:.08em; text-shadow:0 0 18px rgba(0,255,136,.35); margin-bottom:.3rem; }
-    .card-subtitle { font-size:.85rem; color:var(--muted); letter-spacing:.12em; text-transform:uppercase; margin-bottom:1.6rem; }
-    .card-divider { width:100%; height:1px; background:var(--border); margin-bottom:1.4rem; }
-
-    .features { list-style:none; display:flex; flex-direction:column; gap:.75rem; margin-bottom:1.6rem; }
-    .features li { display:flex; align-items:flex-start; gap:.8rem; font-size:1rem; line-height:1.4; }
-    .features li .icon { font-family:'Share Tech Mono',monospace; font-size:.8rem; color:var(--green); margin-top:.12rem; flex-shrink:0; }
-    .features li.warn .icon { color:#ffcc00; }
-    .features li.warn .label { color:#ffe9a0; }
-    .features li .label { color:var(--text); }
-    .features li .label span { color:var(--muted); font-size:.88rem; display:block; margin-top:.1rem; }
-
-    .price-row { display:flex; align-items:center; gap:.8rem; margin-bottom:1rem; }
-    .price { font-family:'Share Tech Mono',monospace; font-size:1.5rem; color:var(--green); text-shadow:0 0 12px rgba(0,255,136,.4); }
-    .price-note { font-size:.8rem; color:var(--muted); font-family:'Share Tech Mono',monospace; letter-spacing:.08em; }
-
-    /* BUTTON ROW */
-    .btn-row { display:flex; gap:.7rem; margin-bottom:0; }
-    .btn-buy { flex:1; display:block; padding:.95rem; background:var(--green); color:#060c08; font-family:'Share Tech Mono',monospace; font-size:.9rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; text-align:center; text-decoration:none; border:none; cursor:pointer; transition:background .2s,box-shadow .2s,transform .15s; }
-    .btn-buy:hover { background:var(--green-dim); box-shadow:0 0 28px rgba(0,255,136,.5); transform:translateY(-1px); }
-    .btn-buy:active { transform:translateY(0); }
-    .btn-discord { display:flex; align-items:center; justify-content:center; padding:.95rem 1rem; background:transparent; border:1px solid rgba(88,101,242,.6); color:#8891f2; font-family:'Share Tech Mono',monospace; font-size:.85rem; letter-spacing:.1em; text-decoration:none; text-transform:uppercase; transition:background .2s, box-shadow .2s, transform .15s; white-space:nowrap; }
-    .btn-discord:hover { background:rgba(88,101,242,.12); box-shadow:0 0 20px rgba(88,101,242,.3); transform:translateY(-1px); }
-
-    .disclaimer { margin-top:1.1rem; font-family:'Share Tech Mono',monospace; font-size:.65rem; color:var(--muted); letter-spacing:.08em; text-align:center; line-height:1.7; }
-    .disclaimer a { color:var(--green); text-decoration:none; }
-    .disclaimer a:hover { text-decoration:underline; }
-
-    /* SOCIAL ROW below card */
-    .social-row {
-      display:flex; gap:1rem; margin-top:1.4rem; justify-content:center;
-      animation:fade-up .6s .2s ease both;
-    }
-    .social-btn {
-      display:flex; align-items:center; gap:.5rem;
-      font-family:'Share Tech Mono',monospace; font-size:.72rem;
-      letter-spacing:.12em; text-transform:uppercase; text-decoration:none;
-      color:var(--muted); border:1px solid var(--border);
-      padding:.4rem 1rem; transition:color .2s, border-color .2s, box-shadow .2s;
-    }
-    .social-btn:hover { color:var(--green); border-color:var(--green); box-shadow:0 0 14px rgba(0,255,136,.2); }
-
-    /* FOOTER */
-    footer { border-top:1px solid var(--border); padding:1.2rem 2rem; text-align:center; font-family:'Share Tech Mono',monospace; font-size:.72rem; color:var(--muted); letter-spacing:.08em; position:relative; z-index:1; }
-    footer a { color:var(--green); text-decoration:none; }
-    footer a:hover { text-decoration:underline; }
-
-    @keyframes fade-up { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes glow-pulse { 0%,100%{text-shadow:0 0 20px var(--green)} 50%{text-shadow:0 0 50px var(--green)} }
-    @keyframes load { 0%{width:0;opacity:1} 80%{width:100%;opacity:1} 100%{width:100%;opacity:0} }
+    :root{--green:#00ff88;--green-dim:#00cc66;--bg:#060c08;--card-bg:#0b1a13;--border:rgba(0,255,136,0.20);--text:#d4ffe8;--muted:#3d7a5e}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;transition:background .6s,color .4s}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.013) 2px,rgba(0,255,136,.013) 4px);pointer-events:none;z-index:9997}
+    #particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+    #maintenance{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;text-align:center;padding:2rem}
+    #maintenance .icon{font-size:4rem;animation:glow-pulse 2s ease-in-out infinite}
+    #maintenance h1{font-family:'Share Tech Mono',monospace;font-size:clamp(1.6rem,5vw,2.8rem);color:var(--green);letter-spacing:.15em}
+    #maintenance p{font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:.9rem}
+    .mbar{width:280px;height:2px;background:rgba(0,0,0,.4);border-radius:2px;overflow:hidden}
+    .mbar-fill{height:100%;background:var(--green);width:0;animation:mload 2.8s ease-in-out infinite;box-shadow:0 0 10px var(--green)}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(6,12,8,.95);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;transition:border-color .5s}
+    .logo{font-family:'Share Tech Mono',monospace;font-size:1.2rem;color:var(--green);text-shadow:0 0 14px var(--green);letter-spacing:.12em;text-decoration:none;display:flex;align-items:center;gap:.55rem;transition:color .5s}
+    .logo span{color:var(--muted)}
+    .v-badge{font-family:'Share Tech Mono',monospace;font-size:.58rem;background:var(--green);color:#060c08;padding:.15rem .42rem;letter-spacing:.06em;font-weight:700;border-radius:2px;line-height:1.4;transition:background .5s}
+    nav ul{list-style:none;display:flex;gap:1.6rem;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;transition:color .2s}
+    nav a:hover,nav a.active{color:var(--green)}
+    .nav-icon{font-size:1.05rem;transition:transform .2s,filter .2s}
+    .nav-icon:hover{transform:scale(1.2);filter:drop-shadow(0 0 5px var(--green))}
+    main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 1.5rem;position:relative;z-index:1}
+    .eyebrow{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.3em;color:var(--green);text-transform:uppercase;margin-bottom:1.6rem;opacity:.7;animation:fade-up .5s ease both}
+    .countdown-wrap{margin-bottom:2rem;animation:fade-up .55s .05s ease both;text-align:center}
+    .cd-label{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-bottom:.6rem}
+    .countdown{display:flex;gap:.7rem;justify-content:center}
+    .cd-block{display:flex;flex-direction:column;align-items:center;background:var(--card-bg);border:1px solid var(--border);padding:.5rem .85rem;min-width:58px;transition:background .5s,border-color .5s}
+    .cd-num{font-family:'Share Tech Mono',monospace;font-size:1.55rem;color:var(--green);line-height:1;transition:color .5s}
+    .cd-unit{font-family:'Share Tech Mono',monospace;font-size:.52rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:.2rem}
+    .cd-live{font-family:'Share Tech Mono',monospace;font-size:.9rem;color:var(--green);letter-spacing:.2em;padding:.6rem 1.2rem;border:1px solid var(--green);background:rgba(0,255,136,.07)}
+    .card{width:100%;max-width:440px;background:var(--card-bg);border:1px solid var(--border);position:relative;overflow:hidden;animation:fade-up .6s .1s ease both;box-shadow:0 0 60px rgba(0,255,136,.06);transition:background .5s,border-color .5s}
+    .card::before,.card::after{content:'';position:absolute;width:20px;height:20px;border-color:var(--green);border-style:solid;opacity:.5;z-index:2;transition:border-color .5s}
+    .card::before{top:10px;left:10px;border-width:2px 0 0 2px}
+    .card::after{bottom:10px;right:10px;border-width:0 2px 2px 0}
+    .card-img-wrap{width:100%;aspect-ratio:16/9;border-bottom:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--card-bg)}
+    .card-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+    .img-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;width:100%;height:100%;font-family:'Share Tech Mono',monospace;background:repeating-linear-gradient(45deg,var(--card-bg),var(--card-bg) 8px,rgba(0,255,136,.03) 8px,rgba(0,255,136,.03) 16px)}
+    .img-placeholder .pi-icon{font-size:2.5rem;opacity:.2}
+    .img-placeholder .pi-label{font-size:.7rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+    .card-body{padding:1.8rem 2rem 2rem}
+    .card-title{font-family:'Share Tech Mono',monospace;font-size:1.55rem;color:var(--green);letter-spacing:.08em;text-shadow:0 0 18px rgba(0,255,136,.35);margin-bottom:.3rem;transition:color .5s}
+    .card-subtitle{font-size:.85rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.6rem}
+    .card-divider{width:100%;height:1px;background:var(--border);margin-bottom:1.4rem}
+    .features{list-style:none;display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.6rem}
+    .features li{display:flex;align-items:flex-start;gap:.8rem;font-size:1rem;line-height:1.4}
+    .features li .icon{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--green);margin-top:.12rem;flex-shrink:0;transition:color .5s}
+    .features li.warn .icon{color:#ffcc00}
+    .features li.warn .label{color:#ffe9a0}
+    .features li .label{color:var(--text)}
+    .features li .label span{color:var(--muted);font-size:.88rem;display:block;margin-top:.1rem}
+    .price-row{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
+    .price{font-family:'Share Tech Mono',monospace;font-size:1.5rem;color:var(--green);transition:color .5s}
+    .price-note{font-size:.8rem;color:var(--muted);font-family:'Share Tech Mono',monospace;letter-spacing:.08em}
+    .btn-row{display:flex;gap:.7rem}
+    .btn-buy{flex:1;display:block;padding:.9rem;background:var(--green);color:#060c08;font-family:'Share Tech Mono',monospace;font-size:.88rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-align:center;text-decoration:none;border:none;cursor:pointer;transition:background .2s,box-shadow .2s,transform .15s}
+    .btn-buy:hover{background:var(--green-dim);box-shadow:0 0 28px rgba(0,255,136,.5);transform:translateY(-1px)}
+    .btn-discord{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.9rem 1rem;background:transparent;border:1px solid rgba(88,101,242,.55);color:#8891f2;font-family:'Share Tech Mono',monospace;font-size:.82rem;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;transition:background .2s,box-shadow .2s,transform .15s;white-space:nowrap}
+    .btn-discord:hover{background:rgba(88,101,242,.1);transform:translateY(-1px)}
+    .disclaimer{margin-top:1rem;font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--muted);letter-spacing:.07em;text-align:center;line-height:1.75}
+    .disclaimer a{color:var(--green);text-decoration:none}
+    .social-row{display:flex;gap:1rem;margin-top:1.4rem;justify-content:center;flex-wrap:wrap;animation:fade-up .6s .2s ease both}
+    .social-btn{display:flex;align-items:center;gap:.45rem;font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--muted);border:1px solid var(--border);padding:.4rem .9rem;transition:color .2s,border-color .2s,box-shadow .2s}
+    .social-btn:hover{color:var(--green);border-color:var(--green)}
+    footer{border-top:1px solid var(--border);padding:1.2rem 2rem;text-align:center;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem}
+    footer a{color:var(--green);text-decoration:none}
+    .footer-sep{color:var(--border)}
+    @keyframes fade-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes glow-pulse{0%,100%{text-shadow:0 0 20px var(--green)}50%{text-shadow:0 0 50px var(--green)}}
+    @keyframes mload{0%{width:0;opacity:1}80%{width:100%;opacity:1}100%{width:100%;opacity:0}}
   </style>
 </head>
 <body>
-
-  <!-- PARTICLES -->
-  <canvas id="particles"></canvas>
-
-  <!-- MAINTENANCE -->
-  <div id="maintenance">
-    <div class="icon">⚙️</div>
-    <h1>Under Maintenance</h1>
-    <p>[ SYSTEM OFFLINE — STAND BY ]</p>
-    <div class="mbar"><div class="mbar-fill"></div></div>
-    <p style="font-size:.75rem">We'll be back soon. // Cmdr DLC</p>
-  </div>
-
-  <div id="main-content">
-    <nav>
-      <a class="logo" href="index.html">
-        Cmdr<span> DLC</span>
-        <span class="version-badge">v1</span>
-      </a>
-      <ul>
-        <li><a href="index.html" class="active">Home</a></li>
-        <li><a href="sneakpeek.html">Sneak Peek</a></li>
-        <li><a href="tos.html">ToS</a></li>
-        <li><a class="nav-icon-link" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener" title="Discord">💬</a></li>
-        <li><a class="nav-icon-link" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener" title="Roblox Profile">🎮</a></li>
-      </ul>
-    </nav>
-
-    <main>
-      <div class="eyebrow">// Roblox · Cmdr Admin Panel</div>
-
-      <!-- COUNTDOWN -->
-      <div class="countdown-wrap">
-        <div class="countdown-label">// Next Drop — 25 April 2026</div>
-        <div class="countdown" id="countdown">
-          <div class="cd-block"><span class="cd-num" id="cd-d">--</span><span class="cd-unit">Days</span></div>
-          <div class="cd-block"><span class="cd-num" id="cd-h">--</span><span class="cd-unit">Hours</span></div>
-          <div class="cd-block"><span class="cd-num" id="cd-m">--</span><span class="cd-unit">Min</span></div>
-          <div class="cd-block"><span class="cd-num" id="cd-s">--</span><span class="cd-unit">Sec</span></div>
-        </div>
+<canvas id="particles"></canvas>
+<div id="maintenance">
+  <div class="icon">⚙️</div><h1>Under Maintenance</h1>
+  <p>[ SYSTEM OFFLINE — STAND BY ]</p>
+  <div class="mbar"><div class="mbar-fill"></div></div>
+  <p style="font-size:.75rem">We'll be back soon. // Cmdr DLC</p>
+</div>
+<div id="main-content">
+  <nav>
+    <a class="logo" href="index.html">Cmdr <span>DLC</span> <span class="v-badge">v1</span></a>
+    <ul>
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="sneakpeek.html">Sneak Peek</a></li>
+      <li><a href="tos.html">ToS</a></li>
+      <li><a class="nav-icon" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">💬</a></li>
+      <li><a class="nav-icon" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">🎮</a></li>
+    </ul>
+  </nav>
+  <main>
+    <div class="eyebrow">// Roblox · Cmdr Admin Panel</div>
+    <div class="countdown-wrap">
+      <div class="cd-label">// Next DLC Drop</div>
+      <div class="countdown" id="countdown">
+        <div class="cd-block"><div class="cd-num" id="cd-d">--</div><div class="cd-unit">Days</div></div>
+        <div class="cd-block"><div class="cd-num" id="cd-h">--</div><div class="cd-unit">Hours</div></div>
+        <div class="cd-block"><div class="cd-num" id="cd-m">--</div><div class="cd-unit">Mins</div></div>
+        <div class="cd-block"><div class="cd-num" id="cd-s">--</div><div class="cd-unit">Secs</div></div>
       </div>
-
-      <div class="card">
-        <div class="card-img-wrap">
-          <img src="Dlc.png" alt="Cmdr DLC"
-               onerror="this.style.display='none';document.getElementById('img-ph').style.display='flex'"/>
-          <div class="img-placeholder" id="img-ph" style="display:none">
-            <span class="pi-icon">🖼</span>
-            <span class="pi-label">Dlc.png</span>
-          </div>
-        </div>
-
-        <div class="card-body">
-          <div class="card-title">Cmdr DLC</div>
-          <div class="card-subtitle">Official Gamepass · Cmdr Admin Panel</div>
-          <div class="card-divider"></div>
-
-          <ul class="features">
-            <li>
-              <span class="icon">[+]</span>
-              <span class="label">Exclusive DLC Commands
-                <span>Unlock extended Cmdr commands only available in this DLC.</span>
-              </span>
-            </li>
-            <li>
-              <span class="icon">[+]</span>
-              <span class="label">One-Time Purchase
-                <span>Buy once, keep forever — no subscription, no hidden fees.</span>
-              </span>
-            </li>
-            <li>
-              <span class="icon">[+]</span>
-              <span class="label">Compatible with Cmdr Games
-                <span>Works in any game that has active Cmdr DLC gamepass support.</span>
-              </span>
-            </li>
-            <li class="warn">
-              <span class="icon">[!]</span>
-              <span class="label">No Refunds
-                <span>All purchases are final. Roblox does not refund gamepass purchases.</span>
-              </span>
-            </li>
-            <li class="warn">
-              <span class="icon">[!]</span>
-              <span class="label">Supported Games Only
-                <span>The DLC only works in games with active DLC integration enabled.</span>
-              </span>
-            </li>
-          </ul>
-
-          <div class="price-row">
-            <span class="price">125 R$</span>
-            <span class="price-note">// one-time purchase</span>
-          </div>
-
-          <div class="btn-row">
-            <a class="btn-buy"
-               href="https://www.roblox.com/de/game-pass/1738044254/125-Rbx"
-               target="_blank" rel="noopener noreferrer">
-              [ Buy Now ]
-            </a>
-            <a class="btn-discord"
-               href="https://discord.gg/XaZSGVFvzV"
-               target="_blank" rel="noopener noreferrer">
-              💬 Discord
-            </a>
-          </div>
-
-          <div class="disclaimer">
-            ⚠ No refund policy — gamepass purchases are non-refundable.<br/>
-            By purchasing you agree to our <a href="tos.html">Terms of Service</a> and the Roblox ToS.
-          </div>
-        </div>
+    </div>
+    <div class="card">
+      <div class="card-img-wrap">
+        <img src="Dlc.png" alt="Cmdr DLC" onerror="this.style.display='none';document.getElementById('img-ph').style.display='flex'"/>
+        <div class="img-placeholder" id="img-ph" style="display:none"><span class="pi-icon">🖼</span><span class="pi-label">Dlc.png</span></div>
       </div>
-
-      <!-- SOCIAL ROW -->
-      <div class="social-row">
-        <a class="social-btn" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">
-          🎮 Roblox Profile
-        </a>
-        <a class="social-btn" href="tos.html">
-          📄 Terms of Service
-        </a>
+      <div class="card-body">
+        <div class="card-title">Cmdr DLC</div>
+        <div class="card-subtitle">Official Gamepass · Cmdr Admin Panel</div>
+        <div class="card-divider"></div>
+        <ul class="features">
+          <li><span class="icon">[+]</span><span class="label">Exclusive DLC Commands<span>Unlock extended Cmdr commands only available in this DLC.</span></span></li>
+          <li><span class="icon">[+]</span><span class="label">One-Time Purchase<span>Buy once, keep forever — no subscription, no hidden fees.</span></span></li>
+          <li><span class="icon">[+]</span><span class="label">Compatible with Cmdr Games<span>Works in any game that has active Cmdr DLC gamepass support.</span></span></li>
+          <li class="warn"><span class="icon">[!]</span><span class="label">No Refunds<span>All purchases are final. Roblox does not refund gamepass purchases.</span></span></li>
+          <li class="warn"><span class="icon">[!]</span><span class="label">Supported Games Only<span>The DLC only works in games with active DLC integration enabled.</span></span></li>
+        </ul>
+        <div class="price-row"><span class="price">125 R$</span><span class="price-note">// one-time purchase</span></div>
+        <div class="btn-row">
+          <a class="btn-buy" href="https://www.roblox.com/de/game-pass/1738044254/125-Rbx" target="_blank" rel="noopener">[ Buy Now on Roblox ]</a>
+          <a class="btn-discord" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">💬 Discord</a>
+        </div>
+        <div class="disclaimer">⚠ No refund policy — gamepass purchases are non-refundable.<br/>By purchasing you agree to our <a href="tos.html">Terms of Service</a> and the Roblox ToS.</div>
       </div>
-
-    </main>
-
-    <footer>
-      © 2026 Cmdr DLC — Not affiliated with Roblox Corporation &nbsp;|&nbsp;
-      <a href="tos.html">ToS</a> &nbsp;|&nbsp;
-      <a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Discord</a>
-    </footer>
-  </div>
-
-  <script>
-    // ┌─────────────────────────────────────────┐
-    // │  MAINTENANCE MODE                       │
-    // │  true  = show maintenance screen        │
-    // │  false = show normal page               │
-    // └─────────────────────────────────────────┘
-    const MAINTENANCE = false;
-
-    if (MAINTENANCE) {
-      document.getElementById('maintenance').style.display = 'flex';
-      document.getElementById('main-content').style.display = 'none';
-    }
-
-    /* ── COUNTDOWN ─────────────────────────────── */
-    const TARGET = new Date('2026-04-25T00:00:00');
-    function updateCountdown() {
-      const diff = TARGET - Date.now();
-      if (diff <= 0) {
-        document.getElementById('countdown').innerHTML = '<div class="cd-expired">[ DLC IS LIVE ]</div>';
-        return;
-      }
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff % 86400000) / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
-      document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
-      document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
-      document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
-    }
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-
-    /* ── PARTICLE SYSTEM ────────────────────────── */
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [];
-
-    function resize() {
-      W = canvas.width  = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    function rand(a, b) { return a + Math.random() * (b - a); }
-
-    function spawnParticle() {
-      return {
-        x: rand(0, W),
-        y: rand(0, H),
-        r: rand(0.6, 2.2),
-        vx: rand(-0.15, 0.15),
-        vy: rand(-0.35, -0.08),
-        alpha: rand(0.2, 0.7),
-        fade: rand(0.002, 0.005)
-      };
-    }
-
-    for (let i = 0; i < 120; i++) particles.push(spawnParticle());
-
-    function drawParticles() {
-      ctx.clearRect(0, 0, W, H);
-      for (let p of particles) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,255,136,${p.alpha})`;
-        ctx.shadowColor = '#00ff88';
-        ctx.shadowBlur = 4;
-        ctx.fill();
-
-        p.x += p.vx;
-        p.y += p.vy;
-        p.alpha -= p.fade;
-
-        if (p.alpha <= 0 || p.y < -10) {
-          Object.assign(p, spawnParticle());
-          p.y = H + 5;
-          p.alpha = rand(0.2, 0.7);
-        }
-      }
-      requestAnimationFrame(drawParticles);
-    }
-    drawParticles();
-  </script>
+    </div>
+    <div class="social-row">
+      <a class="social-btn" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">🎮 Roblox Profile</a>
+      <a class="social-btn" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">💬 Discord Server</a>
+      <a class="social-btn" href="tos.html">📄 Terms of Service</a>
+    </div>
+  </main>
+  <footer>
+    <span>© 2026 Cmdr DLC — Not affiliated with Roblox Corporation</span>
+    <span class="footer-sep">|</span><a href="tos.html">ToS</a>
+    <span class="footer-sep">|</span><a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Discord</a>
+    <span class="footer-sep">|</span><a href="sneakpeek.html">Sneak Peek</a>
+  </footer>
+</div>
+<script>
+const SUPABASE_URL="https://YOUR_PROJECT.supabase.co";
+const SUPABASE_ANON="YOUR_ANON_KEY";
+const THEMES={
+  default:{vars:{"--green":"#00ff88","--green-dim":"#00cc66","--bg":"#060c08","--card-bg":"#0b1a13","--border":"rgba(0,255,136,0.20)","--text":"#d4ffe8","--muted":"#3d7a5e"},particle:"0,255,136"},
+  winter:{vars:{"--green":"#88ddff","--green-dim":"#55bbee","--bg":"#060d14","--card-bg":"#0a1520","--border":"rgba(136,221,255,0.22)","--text":"#d0eeff","--muted":"#3a6a88"},particle:"136,221,255"},
+  easter:{vars:{"--green":"#c8ff88","--green-dim":"#aae055","--bg":"#0c0f06","--card-bg":"#141a0a","--border":"rgba(200,255,136,0.22)","--text":"#edffd0","--muted":"#5a7a3a"},particle:"200,255,136"},
+  christmas:{vars:{"--green":"#ff4444","--green-dim":"#cc2222","--bg":"#080606","--card-bg":"#160c0c","--border":"rgba(255,68,68,0.22)","--text":"#ffd0d0","--muted":"#883a3a"},particle:"255,68,68"},
+  halloween:{vars:{"--green":"#ff8800","--green-dim":"#cc6600","--bg":"#080500","--card-bg":"#140c00","--border":"rgba(255,136,0,0.22)","--text":"#ffddb0","--muted":"#885500"},particle:"255,136,0"},
+  summer:{vars:{"--green":"#ffdd00","--green-dim":"#ccaa00","--bg":"#080700","--card-bg":"#141100","--border":"rgba(255,221,0,0.22)","--text":"#fff9cc","--muted":"#888800"},particle:"255,221,0"}
+};
+function applyTheme(k){const t=THEMES[k]||THEMES.default;for(const[p,v]of Object.entries(t.vars))document.documentElement.style.setProperty(p,v);window.__pc=t.particle;}
+async function loadSettings(){
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/settings?select=key,value`,{headers:{apikey:SUPABASE_ANON,Authorization:`Bearer ${SUPABASE_ANON}`}});
+    const rows=await res.json();
+    const map=Object.fromEntries(rows.map(r=>[r.key,r.value]));
+    if(map.maintenance==="true"){document.getElementById("maintenance").style.display="flex";document.getElementById("main-content").style.display="none";}
+    applyTheme(map.theme||"default");
+  }catch(e){applyTheme("default");}
+}
+const TARGET=new Date('2026-04-25T00:00:00');
+function tick(){const diff=TARGET-Date.now();if(diff<=0){document.getElementById('countdown').innerHTML='<div class="cd-live">[ DLC IS LIVE ]</div>';return;}const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);document.getElementById('cd-d').textContent=String(d).padStart(2,'0');document.getElementById('cd-h').textContent=String(h).padStart(2,'0');document.getElementById('cd-m').textContent=String(m).padStart(2,'0');document.getElementById('cd-s').textContent=String(s).padStart(2,'0');}
+tick();setInterval(tick,1000);
+function initParticles(){const c=document.getElementById('particles'),x=c.getContext('2d');let W,H,pts=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const col=()=>window.__pc||'0,255,136';function rnd(a,b){return a+Math.random()*(b-a);}function mkP(){return{x:rnd(0,W),y:rnd(0,H),r:rnd(.5,2),vx:rnd(-.12,.12),vy:rnd(-.3,-.06),a:rnd(.15,.6),fade:rnd(.002,.005)};}for(let i=0;i<130;i++)pts.push(mkP());function draw(){x.clearRect(0,0,W,H);x.shadowColor=`rgb(${col()})`;x.shadowBlur=5;for(let p of pts){x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(${col()},${p.a})`;x.fill();p.x+=p.vx;p.y+=p.vy;p.a-=p.fade;if(p.a<=0||p.y<-8){Object.assign(p,mkP());p.y=H+5;p.a=rnd(.15,.6);}}requestAnimationFrame(draw);}draw();}
+loadSettings().then(()=>initParticles());
+</script>
 </body>
 </html>
