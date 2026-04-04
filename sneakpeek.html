@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sneak Peek — Cmdr DLC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:     #00ff88;
+      --green-dim: #00cc66;
+      --green-glow:rgba(0,255,136,0.18);
+      --bg:        #060c08;
+      --card-bg:   #0b1a13;
+      --border:    rgba(0,255,136,0.20);
+      --text:      #d4ffe8;
+      --muted:     #3d7a5e;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden; }
+    body::before { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px); pointer-events:none; z-index:9997; }
+
+    #particles { position:fixed; inset:0; pointer-events:none; z-index:0; }
+
+    /* MAINTENANCE */
+    #maintenance { display:none; position:fixed; inset:0; background:var(--bg); z-index:9999; flex-direction:column; align-items:center; justify-content:center; gap:1.8rem; text-align:center; padding:2rem; }
+    #maintenance .icon { font-size:4rem; animation:glow-pulse 2s ease-in-out infinite; }
+    #maintenance h1 { font-family:'Share Tech Mono',monospace; font-size:clamp(1.6rem,5vw,2.8rem); color:var(--green); letter-spacing:.15em; }
+    #maintenance p { font-family:'Share Tech Mono',monospace; color:var(--muted); font-size:.9rem; }
+    .mbar { width:280px; height:2px; background:#001a0d; border-radius:2px; overflow:hidden; }
+    .mbar-fill { height:100%; background:var(--green); width:0; animation:mload 2.8s ease-in-out infinite; box-shadow:0 0 10px var(--green); }
+
+    /* LIGHTBOX */
+    #lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,.93); z-index:9000; align-items:center; justify-content:center; flex-direction:column; gap:1.2rem; padding:2rem; }
+    #lightbox.open { display:flex; }
+    #lightbox img { max-width:90vw; max-height:80vh; border:1px solid var(--border); box-shadow:0 0 60px rgba(0,255,136,.2); }
+    #lightbox-close { font-family:'Share Tech Mono',monospace; font-size:.85rem; color:var(--muted); background:none; border:1px solid var(--border); padding:.4rem 1.2rem; cursor:pointer; letter-spacing:.15em; text-transform:uppercase; transition:color .2s,border-color .2s; }
+    #lightbox-close:hover { color:var(--green); border-color:var(--green); }
+
+    /* NAV */
+    nav { display:flex; align-items:center; justify-content:space-between; padding:1rem 2rem; border-bottom:1px solid var(--border); background:rgba(6,12,8,.95); backdrop-filter:blur(10px); position:sticky; top:0; z-index:100; }
+    .logo { font-family:'Share Tech Mono',monospace; font-size:1.2rem; color:var(--green); text-shadow:0 0 14px var(--green); letter-spacing:.12em; text-decoration:none; display:flex; align-items:center; gap:.55rem; }
+    .logo span { color:var(--muted); }
+    .v-badge { font-family:'Share Tech Mono',monospace; font-size:.58rem; background:var(--green); color:#060c08; padding:.15rem .42rem; letter-spacing:.06em; font-weight:700; border-radius:2px; text-shadow:none; line-height:1.4; }
+    nav ul { list-style:none; display:flex; gap:1.6rem; align-items:center; }
+    nav a { color:var(--muted); text-decoration:none; font-size:.9rem; letter-spacing:.08em; text-transform:uppercase; font-weight:600; transition:color .2s; }
+    nav a:hover, nav a.active { color:var(--green); }
+    .nav-icon { font-size:1.05rem; transition:transform .2s,filter .2s; }
+    .nav-icon:hover { transform:scale(1.2); filter:drop-shadow(0 0 5px var(--green)); }
+
+    /* PAGE HEADER */
+    .page-header { position:relative; padding:5rem 2rem 3rem; text-align:center; overflow:hidden; z-index:1; }
+    .page-header-bg { position:absolute; inset:0; background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(0,255,136,.1) 0%,transparent 70%); }
+    .page-header-bg::after { content:''; position:absolute; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:60px 60px; mask-image:radial-gradient(ellipse 80% 100% at 50% 0%,black 20%,transparent 80%); opacity:.35; }
+    .page-header > * { position:relative; z-index:1; }
+    .badge { display:inline-block; font-family:'Share Tech Mono',monospace; font-size:.75rem; color:var(--green); border:1px solid var(--border); padding:.3rem .9rem; letter-spacing:.2em; text-transform:uppercase; background:rgba(0,255,136,.05); margin-bottom:1rem; animation:fade-up .5s ease both; }
+    .page-header h1 { font-family:'Share Tech Mono',monospace; font-size:clamp(2.2rem,7vw,5rem); color:var(--green); text-shadow:0 0 30px rgba(0,255,136,.5),0 0 60px rgba(0,255,136,.15); letter-spacing:.1em; animation:fade-up .6s .1s ease both; }
+    .page-header p { margin-top:1rem; color:var(--muted); font-size:1rem; font-family:'Share Tech Mono',monospace; letter-spacing:.08em; animation:fade-up .6s .2s ease both; }
+
+    /* GALLERY */
+    .gallery-section { max-width:1200px; margin:0 auto; padding:3rem 2rem 6rem; flex:1; position:relative; z-index:1; }
+    .gallery-label { font-family:'Share Tech Mono',monospace; font-size:.75rem; letter-spacing:.25em; color:var(--green); text-transform:uppercase; margin-bottom:2rem; display:flex; align-items:center; gap:1rem; }
+    .gallery-label::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--green-dim),transparent); opacity:.4; }
+    .gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+
+    /* SLOT */
+    .slot { background:var(--card-bg); border:1px solid var(--border); position:relative; overflow:hidden; aspect-ratio:16/10; cursor:pointer; transition:border-color .25s,box-shadow .25s,transform .25s; }
+    .slot:hover { border-color:var(--green); box-shadow:0 0 30px var(--green-glow); transform:scale(1.02); }
+    .slot::before, .slot::after { content:''; position:absolute; width:16px; height:16px; border-color:var(--green); border-style:solid; opacity:.5; z-index:2; transition:opacity .25s,width .25s,height .25s; }
+    .slot::before { top:8px; left:8px; border-width:2px 0 0 2px; }
+    .slot::after  { bottom:8px; right:8px; border-width:0 2px 2px 0; }
+    .slot:hover::before, .slot:hover::after { opacity:1; width:24px; height:24px; }
+    .slot img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease,filter .4s ease; filter:brightness(.9) saturate(.9); }
+    .slot:hover img { transform:scale(1.05); filter:brightness(1.05) saturate(1.1); }
+    .slot-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.6rem; background:repeating-linear-gradient(45deg,var(--card-bg),var(--card-bg) 8px,rgba(0,255,136,.03) 8px,rgba(0,255,136,.03) 16px); }
+    .slot-placeholder .sp-icon { font-size:2rem; opacity:.2; }
+    .slot-placeholder .sp-label { font-family:'Share Tech Mono',monospace; font-size:.7rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; }
+    .slot-placeholder .sp-num { position:absolute; top:10px; right:12px; font-family:'Share Tech Mono',monospace; font-size:.65rem; color:var(--muted); opacity:.4; }
+    .slot-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,20,10,.85) 0%,transparent 55%); display:flex; flex-direction:column; justify-content:flex-end; padding:1rem 1.1rem; opacity:0; transition:opacity .3s; z-index:3; }
+    .slot:hover .slot-overlay { opacity:1; }
+    .slot-title { font-family:'Share Tech Mono',monospace; font-size:.85rem; color:var(--green); letter-spacing:.1em; }
+    .slot-sub { font-size:.8rem; color:var(--muted); margin-top:.15rem; }
+
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); padding:1.2rem 2rem; text-align:center; font-family:'Share Tech Mono',monospace; font-size:.7rem; color:var(--muted); letter-spacing:.08em; position:relative; z-index:1; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:.5rem; }
+    footer a { color:var(--green); text-decoration:none; }
+    footer a:hover { text-decoration:underline; }
+    .footer-sep { color:var(--border); }
+
+    @keyframes fade-up  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes glow-pulse { 0%,100%{text-shadow:0 0 20px var(--green)} 50%{text-shadow:0 0 50px var(--green)} }
+    @keyframes mload { 0%{width:0;opacity:1} 80%{width:100%;opacity:1} 100%{width:100%;opacity:0} }
+
+    @media(max-width:700px){ .gallery-grid{ grid-template-columns:1fr 1fr; } }
+    @media(max-width:420px){ .gallery-grid{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+  <canvas id="particles"></canvas>
+
+  <div id="maintenance">
+    <div class="icon">⚙️</div>
+    <h1>Under Maintenance</h1>
+    <p>[ SYSTEM OFFLINE — STAND BY ]</p>
+    <div class="mbar"><div class="mbar-fill"></div></div>
+    <p style="font-size:.75rem">We'll be back soon. // Cmdr DLC</p>
+  </div>
+
+  <div id="lightbox">
+    <img id="lightbox-img" src="" alt="Sneak Peek"/>
+    <button id="lightbox-close" onclick="closeLightbox()">[ Close ]</button>
+  </div>
+
+  <div id="main-content">
+    <nav>
+      <a class="logo" href="index.html">
+        Cmdr <span>DLC</span>
+        <span class="v-badge">v1</span>
+      </a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="sneakpeek.html" class="active">Sneak Peek</a></li>
+        <li><a href="tos.html">ToS</a></li>
+        <li><a class="nav-icon" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener" title="Discord">💬</a></li>
+        <li><a class="nav-icon" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener" title="Roblox Profile">🎮</a></li>
+      </ul>
+    </nav>
+
+    <div class="page-header">
+      <div class="page-header-bg"></div>
+      <div class="badge">// Classified Preview</div>
+      <h1>SNEAK PEEK</h1>
+      <p>[ 6 SLOTS — UPCOMING DLC REVEALED ]</p>
+    </div>
+
+    <div class="gallery-section">
+      <div class="gallery-label">// Preview Gallery — 6 Slots</div>
+      <div class="gallery-grid">
+
+        <div class="slot" onclick="openLightbox(this)">
+          <img src="sneakpeek1.png" alt="Sneak Peek 1" onerror="this.style.display='none'"/>
+          <div class="slot-placeholder"><span class="sp-num">01</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek1.png</span></div>
+          <div class="slot-overlay"><div class="slot-title">Preview #01</div><div class="slot-sub">Cmdr DLC</div></div>
+        </div>
+
+        <div class="slot" onclick="openLightbox(this)">
+          <img src="sneakpeek2.png" alt="Sneak Peek 2" onerror="this.style.display='none'"/>
+          <div class="slot-placeholder"><span class="sp-num">02</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek2.png</span></div>
+          <div class="slot-overlay"><div class="slot-title">Preview #02</div><div class="slot-sub">Cmdr DLC</div></div>
+        </div>
+
+        <div class="slot" onclick="openLightbox(this)">
+          <img src="sneakpeek3.png" alt="Sneak Peek 3" onerror="this.style.display='none'"/>
+          <div class="slot-placeholder"><span class="sp-num">03</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek3.png</span></div>
+          <div class="slot-overlay"><div class="slot-title">Preview #03</div><div class="slot-sub">Cmdr DLC</div></div>
+        </div>
+
+        <div class="slot" onclick="openLightbox(this)">
+          <img src="sneakpeek4.png" alt="Sneak Peek 4" onerror="this.style.display='none'"/>
+          <div class="slot-placeholder"><span class="sp-num">04</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek4.png</span></div>
+          <div class="slot-overlay"><div class="slot-title">Preview #04</div><div class="slot-sub">Cmdr DLC</div></div>
+        </div>
+
+        <div class="slot" onclick="openLightbox(this)">
+          <img src="sneakpeek5.png" alt="Sneak Peek 5" onerror="this.style.display='none'"/>
+          <div class="slot-placeholder"><span class="sp-num">05</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek5.png</span></div>
+          <div class="slot-overlay"><div class="slot-title">Preview #05</div><div class="slot-sub">Cmdr DLC</div></div>
+        </div>
+
+        <div class="slot" onclick="openLightbox(this)">
+          <img src="sneakpeek6.png" alt="Sneak Peek 6" onerror="this.style.display='none'"/>
+          <div class="slot-placeholder"><span class="sp-num">06</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek6.png</span></div>
+          <div class="slot-overlay"><div class="slot-title">Preview #06</div><div class="slot-sub">Cmdr DLC</div></div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer>
+      <span>© 2026 Cmdr DLC — Not affiliated with Roblox Corporation</span>
+      <span class="footer-sep">|</span>
+      <a href="tos.html">ToS</a>
+      <span class="footer-sep">|</span>
+      <a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Discord</a>
+      <span class="footer-sep">|</span>
+      <a href="index.html">← Home</a>
+    </footer>
+  </div>
+
+  <script>
+    // ┌─────────────────────────────────────────┐
+    // │  MAINTENANCE MODE                       │
+    // │  true  = maintenance screen             │
+    // │  false = normal page                    │
+    // └─────────────────────────────────────────┘
+    const MAINTENANCE = false;
+
+    if (MAINTENANCE) {
+      document.getElementById('maintenance').style.display = 'flex';
+      document.getElementById('main-content').style.display = 'none';
+    }
+
+    /* LIGHTBOX */
+    function openLightbox(slot) {
+      const img = slot.querySelector('img');
+      if (!img || img.style.display === 'none' || !img.src || img.src === window.location.href) return;
+      document.getElementById('lightbox-img').src = img.src;
+      document.getElementById('lightbox').classList.add('open');
+    }
+    function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+    document.getElementById('lightbox').addEventListener('click', function(e){ if(e.target===this) closeLightbox(); });
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
+
+    /* PARTICLE SYSTEM */
+    const canvas = document.getElementById('particles');
+    const ctx    = canvas.getContext('2d');
+    let W, H, pts = [];
+    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    function rnd(a,b){ return a+Math.random()*(b-a); }
+    function mkP(){ return { x:rnd(0,W), y:rnd(0,H), r:rnd(0.5,2), vx:rnd(-0.12,0.12), vy:rnd(-0.3,-0.06), a:rnd(0.15,0.6), fade:rnd(0.002,0.005) }; }
+    for(let i=0;i<130;i++) pts.push(mkP());
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      ctx.shadowColor='#00ff88'; ctx.shadowBlur=5;
+      for(let p of pts){
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,255,136,${p.a})`; ctx.fill();
+        p.x+=p.vx; p.y+=p.vy; p.a-=p.fade;
+        if(p.a<=0||p.y<-8){ Object.assign(p,mkP()); p.y=H+5; p.a=rnd(0.15,0.6); }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
