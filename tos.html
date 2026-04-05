@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sneak Peek — Cmdr DLC</title>
+  <title>Legal — Cmdr DLC</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root{--green:#00ff88;--green-dim:#00cc66;--bg:#060c08;--card-bg:#0b1a13;--border:rgba(0,255,136,0.20);--text:#d4ffe8;--muted:#3d7a5e}
@@ -21,25 +21,11 @@
     .mbar{width:280px;height:2px;background:rgba(0,0,0,.4);border-radius:2px;overflow:hidden}
     .mbar-fill{height:100%;background:var(--green);width:0;animation:mload 2.8s ease-in-out infinite;box-shadow:0 0 10px var(--green)}
 
-    /* IMAGE LIGHTBOX */
-    #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9000;align-items:center;justify-content:center;flex-direction:column;gap:1.2rem;padding:2rem}
-    #lightbox.open{display:flex}
-    #lightbox img{max-width:90vw;max-height:80vh;border:1px solid var(--border);box-shadow:0 0 60px rgba(0,255,136,.2)}
-    #lightbox-close{font-family:"Share Tech Mono",monospace;font-size:.85rem;color:var(--muted);background:none;border:1px solid var(--border);padding:.4rem 1.2rem;cursor:pointer;letter-spacing:.15em;text-transform:uppercase;transition:color .2s,border-color .2s}
-    #lightbox-close:hover{color:var(--green);border-color:var(--green)}
-
-    /* VIDEO LIGHTBOX */
-    #videolightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:9000;align-items:center;justify-content:center;flex-direction:column;gap:1.2rem;padding:2rem}
-    #videolightbox.open{display:flex}
-    #videolightbox video{max-width:90vw;max-height:75vh;border:1px solid var(--border);box-shadow:0 0 60px rgba(0,255,136,.2)}
-    #video-close{font-family:"Share Tech Mono",monospace;font-size:.85rem;color:var(--muted);background:none;border:1px solid var(--border);padding:.4rem 1.2rem;cursor:pointer;letter-spacing:.15em;text-transform:uppercase;transition:color .2s,border-color .2s}
-    #video-close:hover{color:var(--green);border-color:var(--green)}
-
     /* NAV */
     nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(6,12,8,.95);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;transition:border-color .5s}
     .logo{font-family:"Share Tech Mono",monospace;font-size:1.2rem;color:var(--green);text-shadow:0 0 14px var(--green);letter-spacing:.12em;text-decoration:none;display:flex;align-items:center;gap:.55rem;transition:color .5s}
     .logo span{color:var(--muted)}
-    .v-badge{font-family:"Share Tech Mono",monospace;font-size:.58rem;background:var(--green);color:#060c08;padding:.15rem .42rem;letter-spacing:.06em;font-weight:700;border-radius:2px;line-height:1.4;transition:background .5s}
+    .v-badge{font-family:"Share Tech Mono",monospace;font-size:.58rem;background:var(--green);color:#060c08;padding:.15rem .42rem;letter-spacing:.06em;font-weight:700;border-radius:2px;line-height:1.4}
     nav ul{list-style:none;display:flex;gap:1.6rem;align-items:center}
     nav a{color:var(--muted);text-decoration:none;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;transition:color .2s}
     nav a:hover,nav a.active{color:var(--green)}
@@ -47,107 +33,57 @@
     .nav-icon:hover{transform:scale(1.2);filter:drop-shadow(0 0 5px var(--green))}
 
     /* PAGE HEADER */
-    .page-header{position:relative;padding:5rem 2rem 3rem;text-align:center;overflow:hidden;z-index:1}
-    .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(0,255,136,.1) 0%,transparent 70%)}
-    .page-header-bg::after{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 100% at 50% 0%,black 20%,transparent 80%);opacity:.35}
+    .page-header{position:relative;padding:4rem 2rem 2.5rem;text-align:center;overflow:hidden;z-index:1}
+    .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(0,255,136,.08) 0%,transparent 70%)}
     .page-header>*{position:relative;z-index:1}
     .badge{display:inline-block;font-family:"Share Tech Mono",monospace;font-size:.75rem;color:var(--green);border:1px solid var(--border);padding:.3rem .9rem;letter-spacing:.2em;text-transform:uppercase;background:rgba(0,255,136,.05);margin-bottom:1rem;animation:fade-up .5s ease both}
-    .page-header h1{font-family:"Share Tech Mono",monospace;font-size:clamp(2.2rem,7vw,5rem);color:var(--green);text-shadow:0 0 30px rgba(0,255,136,.5),0 0 60px rgba(0,255,136,.15);letter-spacing:.1em;animation:fade-up .6s .1s ease both}
-    .page-header p{margin-top:1rem;color:var(--muted);font-size:1rem;font-family:"Share Tech Mono",monospace;letter-spacing:.08em;animation:fade-up .6s .2s ease both}
+    .page-header h1{font-family:"Share Tech Mono",monospace;font-size:clamp(1.8rem,5vw,3.5rem);color:var(--green);text-shadow:0 0 24px rgba(0,255,136,.4);letter-spacing:.1em;animation:fade-up .6s .1s ease both}
+    .page-header p{margin-top:.8rem;color:var(--muted);font-size:.9rem;font-family:"Share Tech Mono",monospace;letter-spacing:.08em;animation:fade-up .6s .2s ease both}
 
-    /* GALLERY SECTION */
-    .gallery-section{max-width:1200px;margin:0 auto;padding:3rem 2rem 2rem;position:relative;z-index:1}
-    .gallery-label{font-family:"Share Tech Mono",monospace;font-size:.75rem;letter-spacing:.25em;color:var(--green);text-transform:uppercase;margin-bottom:2rem;display:flex;align-items:center;gap:1rem}
-    .gallery-label .gl-icon{font-size:1rem}
-    .gallery-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--green-dim),transparent);opacity:.4}
+    /* TAB SWITCHER */
+    .tab-bar{max-width:760px;margin:0 auto;padding:0 2rem;display:flex;gap:.8rem;position:relative;z-index:1;animation:fade-up .5s .2s ease both}
+    .tab-btn{font-family:"Share Tech Mono",monospace;font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;padding:.6rem 1.4rem;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+    .tab-btn:hover{color:var(--text);border-color:rgba(0,255,136,.4)}
+    .tab-btn.active{color:var(--green);border-color:var(--green);background:rgba(0,255,136,.07);box-shadow:0 0 12px rgba(0,255,136,.15)}
 
-    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:4rem}
+    /* CONTENT WRAP */
+    .doc-wrap{max-width:760px;margin:0 auto;padding:2rem 2rem 6rem;position:relative;z-index:1;flex:1;animation:fade-up .6s .15s ease both}
+    .doc-meta{font-family:"Share Tech Mono",monospace;font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-bottom:2.5rem;padding:.5rem .8rem;border:1px solid var(--border);background:var(--card-bg);display:inline-block}
 
-    /* IMAGE SLOT */
-    .slot{background:var(--card-bg);border:1px solid var(--border);position:relative;overflow:hidden;aspect-ratio:16/10;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .25s}
-    .slot:hover{border-color:var(--green);box-shadow:0 0 30px rgba(0,255,136,.18);transform:scale(1.02)}
-    .slot::before,.slot::after{content:"";position:absolute;width:16px;height:16px;border-color:var(--green);border-style:solid;opacity:.5;z-index:2;transition:opacity .25s,width .25s,height .25s}
-    .slot::before{top:8px;left:8px;border-width:2px 0 0 2px}
-    .slot::after{bottom:8px;right:8px;border-width:0 2px 2px 0}
-    .slot:hover::before,.slot:hover::after{opacity:1;width:24px;height:24px}
-    .slot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease,filter .4s ease;filter:brightness(.9) saturate(.9)}
-    .slot:hover img{transform:scale(1.05);filter:brightness(1.05) saturate(1.1)}
-    .slot-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;background:repeating-linear-gradient(45deg,var(--card-bg),var(--card-bg) 8px,rgba(0,255,136,.03) 8px,rgba(0,255,136,.03) 16px)}
-    .slot-placeholder .sp-icon{font-size:2rem;opacity:.2}
-    .slot-placeholder .sp-label{font-family:"Share Tech Mono",monospace;font-size:.7rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
-    .slot-placeholder .sp-num{position:absolute;top:10px;right:12px;font-family:"Share Tech Mono",monospace;font-size:.65rem;color:var(--muted);opacity:.4}
-    .slot-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,20,10,.85) 0%,transparent 55%);display:flex;flex-direction:column;justify-content:flex-end;padding:1rem 1.1rem;opacity:0;transition:opacity .3s;z-index:3}
-    .slot:hover .slot-overlay{opacity:1}
-    .slot-title{font-family:"Share Tech Mono",monospace;font-size:.85rem;color:var(--green);letter-spacing:.1em}
-    .slot-sub{font-size:.8rem;color:var(--muted);margin-top:.15rem}
+    /* SECTIONS */
+    .doc-section{margin-bottom:2.5rem;animation:fade-up .4s ease both}
+    .doc-section h2{font-family:"Share Tech Mono",monospace;font-size:1rem;color:var(--green);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem;transition:color .5s}
+    .doc-section h2 .num{font-size:.75rem;color:var(--muted);flex-shrink:0}
+    .doc-section p{font-size:1.05rem;color:var(--text);line-height:1.8;margin-bottom:.6rem}
+    .doc-section ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem;margin-bottom:.6rem}
+    .doc-section ul li{display:flex;align-items:flex-start;gap:.7rem;font-size:1.05rem;line-height:1.65}
+    .doc-section ul li::before{content:"[—]";font-family:"Share Tech Mono",monospace;font-size:.75rem;color:var(--green);flex-shrink:0;margin-top:.22rem;transition:color .5s}
+    .highlight{background:rgba(0,255,136,.06);border:1px solid var(--border);border-left:3px solid var(--green);padding:.9rem 1.1rem;margin-top:.9rem;font-family:"Share Tech Mono",monospace;font-size:.82rem;color:var(--muted);line-height:1.75;letter-spacing:.04em;transition:border-color .5s}
+    .warn-box{background:rgba(255,204,0,.05);border:1px solid rgba(255,204,0,.3);border-left:3px solid #ffcc00;padding:.9rem 1.1rem;margin-top:.9rem;font-size:.95rem;color:#ffe9a0;line-height:1.75}
+    .info-box{background:rgba(0,255,136,.04);border:1px solid var(--border);border-left:3px solid var(--green);padding:.9rem 1.1rem;margin-top:.9rem;font-size:.95rem;color:var(--text);line-height:1.75}
+    .doc-section a{color:var(--green);text-decoration:none}
+    .doc-section a:hover{text-decoration:underline}
 
-    /* VIDEO SLOT */
-    .vslot{background:var(--card-bg);border:1px solid var(--border);position:relative;overflow:hidden;aspect-ratio:16/9;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .25s}
-    .vslot:hover{border-color:var(--green);box-shadow:0 0 30px rgba(0,255,136,.18);transform:scale(1.02)}
-    .vslot::before,.vslot::after{content:"";position:absolute;width:16px;height:16px;border-color:var(--green);border-style:solid;opacity:.5;z-index:2;transition:opacity .25s,width .25s,height .25s}
-    .vslot::before{top:8px;left:8px;border-width:2px 0 0 2px}
-    .vslot::after{bottom:8px;right:8px;border-width:0 2px 2px 0}
-    .vslot:hover::before,.vslot:hover::after{opacity:1;width:24px;height:24px}
-
-    /* video thumbnail preview */
-    .vslot video.thumb{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;filter:brightness(.75)}
-    .vslot:hover video.thumb{filter:brightness(.9)}
-
-    /* play button overlay */
-    .play-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;z-index:3;transition:opacity .25s}
-    .play-btn{width:56px;height:56px;border:2px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);transition:background .2s,box-shadow .2s,transform .2s}
-    .vslot:hover .play-btn{background:rgba(0,255,136,.15);box-shadow:0 0 24px rgba(0,255,136,.4);transform:scale(1.1)}
-    .play-btn svg{width:22px;height:22px;fill:var(--green);margin-left:3px}
-    .play-label{font-family:"Share Tech Mono",monospace;font-size:.68rem;color:var(--green);letter-spacing:.15em;text-transform:uppercase}
-
-    /* video bottom overlay */
-    .vslot-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,20,10,.85) 0%,transparent 50%);display:flex;flex-direction:column;justify-content:flex-end;padding:1rem 1.1rem;z-index:2}
-    .vslot-title{font-family:"Share Tech Mono",monospace;font-size:.85rem;color:var(--green);letter-spacing:.1em}
-    .vslot-sub{font-size:.8rem;color:var(--muted);margin-top:.15rem}
-
-    /* video placeholder */
-    .vslot-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;background:repeating-linear-gradient(45deg,var(--card-bg),var(--card-bg) 8px,rgba(0,255,136,.03) 8px,rgba(0,255,136,.03) 16px)}
-    .vslot-placeholder .vp-icon{font-size:2rem;opacity:.2}
-    .vslot-placeholder .vp-label{font-family:"Share Tech Mono",monospace;font-size:.7rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
-    .vslot-placeholder .vp-num{position:absolute;top:10px;right:12px;font-family:"Share Tech Mono",monospace;font-size:.65rem;color:var(--muted);opacity:.4}
-
-    /* section divider */
-    .section-gap{height:1px;background:var(--border);max-width:1200px;margin:0 auto 3rem;opacity:.4}
+    /* TAB PANEL */
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
 
     footer{border-top:1px solid var(--border);padding:1.2rem 2rem;text-align:center;font-family:"Share Tech Mono",monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem}
-    footer a{color:var(--green);text-decoration:none}
-    footer a:hover{text-decoration:underline}
+    footer a{color:var(--green);text-decoration:none}footer a:hover{text-decoration:underline}
     .footer-sep{color:var(--border)}
 
-    @keyframes fade-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fade-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes glow-pulse{0%,100%{text-shadow:0 0 20px var(--green)}50%{text-shadow:0 0 50px var(--green)}}
     @keyframes mload{0%{width:0;opacity:1}80%{width:100%;opacity:1}100%{width:100%;opacity:0}}
-    @media(max-width:700px){.gallery-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:420px){.gallery-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
 <canvas id="particles"></canvas>
 
-<!-- MAINTENANCE -->
 <div id="maintenance">
   <div class="icon">⚙️</div><h1>Under Maintenance</h1>
   <p>[ SYSTEM OFFLINE ]</p>
   <div class="mbar"><div class="mbar-fill"></div></div>
-</div>
-
-<!-- IMAGE LIGHTBOX -->
-<div id="lightbox">
-  <img id="lightbox-img" src="" alt="Preview"/>
-  <button id="lightbox-close" onclick="closeLightbox()">[ Close ]</button>
-</div>
-
-<!-- VIDEO LIGHTBOX -->
-<div id="videolightbox">
-  <video id="lightbox-video" controls autoplay playsinline style="max-width:90vw;max-height:75vh;border:1px solid var(--border);box-shadow:0 0 60px rgba(0,255,136,.2)">
-    <source id="lightbox-video-src" src="" type="video/mp4"/>
-  </video>
-  <button id="video-close" onclick="closeVideoLightbox()">[ Close ]</button>
 </div>
 
 <div id="main-content">
@@ -155,8 +91,8 @@
     <a class="logo" href="index.html">Cmdr <span>DLC</span> <span class="v-badge">v1</span></a>
     <ul>
       <li><a href="index.html">Home</a></li>
-      <li><a href="sneakpeek.html" class="active">Sneak Peek</a></li>
-      <li><a href="tos.html">Legal</a></li>
+      <li><a href="sneakpeek.html">Sneak Peek</a></li>
+      <li><a href="tos.html" class="active">Legal</a></li>
       <li><a class="nav-icon" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">💬</a></li>
       <li><a class="nav-icon" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">🎮</a></li>
     </ul>
@@ -164,101 +100,227 @@
 
   <div class="page-header">
     <div class="page-header-bg"></div>
-    <div class="badge">// Classified Preview</div>
-    <h1>SNEAK PEEK</h1>
-    <p>[ PICTURES &amp; VIDEOS — UPCOMING DLC REVEALED ]</p>
+    <div class="badge">// Legal Documents</div>
+    <h1>Legal</h1>
+    <p>[ Terms of Service &amp; Privacy Policy ]</p>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       PICTURES SECTION
-       ══════════════════════════════════════════ -->
-  <div class="gallery-section">
-    <div class="gallery-label"><span class="gl-icon">🖼</span> // Preview Pictures &mdash; 6 Slots</div>
-    <div class="gallery-grid">
+  <!-- TAB SWITCHER -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('tos')">📄 Terms of Service</button>
+    <button class="tab-btn" onclick="switchTab('pp')">🔒 Privacy Policy</button>
+  </div>
 
-      <!-- SLOT 1 -->
-      <div class="slot" onclick="openLightbox(this)">
-        <img src="sneakpeek1.png" alt="Preview 1" onerror="this.style.display='none'"/>
-        <div class="slot-placeholder"><span class="sp-num">01</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek1.png</span></div>
-        <div class="slot-overlay"><div class="slot-title">Preview #01</div><div class="slot-sub">Cmdr DLC</div></div>
-      </div>
-
-      <!-- SLOT 2 -->
-      <div class="slot" onclick="openLightbox(this)">
-        <img src="sneakpeek2.png" alt="Preview 2" onerror="this.style.display='none'"/>
-        <div class="slot-placeholder"><span class="sp-num">02</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek2.png</span></div>
-        <div class="slot-overlay"><div class="slot-title">Preview #02</div><div class="slot-sub">Cmdr DLC</div></div>
-      </div>
-
-      <!-- SLOT 3 -->
-      <div class="slot" onclick="openLightbox(this)">
-        <img src="sneakpeek3.png" alt="Preview 3" onerror="this.style.display='none'"/>
-        <div class="slot-placeholder"><span class="sp-num">03</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek3.png</span></div>
-        <div class="slot-overlay"><div class="slot-title">Preview #03</div><div class="slot-sub">Cmdr DLC</div></div>
-      </div>
-
-      <!-- SLOT 4 -->
-      <div class="slot" onclick="openLightbox(this)">
-        <img src="sneakpeek4.png" alt="Preview 4" onerror="this.style.display='none'"/>
-        <div class="slot-placeholder"><span class="sp-num">04</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek4.png</span></div>
-        <div class="slot-overlay"><div class="slot-title">Preview #04</div><div class="slot-sub">Cmdr DLC</div></div>
-      </div>
-
-      <!-- SLOT 5 -->
-      <div class="slot" onclick="openLightbox(this)">
-        <img src="sneakpeek5.png" alt="Preview 5" onerror="this.style.display='none'"/>
-        <div class="slot-placeholder"><span class="sp-num">05</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek5.png</span></div>
-        <div class="slot-overlay"><div class="slot-title">Preview #05</div><div class="slot-sub">Cmdr DLC</div></div>
-      </div>
-
-      <!-- SLOT 6 -->
-      <div class="slot" onclick="openLightbox(this)">
-        <img src="sneakpeek6.png" alt="Preview 6" onerror="this.style.display='none'"/>
-        <div class="slot-placeholder"><span class="sp-num">06</span><span class="sp-icon">🖼</span><span class="sp-label">sneakpeek6.png</span></div>
-        <div class="slot-overlay"><div class="slot-title">Preview #06</div><div class="slot-sub">Cmdr DLC</div></div>
-      </div>
-
-    </div><!-- /.gallery-grid -->
+  <div class="doc-wrap">
 
     <!-- ══════════════════════════════════════════
-         VIDEOS SECTION
-         Video files: sneakvid1.mp4, sneakvid2.mp4 ...
+         TERMS OF SERVICE
          ══════════════════════════════════════════ -->
-    <div class="gallery-label" style="margin-top:1rem"><span class="gl-icon">🎬</span> // Preview Videos &mdash; 3 Slots</div>
-    <div class="gallery-grid">
+    <div id="tab-tos" class="tab-panel active">
+      <div class="doc-meta">// Last updated: April 2026 &nbsp;·&nbsp; Cmdr DLC v1</div>
 
-      <!-- VIDEO SLOT 1 -->
-      <div class="vslot" onclick="openVideoLightbox('sneakvid1.mp4')">
-        <video class="thumb" src="sneakvid1.mp4" muted preload="metadata" onerror="this.style.display='none';this.nextElementSibling.style.display='none';this.parentElement.querySelector('.vslot-placeholder').style.display='flex'"></video>
-        <div class="vslot-placeholder" style="display:none"><span class="vp-num">01</span><span class="vp-icon">🎬</span><span class="vp-label">sneakvid1.mp4</span></div>
-        <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="play-label">Play</span></div>
-        <div class="vslot-overlay"><div class="vslot-title">Video #01</div><div class="vslot-sub">Cmdr DLC</div></div>
+      <div class="doc-section">
+        <h2><span class="num">[01]</span> Acceptance of Terms</h2>
+        <p>By purchasing, accessing, or using the Cmdr DLC Gamepass ("the DLC"), you confirm that you have read, understood, and agree to be legally bound by these Terms of Service ("Terms"). If you do not agree to any part of these Terms, you must not purchase or use the DLC.</p>
+        <p>These Terms apply to all users of the DLC, including but not limited to players, administrators, and developers who integrate the DLC into their games.</p>
       </div>
 
-      <!-- VIDEO SLOT 2 -->
-      <div class="vslot" onclick="openVideoLightbox('sneakvid2.mp4')">
-        <video class="thumb" src="sneakvid2.mp4" muted preload="metadata" onerror="this.style.display='none';this.nextElementSibling.style.display='none';this.parentElement.querySelector('.vslot-placeholder').style.display='flex'"></video>
-        <div class="vslot-placeholder" style="display:none"><span class="vp-num">02</span><span class="vp-icon">🎬</span><span class="vp-label">sneakvid2.mp4</span></div>
-        <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="play-label">Play</span></div>
-        <div class="vslot-overlay"><div class="vslot-title">Video #02</div><div class="vslot-sub">Cmdr DLC</div></div>
+      <div class="doc-section">
+        <h2><span class="num">[02]</span> What You Receive</h2>
+        <ul>
+          <li>Access to exclusive extended commands within the Cmdr admin system.</li>
+          <li>Permanent access to all features available at the time of purchase.</li>
+          <li>Access to future updates and improvements to existing DLC features, where applicable.</li>
+          <li>The right to use the DLC in any Roblox game that has officially integrated Cmdr DLC support.</li>
+        </ul>
+        <div class="highlight">// The DLC is distributed as a Roblox Gamepass. All transactions are processed and managed by Roblox Corporation. We are not responsible for any issues, outages, or errors originating from the Roblox platform or payment system.</div>
       </div>
 
-      <!-- VIDEO SLOT 3 -->
-      <div class="vslot" onclick="openVideoLightbox('sneakvid3.mp4')">
-        <video class="thumb" src="sneakvid3.mp4" muted preload="metadata" onerror="this.style.display='none';this.nextElementSibling.style.display='none';this.parentElement.querySelector('.vslot-placeholder').style.display='flex'"></video>
-        <div class="vslot-placeholder" style="display:none"><span class="vp-num">03</span><span class="vp-icon">🎬</span><span class="vp-label">sneakvid3.mp4</span></div>
-        <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="play-label">Play</span></div>
-        <div class="vslot-overlay"><div class="vslot-title">Video #03</div><div class="vslot-sub">Cmdr DLC</div></div>
+      <div class="doc-section">
+        <h2><span class="num">[03]</span> No Refund Policy</h2>
+        <div class="warn-box">
+          ⚠ All purchases are strictly final and non-refundable. Once the Cmdr DLC Gamepass has been successfully purchased, no refunds will be issued under any circumstances, including but not limited to: accidental purchases, dissatisfaction with the product, game unavailability, or feature changes. Roblox Corporation does not process refunds for Gamepass purchases.
+        </div>
+        <p style="margin-top:.8rem">By completing a purchase, you explicitly acknowledge and accept this no-refund policy.</p>
       </div>
 
-    </div><!-- /.gallery-grid videos -->
-  </div><!-- /.gallery-section -->
+      <div class="doc-section">
+        <h2><span class="num">[04]</span> Usage Restrictions</h2>
+        <p>By purchasing the DLC, you agree to the following usage restrictions:</p>
+        <ul>
+          <li>The DLC may only be used in Roblox games that have officially integrated and enabled Cmdr DLC support.</li>
+          <li>You may not resell, sublicense, share, transfer, or gift access to your Gamepass to any other person or account.</li>
+          <li>You may not attempt to exploit, reverse-engineer, decompile, or abuse any DLC commands or features.</li>
+          <li>You may not use the DLC to harass, harm, grief, or otherwise negatively impact other players.</li>
+          <li>You may not use the DLC for commercial purposes without prior written consent from the creator.</li>
+          <li>You may not attempt to bypass or circumvent any access restrictions, cooldowns, or permission systems.</li>
+        </ul>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[05]</span> Intellectual Property</h2>
+        <p>All content, commands, features, branding, and design elements associated with Cmdr DLC are the intellectual property of the creator. You are granted a limited, non-exclusive, non-transferable license to use the DLC for personal, non-commercial purposes only.</p>
+        <p>You may not copy, reproduce, distribute, modify, or create derivative works based on the DLC without explicit written permission.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[06]</span> Availability &amp; Uptime</h2>
+        <p>We do not guarantee that the DLC or any associated services will be available at all times. Access may be interrupted due to Roblox platform maintenance, updates, or unforeseen technical issues. We are not liable for any loss or inconvenience caused by service unavailability.</p>
+        <div class="info-box">Game developers who integrate Cmdr DLC into their games are responsible for maintaining compatibility with the DLC within their own games. We are not responsible for integration issues caused by third-party games.</div>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[07]</span> Modifications &amp; Updates</h2>
+        <p>We reserve the right to update, modify, add, or remove features of the DLC at any time without prior notice. This includes changes to commands, functionality, supported games, and pricing for future purchases.</p>
+        <p>We also reserve the right to amend these Terms of Service at any time. Continued use of the DLC following any changes constitutes your acceptance of the revised Terms.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[08]</span> Account Responsibility</h2>
+        <p>You are solely responsible for maintaining the security of your Roblox account. We are not liable for any unauthorized use of the DLC resulting from account compromise, sharing of login credentials, or any other security breach on your part.</p>
+        <ul>
+          <li>Do not share your Roblox account credentials with others.</li>
+          <li>Report any unauthorized use of your account to Roblox Support immediately.</li>
+          <li>Purchases made from your account are your responsibility, regardless of who made them.</li>
+        </ul>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[09]</span> Termination &amp; Bans</h2>
+        <p>We reserve the right to revoke, suspend, or permanently terminate access to the DLC without prior notice if a user is found to be in violation of these Terms, the Roblox Terms of Service, or engages in any of the following:</p>
+        <ul>
+          <li>Exploitation or abuse of DLC commands or features.</li>
+          <li>Harassment, threats, or harmful behavior toward other players or community members.</li>
+          <li>Attempting to circumvent security measures or access controls.</li>
+          <li>Any conduct deemed harmful to the Cmdr DLC community or its reputation.</li>
+        </ul>
+        <div class="warn-box">⚠ Termination of access does not entitle you to a refund. No compensation will be provided for revoked access resulting from violations of these Terms.</div>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[10]</span> Limitation of Liability</h2>
+        <p>To the fullest extent permitted by applicable law, Cmdr DLC and its creator shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use the DLC, including but not limited to loss of data, loss of profits, or any other intangible losses.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[11]</span> Disclaimer</h2>
+        <p>Cmdr DLC is an independent product created by a third-party developer. It is not affiliated with, endorsed by, sponsored by, or in any way officially connected to Roblox Corporation.</p>
+        <p>"Roblox," the Roblox logo, and all related names, logos, and trademarks are registered trademarks of Roblox Corporation.</p>
+        <div class="highlight">// Cmdr is an open-source admin framework by Sleitnick. Cmdr DLC extends its functionality and is not affiliated with the original Cmdr project.</div>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[12]</span> Governing Law</h2>
+        <p>These Terms shall be governed by and construed in accordance with applicable laws. Any disputes arising from these Terms or the use of the DLC shall be subject to the exclusive jurisdiction of the applicable courts.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[13]</span> Contact</h2>
+        <p>If you have any questions, concerns, or reports regarding these Terms of Service, please contact us through one of the following channels:</p>
+        <ul>
+          <li>Discord: <a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">discord.gg/XaZSGVFvzV</a></li>
+          <li>Roblox Profile: <a href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">View Profile</a></li>
+        </ul>
+      </div>
+    </div><!-- /#tab-tos -->
+
+    <!-- ══════════════════════════════════════════
+         PRIVACY POLICY
+         ══════════════════════════════════════════ -->
+    <div id="tab-pp" class="tab-panel">
+      <div class="doc-meta">// Last updated: April 2026 &nbsp;·&nbsp; Cmdr DLC v1</div>
+
+      <div class="doc-section">
+        <h2><span class="num">[01]</span> Introduction</h2>
+        <p>This Privacy Policy explains how Cmdr DLC ("we", "us", "our") handles information in connection with the use of the Cmdr DLC Gamepass, this website, and any related services. We are committed to being transparent about what data is and is not collected.</p>
+        <div class="info-box">Cmdr DLC is a Roblox Gamepass product. The majority of data processing is handled directly by Roblox Corporation under their own Privacy Policy. We encourage you to review Roblox's Privacy Policy at roblox.com/info/privacy.</div>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[02]</span> Data We Do NOT Collect</h2>
+        <p>We want to be clear about what we do not collect:</p>
+        <ul>
+          <li>We do not collect your real name, email address, or any personal identifiers.</li>
+          <li>We do not collect or store passwords or payment information — all payments are handled by Roblox.</li>
+          <li>We do not use tracking pixels, fingerprinting, or cross-site tracking technologies.</li>
+          <li>We do not sell, rent, or trade any user data to third parties.</li>
+          <li>We do not use advertising networks or ad-tracking services.</li>
+        </ul>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[03]</span> Website Data (GitHub Pages)</h2>
+        <p>This website is hosted on GitHub Pages. GitHub may automatically collect limited technical data such as IP addresses and browser information as part of standard server logging. This data is handled by GitHub under their own Privacy Policy.</p>
+        <p>We do not have direct access to GitHub Pages server logs and do not use this data for any purpose.</p>
+        <div class="highlight">// GitHub Privacy Policy: docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement</div>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[04]</span> Supabase (Site Settings)</h2>
+        <p>This website uses Supabase to store site configuration settings such as the active theme and maintenance mode status. The following applies:</p>
+        <ul>
+          <li>No personal user data is stored in our Supabase database.</li>
+          <li>Only site-wide settings (e.g., theme, maintenance toggle) are stored.</li>
+          <li>Supabase may collect technical usage data under their own Privacy Policy.</li>
+        </ul>
+        <div class="highlight">// Supabase Privacy Policy: supabase.com/privacy</div>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[05]</span> Roblox Platform Data</h2>
+        <p>When you purchase or use the Cmdr DLC Gamepass on Roblox, Roblox Corporation processes all associated transaction data, gameplay data, and account information under their own Terms of Service and Privacy Policy.</p>
+        <p>We may have access to your Roblox username and User ID in the context of in-game DLC usage for the purpose of verifying gamepass ownership and applying DLC permissions. This information is not stored outside of Roblox's platform systems.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[06]</span> Discord</h2>
+        <p>We operate a Discord server for community support and announcements. If you join our Discord server, Discord collects and processes your data under Discord's Terms of Service and Privacy Policy.</p>
+        <p>We do not share Discord user data with any third parties. Messages sent in our server may be seen by moderators for the purpose of community management.</p>
+        <div class="highlight">// Discord Privacy Policy: discord.com/privacy</div>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[07]</span> Cookies</h2>
+        <p>This website does not use cookies for tracking or analytics purposes. Any cookies that may be set are strictly functional (e.g., browser session handling) and do not collect personal information.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[08]</span> Children's Privacy</h2>
+        <p>Roblox is a platform used by players of all ages, including minors. We do not knowingly collect any personal information from children under the age of 13. If you believe a child has provided personal data through our services, please contact us immediately and we will take appropriate action.</p>
+        <p>Parents and guardians are encouraged to supervise their children's online activity and review Roblox's parental controls.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[09]</span> Data Security</h2>
+        <p>We take reasonable precautions to protect the limited data associated with our services. However, no method of transmission over the internet or electronic storage is 100% secure. We cannot guarantee absolute security and are not liable for any unauthorized access resulting from security breaches beyond our control.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[10]</span> Third-Party Links</h2>
+        <p>This website may contain links to third-party websites such as Roblox, Discord, and GitHub. We are not responsible for the privacy practices or content of those sites. We encourage you to review the privacy policies of any third-party sites you visit.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[11]</span> Changes to This Policy</h2>
+        <p>We reserve the right to update this Privacy Policy at any time. Changes will be reflected on this page with an updated revision date. Continued use of the website or DLC after changes constitutes your acceptance of the revised policy.</p>
+      </div>
+
+      <div class="doc-section">
+        <h2><span class="num">[12]</span> Contact</h2>
+        <p>If you have any questions or concerns about this Privacy Policy or how your data is handled, please reach out to us:</p>
+        <ul>
+          <li>Discord: <a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">discord.gg/XaZSGVFvzV</a></li>
+          <li>Roblox Profile: <a href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">View Profile</a></li>
+        </ul>
+      </div>
+    </div><!-- /#tab-pp -->
+
+  </div><!-- /.doc-wrap -->
 
   <footer>
-    <span>© 2026 Cmdr DLC</span>
-    <span class="footer-sep">|</span><a href="tos.html">Legal</a>
-    <span class="footer-sep">|</span><a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Discord</a>
+    <span>© 2026 Cmdr DLC — Not affiliated with Roblox Corporation</span>
     <span class="footer-sep">|</span><a href="index.html">← Home</a>
+    <span class="footer-sep">|</span><a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Discord</a>
   </footer>
 </div>
 
@@ -292,34 +354,24 @@ async function loadSettings(){
   }catch(e){applyTheme("default");}
 }
 
-// IMAGE LIGHTBOX
-function openLightbox(slot){
-  const img=slot.querySelector("img");
-  if(!img||img.style.display==="none")return;
-  document.getElementById("lightbox-img").src=img.src;
-  document.getElementById("lightbox").classList.add("open");
+// TAB SWITCHER
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  // update URL hash for direct linking
+  window.location.hash = id;
 }
-function closeLightbox(){document.getElementById("lightbox").classList.remove("open");}
-document.getElementById("lightbox").addEventListener("click",function(e){if(e.target===this)closeLightbox();});
 
-// VIDEO LIGHTBOX
-function openVideoLightbox(src){
-  const vid=document.getElementById("lightbox-video");
-  document.getElementById("lightbox-video-src").src=src;
-  vid.load();
-  vid.play();
-  document.getElementById("videolightbox").classList.add("open");
-}
-function closeVideoLightbox(){
-  const vid=document.getElementById("lightbox-video");
-  vid.pause();
-  vid.src="";
-  document.getElementById("videolightbox").classList.remove("open");
-}
-document.getElementById("videolightbox").addEventListener("click",function(e){if(e.target===this)closeVideoLightbox();});
-
-document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){closeLightbox();closeVideoLightbox();}
+// Handle direct link to tab via hash
+window.addEventListener('DOMContentLoaded',()=>{
+  if(window.location.hash==='#pp'){
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-pp').classList.add('active');
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+  }
 });
 
 // PARTICLES
