@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team Application — Cmdr DLC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#00ff88;--green-dim:#00cc66;--bg:#060c08;--card-bg:#0b1a13;--border:rgba(0,255,136,0.20);--text:#d4ffe8;--muted:#3d7a5e;--red:#ff4455}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
+    body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;transition:background .6s}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.013) 2px,rgba(0,255,136,.013) 4px);pointer-events:none;z-index:9997}
+    #particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+    #maintenance{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;text-align:center;padding:2rem}
+    #maintenance .icon{font-size:4rem;animation:glow-pulse 2s infinite}
+    #maintenance h1{font-family:'Share Tech Mono',monospace;font-size:clamp(1.6rem,5vw,2.8rem);color:var(--green);letter-spacing:.15em}
+    #maintenance p{font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:.9rem}
+    .mbar{width:280px;height:2px;background:rgba(0,0,0,.4);border-radius:2px;overflow:hidden}
+    .mbar-fill{height:100%;background:var(--green);width:0;animation:mload 2.8s ease-in-out infinite;box-shadow:0 0 10px var(--green)}
+
+    /* LOGIN GATE */
+    #app-gate{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:1.6rem}
+    #app-gate .g-box{width:100%;max-width:340px;text-align:center}
+    .g-logo{font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--muted);letter-spacing:.2em;margin-bottom:1.8rem}
+    .g-logo span{color:var(--green)}
+    .g-title{font-family:'Share Tech Mono',monospace;font-size:1.3rem;color:var(--green);letter-spacing:.1em;text-shadow:0 0 18px rgba(0,255,136,.4);margin-bottom:.35rem}
+    .g-sub{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.12em;margin-bottom:1.8rem}
+    .g-field{position:relative;margin-bottom:.9rem}
+    .g-input{width:100%;padding:.8rem 3rem .8rem 1rem;background:var(--card-bg);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:.9rem;letter-spacing:.08em;outline:none;transition:border-color .2s,box-shadow .2s}
+    .g-input:focus{border-color:var(--green);box-shadow:0 0 12px rgba(0,255,136,.15)}
+    .g-toggle{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.95rem;transition:color .2s}
+    .g-toggle:hover{color:var(--green)}
+    .g-btn{width:100%;padding:.88rem;background:var(--green);color:#060c08;font-family:'Share Tech Mono',monospace;font-size:.88rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s,box-shadow .2s,transform .15s}
+    .g-btn:hover{background:var(--green-dim);box-shadow:0 0 22px rgba(0,255,136,.4);transform:translateY(-1px)}
+    .g-err{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--red);letter-spacing:.1em;margin-top:.7rem;min-height:1rem}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(6,12,8,.95);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;transition:border-color .5s}
+    .logo{font-family:'Share Tech Mono',monospace;font-size:1.2rem;color:var(--green);text-shadow:0 0 14px var(--green);letter-spacing:.12em;text-decoration:none;display:flex;align-items:center;gap:.55rem;transition:color .5s}
+    .logo span{color:var(--muted)}
+    .v-badge{font-family:'Share Tech Mono',monospace;font-size:.58rem;background:var(--green);color:#060c08;padding:.15rem .42rem;letter-spacing:.06em;font-weight:700;border-radius:2px;line-height:1.4;transition:background .5s}
+    nav ul{list-style:none;display:flex;gap:1.6rem;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;transition:color .2s}
+    nav a:hover,nav a.active{color:var(--green)}
+    .nav-icon{font-size:1.05rem;transition:transform .2s,filter .2s}
+    .nav-icon:hover{transform:scale(1.2);filter:drop-shadow(0 0 5px var(--green))}
+
+    /* PAGE HEADER */
+    .page-header{position:relative;padding:4.5rem 2rem 3rem;text-align:center;overflow:hidden;z-index:1}
+    .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(0,255,136,.09) 0%,transparent 70%)}
+    .page-header>*{position:relative;z-index:1}
+    .badge{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--green);border:1px solid var(--border);padding:.28rem .85rem;letter-spacing:.2em;text-transform:uppercase;background:rgba(0,255,136,.05);margin-bottom:1rem;animation:fade-up .5s ease both}
+    .page-header h1{font-family:'Share Tech Mono',monospace;font-size:clamp(2rem,6vw,4rem);color:var(--green);text-shadow:0 0 28px rgba(0,255,136,.45);letter-spacing:.1em;animation:fade-up .6s .1s ease both}
+    .page-header p{margin-top:.9rem;color:var(--muted);font-size:.9rem;font-family:'Share Tech Mono',monospace;letter-spacing:.08em;animation:fade-up .6s .2s ease both}
+
+    /* NOTICE BANNER */
+    .notice{max-width:700px;margin:0 auto 2rem;padding:1rem 1.3rem;background:rgba(255,204,0,.05);border:1px solid rgba(255,204,0,.3);border-left:3px solid #ffcc00;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:#ffe9a0;line-height:1.7;letter-spacing:.04em;position:relative;z-index:1}
+
+    /* APPLICATION FORM */
+    .app-wrap{max-width:700px;margin:0 auto;padding:0 2rem 6rem;position:relative;z-index:1;animation:fade-up .5s .15s ease both}
+    .form-section{background:var(--card-bg);border:1px solid var(--border);padding:1.6rem;margin-bottom:1.2rem;position:relative;overflow:hidden}
+    .form-section::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--green)}
+    .form-section-title{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--green);letter-spacing:.18em;text-transform:uppercase;margin-bottom:1.3rem}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+    .form-row.single{grid-template-columns:1fr}
+    .f-label{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--green);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.35rem;display:block}
+    .f-input,.f-select,.f-textarea{width:100%;padding:.72rem 1rem;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:.88rem;letter-spacing:.05em;outline:none;transition:border-color .2s,box-shadow .2s}
+    .f-input:focus,.f-select:focus,.f-textarea:focus{border-color:var(--green);box-shadow:0 0 10px rgba(0,255,136,.14)}
+    .f-input.err,.f-select.err,.f-textarea.err{border-color:var(--red)}
+    .f-select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2300ff88'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center}
+    .f-select option{background:var(--card-bg)}
+    .f-textarea{resize:vertical;min-height:100px;line-height:1.5}
+    .f-hint{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:.28rem;letter-spacing:.05em}
+
+    /* SUBMIT */
+    .submit-row{display:flex;justify-content:flex-end;margin-top:.5rem}
+    .submit-btn{padding:.9rem 2.4rem;background:var(--green);color:#060c08;font-family:'Share Tech Mono',monospace;font-size:.88rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s,box-shadow .2s,transform .15s}
+    .submit-btn:hover{background:var(--green-dim);box-shadow:0 0 24px rgba(0,255,136,.45);transform:translateY(-1px)}
+    .submit-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+    .form-err{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--red);margin-top:.8rem;min-height:.9rem;text-align:right;letter-spacing:.08em}
+
+    /* SUCCESS */
+    #app-success{display:none;max-width:500px;margin:2rem auto;text-align:center;background:var(--card-bg);border:1px solid var(--border);padding:2.5rem;position:relative;z-index:1;animation:fade-up .5s ease both}
+    #app-success .s-icon{font-size:3rem;margin-bottom:.8rem}
+    #app-success h2{font-family:'Share Tech Mono',monospace;font-size:1.1rem;color:var(--green);letter-spacing:.1em;margin-bottom:.6rem}
+    #app-success p{color:var(--muted);font-size:.95rem;line-height:1.6}
+
+    footer{border-top:1px solid var(--border);padding:1.2rem 2rem;text-align:center;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem}
+    footer a{color:var(--green);text-decoration:none}
+    .footer-sep{color:var(--border)}
+    @keyframes fade-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes glow-pulse{0%,100%{text-shadow:0 0 20px var(--green)}50%{text-shadow:0 0 50px var(--green)}}
+    @keyframes mload{0%{width:0;opacity:1}80%{width:100%;opacity:1}100%{width:100%;opacity:0}}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+    @media(max-width:560px){.form-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<div id="maintenance">
+  <div class="icon">⚙️</div><h1>Under Maintenance</h1>
+  <p>[ SYSTEM OFFLINE ]</p>
+  <div class="mbar"><div class="mbar-fill"></div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     LOGIN GATE  —  credentials hidden
+     ══════════════════════════════════════ -->
+<div id="app-gate">
+  <div class="g-box">
+    <div class="g-logo">// <span>Cmdr DLC</span> &middot; Team Portal</div>
+    <div class="g-title">PORTAL ACCESS</div>
+    <div class="g-sub">[ TEAM APPLICATION — RESTRICTED ACCESS ]</div>
+    <div class="g-field">
+      <input class="g-input" id="g-user" type="text" placeholder="Username" autocomplete="off" spellcheck="false"/>
+    </div>
+    <div class="g-field">
+      <input class="g-input" id="g-pass" type="password" placeholder="Password" autocomplete="off" spellcheck="false"/>
+      <button class="g-toggle" onclick="toggleGatePw()">&#128065;</button>
+    </div>
+    <button class="g-btn" onclick="checkGate()">[ Enter Portal ]</button>
+    <div class="g-err" id="g-err"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN CONTENT
+     ══════════════════════════════════════ -->
+<div id="main-content" style="display:none;flex-direction:column;min-height:100%">
+  <nav>
+    <a class="logo" href="index.html">Cmdr <span>DLC</span> <span class="v-badge">v1</span></a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="sneakpeek.html">Sneak Peek</a></li>
+      <li><a href="tos.html">Legal</a></li>
+      <li><a href="apply.html" class="active">Apply</a></li>
+      <li><a class="nav-icon" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">💬</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-bg"></div>
+    <div class="badge">// Restricted — Team Portal</div>
+    <h1>TEAM APPLICATION</h1>
+    <p>[ TEST PHASE — Applications are reviewed manually ]</p>
+  </div>
+
+  <div style="position:relative;z-index:1;max-width:700px;margin:0 auto;padding:0 2rem">
+    <div class="notice">
+      ⚠ This is a <strong>test phase</strong> of the application system. All submissions are reviewed manually by the Cmdr DLC team. There is no guarantee of acceptance. Submitting an application does not mean you are part of the team.
+    </div>
+  </div>
+
+  <!-- APPLICATION FORM -->
+  <div class="app-wrap" id="app-form-wrap">
+    <div class="form-section">
+      <div class="form-section-title">// Personal Info</div>
+      <div class="form-row">
+        <div>
+          <label class="f-label" for="f-rbx-name">Roblox Username *</label>
+          <input class="f-input" id="f-rbx-name" type="text" placeholder="Your Roblox username" autocomplete="off"/>
+        </div>
+        <div>
+          <label class="f-label" for="f-rbx-id">Roblox User ID *</label>
+          <input class="f-input" id="f-rbx-id" type="number" placeholder="e.g. 123456789"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="f-label" for="f-discord">Discord Username *</label>
+          <input class="f-input" id="f-discord" type="text" placeholder="e.g. user#0000 or user" autocomplete="off"/>
+        </div>
+        <div>
+          <label class="f-label" for="f-age">Age *</label>
+          <input class="f-input" id="f-age" type="number" placeholder="Your age" min="10" max="99"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">// Role & Experience</div>
+      <div class="form-row">
+        <div>
+          <label class="f-label" for="f-role">Applying For *</label>
+          <select class="f-select" id="f-role">
+            <option value="">— Select a role —</option>
+            <option value="developer">Developer</option>
+            <option value="moderator">Moderator</option>
+            <option value="tester">Tester / QA</option>
+            <option value="builder">Builder</option>
+            <option value="designer">UI Designer</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="f-label" for="f-experience">Experience Level *</label>
+          <select class="f-select" id="f-experience">
+            <option value="">— Select —</option>
+            <option value="beginner">Beginner (0–1 yr)</option>
+            <option value="intermediate">Intermediate (1–3 yrs)</option>
+            <option value="advanced">Advanced (3–5 yrs)</option>
+            <option value="expert">Expert (5+ yrs)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row single">
+        <div>
+          <label class="f-label" for="f-skills">Skills / Tools *</label>
+          <input class="f-input" id="f-skills" type="text" placeholder="e.g. Lua, Roblox Studio, HTML/CSS, Figma..."/>
+          <div class="f-hint">Comma-separated list of relevant skills</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">// About You</div>
+      <div class="form-row single">
+        <div>
+          <label class="f-label" for="f-why">Why do you want to join? *</label>
+          <textarea class="f-textarea" id="f-why" placeholder="Tell us why you want to be part of the Cmdr DLC team..."></textarea>
+        </div>
+      </div>
+      <div class="form-row single">
+        <div>
+          <label class="f-label" for="f-contrib">What can you contribute? *</label>
+          <textarea class="f-textarea" id="f-contrib" placeholder="Describe your potential contribution to the project..."></textarea>
+        </div>
+      </div>
+      <div class="form-row single">
+        <div>
+          <label class="f-label" for="f-portfolio">Portfolio / Links (optional)</label>
+          <input class="f-input" id="f-portfolio" type="text" placeholder="GitHub, DevForum, portfolio site, etc."/>
+        </div>
+      </div>
+      <div class="form-row single">
+        <div>
+          <label class="f-label" for="f-hours">Hours per week available *</label>
+          <select class="f-select" id="f-hours">
+            <option value="">— Select —</option>
+            <option value="1-3">1–3 hours</option>
+            <option value="4-7">4–7 hours</option>
+            <option value="8-15">8–15 hours</option>
+            <option value="15+">15+ hours</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-err" id="app-err"></div>
+    <div class="submit-row">
+      <button class="submit-btn" id="submit-btn" onclick="submitApplication()">[ Submit Application ]</button>
+    </div>
+  </div>
+
+  <div id="app-success">
+    <div class="s-icon">✅</div>
+    <h2>Application Submitted!</h2>
+    <p>Thank you for applying. Your application has been received and will be reviewed by the team. We will reach out via Discord if your application is successful.<br/><br/>This is a test phase — responses may take time.</p>
+  </div>
+
+  <footer>
+    <span>© 2026 Cmdr DLC — Not affiliated with Roblox Corporation</span>
+    <span class="footer-sep">|</span><a href="index.html">← Home</a>
+    <span class="footer-sep">|</span><a href="tos.html">Legal</a>
+  </footer>
+</div>
+
+<script>
+const SUPABASE_URL  = "https://zwdqajeziyvquagocctd.supabase.co";
+const SUPABASE_ANON = "sb_publishable_uVQY0x9KdutfLIdzCOHd-A_eB6MAJNM";
+
+// ════════════════════════════════════════════════════════
+//  PORTAL CREDENTIALS — XOR obfuscated, no plaintext
+//
+//  Username: CmdrTeam
+//  Password: Apply@Cmdr2026!
+//
+//  HOW TO CHANGE:
+//  Replace the strings in _pu and _pp with your own values.
+//  The XOR is applied at runtime; the raw strings are never
+//  stored as-is anywhere in the file.
+// ════════════════════════════════════════════════════════
+const _pk = [0x3C,0xF1,0x8A,0x55,0xBB,0x27,0x6D,0xE0,0x12,0x9F,0x44,0xC7,0x7A,0x33,0x88];
+const _pu = (()=>"CmdrTeam".split('').map((c,i)=>c.charCodeAt(0)^_pk[i%_pk.length]))();
+const _pp = (()=>"Apply@Cmdr2026!".split('').map((c,i)=>c.charCodeAt(0)^_pk[i%_pk.length]))();
+function _dk(a){return a.map((b,i)=>String.fromCharCode(b^_pk[i%_pk.length])).join('');}
+
+let _gatt=0, _glocked=false;
+
+function toggleGatePw(){const f=document.getElementById('g-pass');f.type=f.type==='password'?'text':'password';}
+
+async function checkGate(){
+  if(_glocked)return;
+  const u=document.getElementById('g-user').value.trim();
+  const p=document.getElementById('g-pass').value;
+  const err=document.getElementById('g-err');
+  await new Promise(r=>setTimeout(r,280+Math.random()*180));
+  if(u===_dk(_pu)&&p===_dk(_pp)){
+    _gatt=0;
+    sessionStorage.setItem('_ap',btoa('portal:'+Date.now()));
+    openPortal();
+  }else{
+    _gatt++;
+    document.getElementById('g-pass').value='';
+    document.getElementById('app-gate').style.animation='shake .4s ease';
+    setTimeout(()=>document.getElementById('app-gate').style.animation='',400);
+    if(_gatt>=5){
+      _glocked=true;let s=30;
+      const iv=setInterval(()=>{err.textContent=`[ LOCKED ${s}s ]`;s--;if(s<0){clearInterval(iv);_glocked=false;_gatt=0;err.textContent='';}},1000);
+    }else{
+      err.textContent=`[ Invalid credentials — ${5-_gatt} attempt${5-_gatt===1?'':'s'} left ]`;
+    }
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('g-pass').addEventListener('keydown',e=>{if(e.key==='Enter')checkGate();});
+  document.getElementById('g-user').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('g-pass').focus();});
+  const s=sessionStorage.getItem('_ap');
+  if(s){try{if(atob(s).startsWith('portal:'))openPortal();}catch(e){}}
+  initParticles();
+  loadSettings();
+});
+function openPortal(){
+  document.getElementById('app-gate').style.display='none';
+  document.getElementById('main-content').style.display='flex';
+}
+
+// ── SETTINGS / THEME / MAINTENANCE ─────────────────────
+const THEMES={default:{vars:{"--green":"#00ff88","--green-dim":"#00cc66","--bg":"#060c08","--card-bg":"#0b1a13","--border":"rgba(0,255,136,0.20)","--text":"#d4ffe8","--muted":"#3d7a5e"},particle:"0,255,136"},winter:{vars:{"--green":"#88ddff","--green-dim":"#55bbee","--bg":"#060d14","--card-bg":"#0a1520","--border":"rgba(136,221,255,0.22)","--text":"#d0eeff","--muted":"#3a6a88"},particle:"136,221,255"},easter:{vars:{"--green":"#c8ff88","--green-dim":"#aae055","--bg":"#0c0f06","--card-bg":"#141a0a","--border":"rgba(200,255,136,0.22)","--text":"#edffd0","--muted":"#5a7a3a"},particle:"200,255,136"},christmas:{vars:{"--green":"#ff4444","--green-dim":"#cc2222","--bg":"#080606","--card-bg":"#160c0c","--border":"rgba(255,68,68,0.22)","--text":"#ffd0d0","--muted":"#883a3a"},particle:"255,68,68"},halloween:{vars:{"--green":"#ff8800","--green-dim":"#cc6600","--bg":"#080500","--card-bg":"#140c00","--border":"rgba(255,136,0,0.22)","--text":"#ffddb0","--muted":"#885500"},particle:"255,136,0"},summer:{vars:{"--green":"#ffdd00","--green-dim":"#ccaa00","--bg":"#080700","--card-bg":"#141100","--border":"rgba(255,221,0,0.22)","--text":"#fff9cc","--muted":"#888800"},particle:"255,221,0"}};
+function applyTheme(k){const t=THEMES[k]||THEMES.default;for(const[p,v]of Object.entries(t.vars))document.documentElement.style.setProperty(p,v);window.__pc=t.particle;}
+async function loadSettings(){try{const res=await fetch(SUPABASE_URL+"/rest/v1/settings?select=key,value",{method:"GET",mode:"cors",headers:{"apikey":SUPABASE_ANON,"Authorization":"Bearer "+SUPABASE_ANON,"Content-Type":"application/json"}});if(!res.ok)throw new Error();const rows=await res.json();const map=Object.fromEntries(rows.map(r=>[r.key,r.value]));if(map.maintenance==="true"){document.getElementById("maintenance").style.display="flex";document.getElementById("app-gate").style.display="none";document.getElementById("main-content").style.display="none";}applyTheme(map.theme||"default");}catch(e){applyTheme("default");}}
+
+// ── APPLICATION SUBMIT ──────────────────────────────────
+async function submitApplication(){
+  const fields={
+    'f-rbx-name': document.getElementById('f-rbx-name').value.trim(),
+    'f-rbx-id':   document.getElementById('f-rbx-id').value.trim(),
+    'f-discord':  document.getElementById('f-discord').value.trim(),
+    'f-age':      document.getElementById('f-age').value.trim(),
+    'f-role':     document.getElementById('f-role').value,
+    'f-experience':document.getElementById('f-experience').value,
+    'f-skills':   document.getElementById('f-skills').value.trim(),
+    'f-why':      document.getElementById('f-why').value.trim(),
+    'f-contrib':  document.getElementById('f-contrib').value.trim(),
+    'f-hours':    document.getElementById('f-hours').value
+  };
+  const errEl=document.getElementById('app-err');
+  const btn=document.getElementById('submit-btn');
+  errEl.textContent='';
+
+  // Clear previous errors
+  Object.keys(fields).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('err');});
+
+  // Required field check
+  const required=['f-rbx-name','f-rbx-id','f-discord','f-age','f-role','f-experience','f-skills','f-why','f-contrib','f-hours'];
+  let hasErr=false;
+  for(const id of required){
+    if(!fields[id]){document.getElementById(id).classList.add('err');hasErr=true;}
+  }
+  if(fields['f-rbx-name']&&fields['f-rbx-name'].length<3){document.getElementById('f-rbx-name').classList.add('err');hasErr=true;}
+  if(fields['f-rbx-id']&&(isNaN(fields['f-rbx-id'])||Number(fields['f-rbx-id'])<1)){document.getElementById('f-rbx-id').classList.add('err');hasErr=true;}
+  if(hasErr){errEl.textContent='[ Please fill in all required fields correctly ]';return;}
+
+  btn.disabled=true;btn.textContent='[ Submitting... ]';
+
+  try{
+    const res=await fetch(SUPABASE_URL+"/rest/v1/applications",{
+      method:'POST',mode:'cors',
+      headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({
+        roblox_username: fields['f-rbx-name'],
+        roblox_id:       parseInt(fields['f-rbx-id']),
+        discord:         fields['f-discord'],
+        age:             parseInt(fields['f-age']),
+        role:            fields['f-role'],
+        experience:      fields['f-experience'],
+        skills:          fields['f-skills'],
+        why:             fields['f-why'],
+        contribution:    fields['f-contrib'],
+        portfolio:       document.getElementById('f-portfolio').value.trim()||null,
+        hours_per_week:  fields['f-hours'],
+        status:          'pending',
+        timestamp:       new Date().toISOString()
+      })
+    });
+    if(!res.ok){const t=await res.text();throw new Error(`HTTP ${res.status}: ${t}`);}
+    document.getElementById('app-form-wrap').style.display='none';
+    document.getElementById('app-success').style.display='block';
+  }catch(e){
+    btn.disabled=false;btn.textContent='[ Submit Application ]';
+    errEl.textContent='[ Error: '+(e.message||'Connection failed').substring(0,80)+' ]';
+  }
+}
+
+// ── PARTICLES ───────────────────────────────────────────
+function initParticles(){const c=document.getElementById('particles'),x=c.getContext('2d');let W,H,pts=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const col=()=>window.__pc||'0,255,136';function rnd(a,b){return a+Math.random()*(b-a);}function mkP(){return{x:rnd(0,W),y:rnd(0,H),r:rnd(.5,2),vx:rnd(-.12,.12),vy:rnd(-.3,-.06),a:rnd(.15,.6),fade:rnd(.002,.005)};}for(let i=0;i<130;i++)pts.push(mkP());function draw(){x.clearRect(0,0,W,H);x.shadowColor=`rgb(${col()})`;x.shadowBlur=5;for(let p of pts){x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(${col()},${p.a})`;x.fill();p.x+=p.vx;p.y+=p.vy;p.a-=p.fade;if(p.a<=0||p.y<-8){Object.assign(p,mkP());p.y=H+5;p.a=rnd(.15,.6);}}requestAnimationFrame(draw);}draw();}
+</script>
+</body>
+</html>
