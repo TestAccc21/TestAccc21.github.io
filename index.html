@@ -6,18 +6,104 @@
   <title>Cmdr DLC</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
-    :root{--green:#00ff88;--green-dim:#00cc66;--bg:#060c08;--card-bg:#0b1a13;--border:rgba(0,255,136,0.20);--text:#d4ffe8;--muted:#3d7a5e}
+    :root{--green:#00ff88;--green-dim:#00cc66;--bg:#060c08;--card-bg:#0b1a13;--border:rgba(0,255,136,0.20);--text:#d4ffe8;--muted:#3d7a5e;--red:#ff4455}
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html,body{height:100%}
     body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;transition:background .6s,color .4s}
     body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.013) 2px,rgba(0,255,136,.013) 4px);pointer-events:none;z-index:9997}
     #particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+    /* MAINTENANCE */
     #maintenance{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;text-align:center;padding:2rem}
     #maintenance .icon{font-size:4rem;animation:glow-pulse 2s ease-in-out infinite}
     #maintenance h1{font-family:'Share Tech Mono',monospace;font-size:clamp(1.6rem,5vw,2.8rem);color:var(--green);letter-spacing:.15em}
     #maintenance p{font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:.9rem}
     .mbar{width:280px;height:2px;background:rgba(0,0,0,.4);border-radius:2px;overflow:hidden}
     .mbar-fill{height:100%;background:var(--green);width:0;animation:mload 2.8s ease-in-out infinite;box-shadow:0 0 10px var(--green)}
+
+    /* ═══════════════════════════════════════
+       PRE-PURCHASE MODAL
+       ═══════════════════════════════════════ */
+    #purchase-modal{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);
+      z-index:8000;align-items:center;justify-content:center;padding:1.5rem;
+      backdrop-filter:blur(4px);
+    }
+    #purchase-modal.open{display:flex}
+    .modal-box{
+      width:100%;max-width:420px;
+      background:var(--card-bg);
+      border:1px solid var(--border);
+      position:relative;
+      animation:modal-in .3s ease both;
+    }
+    .modal-box::before,.modal-box::after{content:'';position:absolute;width:18px;height:18px;border-color:var(--green);border-style:solid;opacity:.6;z-index:2}
+    .modal-box::before{top:8px;left:8px;border-width:2px 0 0 2px}
+    .modal-box::after{bottom:8px;right:8px;border-width:0 2px 2px 0}
+    .modal-header{padding:1.4rem 1.6rem 1rem;border-bottom:1px solid var(--border)}
+    .modal-tag{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--green);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.4rem;opacity:.7}
+    .modal-title{font-family:'Share Tech Mono',monospace;font-size:1.15rem;color:var(--green);letter-spacing:.08em;text-shadow:0 0 14px rgba(0,255,136,.3)}
+    .modal-sub{font-size:.85rem;color:var(--muted);margin-top:.25rem;line-height:1.5}
+    .modal-body{padding:1.4rem 1.6rem}
+
+    /* INPUT FIELDS */
+    .field{margin-bottom:1.1rem}
+    .field-label{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--green);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;display:block}
+    .field-input{
+      width:100%;padding:.75rem 1rem;
+      background:var(--bg);border:1px solid var(--border);
+      color:var(--text);font-family:'Share Tech Mono',monospace;
+      font-size:.9rem;letter-spacing:.06em;outline:none;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    .field-input:focus{border-color:var(--green);box-shadow:0 0 12px rgba(0,255,136,.15)}
+    .field-input.err{border-color:var(--red);box-shadow:0 0 10px rgba(255,68,85,.2)}
+    .field-hint{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.06em;margin-top:.3rem}
+    .field-hint a{color:var(--green);text-decoration:none}
+    .field-hint a:hover{text-decoration:underline}
+
+    /* MODAL WARN BOX */
+    .modal-warn{
+      background:rgba(255,204,0,.05);border:1px solid rgba(255,204,0,.25);
+      border-left:3px solid #ffcc00;
+      padding:.7rem .9rem;margin-bottom:1.1rem;
+      font-family:'Share Tech Mono',monospace;font-size:.68rem;
+      color:#ffe9a0;line-height:1.7;letter-spacing:.04em;
+    }
+
+    /* MODAL BUTTONS */
+    .modal-btn-row{display:flex;gap:.7rem;margin-top:1.2rem}
+    .modal-confirm{
+      flex:1;padding:.85rem;background:var(--green);color:#060c08;
+      font-family:'Share Tech Mono',monospace;font-size:.85rem;font-weight:700;
+      letter-spacing:.14em;text-transform:uppercase;border:none;cursor:pointer;
+      transition:background .2s,box-shadow .2s,transform .15s;
+    }
+    .modal-confirm:hover{background:var(--green-dim);box-shadow:0 0 22px rgba(0,255,136,.45);transform:translateY(-1px)}
+    .modal-confirm:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+    .modal-cancel{
+      padding:.85rem 1.1rem;background:transparent;
+      border:1px solid var(--border);color:var(--muted);
+      font-family:'Share Tech Mono',monospace;font-size:.82rem;
+      letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+      transition:color .2s,border-color .2s;
+    }
+    .modal-cancel:hover{color:var(--red);border-color:var(--red)}
+    .modal-err{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--red);letter-spacing:.08em;margin-top:.6rem;min-height:.9rem}
+    .modal-success{display:none;flex-direction:column;align-items:center;text-align:center;gap:.8rem;padding:1.6rem}
+    .modal-success .s-icon{font-size:2.8rem;animation:glow-pulse 1.5s ease-in-out infinite}
+    .modal-success h3{font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--green);letter-spacing:.12em}
+    .modal-success p{font-size:.9rem;color:var(--muted);line-height:1.6}
+    .modal-success .s-btn{
+      margin-top:.4rem;padding:.8rem 1.8rem;background:var(--green);color:#060c08;
+      font-family:'Share Tech Mono',monospace;font-size:.85rem;font-weight:700;
+      letter-spacing:.14em;text-transform:uppercase;border:none;cursor:pointer;
+      text-decoration:none;display:inline-block;
+      transition:background .2s,box-shadow .2s;
+    }
+    .modal-success .s-btn:hover{background:var(--green-dim);box-shadow:0 0 20px rgba(0,255,136,.4)}
+
+    /* NAV */
     nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(6,12,8,.95);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;transition:border-color .5s}
     .logo{font-family:'Share Tech Mono',monospace;font-size:1.2rem;color:var(--green);text-shadow:0 0 14px var(--green);letter-spacing:.12em;text-decoration:none;display:flex;align-items:center;gap:.55rem;transition:color .5s}
     .logo span{color:var(--muted)}
@@ -27,6 +113,8 @@
     nav a:hover,nav a.active{color:var(--green)}
     .nav-icon{font-size:1.05rem;transition:transform .2s,filter .2s}
     .nav-icon:hover{transform:scale(1.2);filter:drop-shadow(0 0 5px var(--green))}
+
+    /* MAIN */
     main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 1.5rem;position:relative;z-index:1}
     .eyebrow{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.3em;color:var(--green);text-transform:uppercase;margin-bottom:1.6rem;opacity:.7;animation:fade-up .5s ease both}
     .countdown-wrap{margin-bottom:2rem;animation:fade-up .55s .05s ease both;text-align:center}
@@ -36,6 +124,8 @@
     .cd-num{font-family:'Share Tech Mono',monospace;font-size:1.55rem;color:var(--green);line-height:1;transition:color .5s}
     .cd-unit{font-family:'Share Tech Mono',monospace;font-size:.52rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:.2rem}
     .cd-live{font-family:'Share Tech Mono',monospace;font-size:.9rem;color:var(--green);letter-spacing:.2em;padding:.6rem 1.2rem;border:1px solid var(--green);background:rgba(0,255,136,.07)}
+
+    /* CARD */
     .card{width:100%;max-width:440px;background:var(--card-bg);border:1px solid var(--border);position:relative;overflow:hidden;animation:fade-up .6s .1s ease both;box-shadow:0 0 60px rgba(0,255,136,.06);transition:background .5s,border-color .5s}
     .card::before,.card::after{content:'';position:absolute;width:20px;height:20px;border-color:var(--green);border-style:solid;opacity:.5;z-index:2;transition:border-color .5s}
     .card::before{top:10px;left:10px;border-width:2px 0 0 2px}
@@ -72,19 +162,74 @@
     footer{border-top:1px solid var(--border);padding:1.2rem 2rem;text-align:center;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem}
     footer a{color:var(--green);text-decoration:none}
     .footer-sep{color:var(--border)}
+
     @keyframes fade-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes modal-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes glow-pulse{0%,100%{text-shadow:0 0 20px var(--green)}50%{text-shadow:0 0 50px var(--green)}}
     @keyframes mload{0%{width:0;opacity:1}80%{width:100%;opacity:1}100%{width:100%;opacity:0}}
   </style>
 </head>
 <body>
 <canvas id="particles"></canvas>
+
+<!-- MAINTENANCE -->
 <div id="maintenance">
   <div class="icon">⚙️</div><h1>Under Maintenance</h1>
   <p>[ SYSTEM OFFLINE — STAND BY ]</p>
   <div class="mbar"><div class="mbar-fill"></div></div>
   <p style="font-size:.75rem">We'll be back soon. // Cmdr DLC</p>
 </div>
+
+<!-- ═══════════════════════════════════════════════
+     PRE-PURCHASE MODAL
+     ═══════════════════════════════════════════════ -->
+<div id="purchase-modal">
+  <div class="modal-box">
+
+    <!-- FORM STATE -->
+    <div id="modal-form-state">
+      <div class="modal-header">
+        <div class="modal-tag">// Pre-Purchase Verification</div>
+        <div class="modal-title">Register Your Account</div>
+        <div class="modal-sub">Enter your Roblox details before proceeding to purchase. This helps us keep track of who owns the DLC.</div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-warn">
+          ⚠ STRICTLY NO REFUNDS — All purchases are absolutely final with zero exceptions. By continuing you confirm you have read and agree to our <a href="tos.html" target="_blank" style="color:var(--green)">Terms of Service</a>.
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="rbx-username">Roblox Username</label>
+          <input class="field-input" id="rbx-username" type="text" placeholder="e.g. Roblox_Player123" autocomplete="off" spellcheck="false"/>
+          <div class="field-hint">Enter your exact Roblox username (case-insensitive)</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="rbx-id">Roblox User ID</label>
+          <input class="field-input" id="rbx-id" type="number" placeholder="e.g. 123456789" autocomplete="off"/>
+          <div class="field-hint">Find your ID at: <a href="https://www.roblox.com/users/profile" target="_blank">roblox.com/users/profile</a> — it's in the URL</div>
+        </div>
+
+        <div class="modal-err" id="modal-err"></div>
+
+        <div class="modal-btn-row">
+          <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+          <button class="modal-confirm" id="modal-confirm-btn" onclick="submitAndBuy()">[ Confirm &amp; Buy ]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="modal-success" id="modal-success-state">
+      <div class="s-icon">✅</div>
+      <h3>Account Registered!</h3>
+      <p id="modal-success-text">Your Roblox account has been saved.<br/>You are now being redirected to Roblox to complete your purchase.</p>
+      <a class="s-btn" id="modal-roblox-link" href="https://www.roblox.com/de/game-pass/1738044254/125-Rbx" target="_blank" rel="noopener">[ Open Roblox Purchase ]</a>
+    </div>
+
+  </div>
+</div>
+
 <div id="main-content">
   <nav>
     <a class="logo" href="index.html">Cmdr <span>DLC</span> <span class="v-badge">v1</span></a>
@@ -96,8 +241,10 @@
       <li><a class="nav-icon" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">🎮</a></li>
     </ul>
   </nav>
+
   <main>
     <div class="eyebrow">// Roblox · Cmdr Admin Panel</div>
+
     <div class="countdown-wrap">
       <div class="cd-label">// Next DLC Drop</div>
       <div class="countdown" id="countdown">
@@ -107,6 +254,7 @@
         <div class="cd-block"><div class="cd-num" id="cd-s">--</div><div class="cd-unit">Secs</div></div>
       </div>
     </div>
+
     <div class="card">
       <div class="card-img-wrap">
         <img src="Dlc.png" alt="Cmdr DLC" onerror="this.style.display='none';document.getElementById('img-ph').style.display='flex'"/>
@@ -120,42 +268,59 @@
           <li><span class="icon">[+]</span><span class="label">Exclusive DLC Commands<span>Unlock extended Cmdr commands only available in this DLC.</span></span></li>
           <li><span class="icon">[+]</span><span class="label">One-Time Purchase<span>Buy once, keep forever — no subscription, no hidden fees.</span></span></li>
           <li><span class="icon">[+]</span><span class="label">Compatible with Cmdr Games<span>Works in any game that has active Cmdr DLC gamepass support.</span></span></li>
-          <li class="warn"><span class="icon">[!]</span><span class="label">No Refunds<span>All purchases are final. Roblox does not refund gamepass purchases.</span></span></li>
+          <li class="warn"><span class="icon">[!]</span><span class="label">No Refunds — Zero Exceptions<span>All purchases are final. No refunds under any circumstances whatsoever.</span></span></li>
           <li class="warn"><span class="icon">[!]</span><span class="label">Supported Games Only<span>The DLC only works in games with active DLC integration enabled.</span></span></li>
         </ul>
         <div class="price-row"><span class="price">125 R$</span><span class="price-note">// one-time purchase</span></div>
         <div class="btn-row">
-          <a class="btn-buy" href="https://www.roblox.com/de/game-pass/1738044254/125-Rbx" target="_blank" rel="noopener">[ Buy Now on Roblox ]</a>
+          <!-- Buy button now opens modal instead of going directly to Roblox -->
+          <button class="btn-buy" onclick="openPurchaseModal()">[ Buy Now on Roblox ]</button>
           <a class="btn-discord" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">💬 Discord</a>
         </div>
-        <div class="disclaimer">⚠ No refund policy — gamepass purchases are non-refundable.<br/>By purchasing you agree to our <a href="tos.html">Terms of Service</a> and the Roblox ToS.</div>
+        <div class="disclaimer">⚠ STRICTLY NO REFUNDS — All purchases are absolutely final with zero exceptions.<br/>By purchasing you agree to our <a href="tos.html">Terms of Service</a> and the Roblox ToS.</div>
       </div>
     </div>
+
     <div class="social-row">
       <a class="social-btn" href="https://www.roblox.com/de/users/8377268005/profile" target="_blank" rel="noopener">🎮 Roblox Profile</a>
       <a class="social-btn" href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">💬 Discord Server</a>
       <a class="social-btn" href="tos.html">📄 Terms of Service</a>
     </div>
   </main>
+
   <footer>
     <span>© 2026 Cmdr DLC — Not affiliated with Roblox Corporation</span>
     <span class="footer-sep">|</span><a href="tos.html">Legal</a>
+    <span class="footer-sep">|</span><a href="tos.html#pp">Privacy Policy</a>
     <span class="footer-sep">|</span><a href="https://discord.gg/XaZSGVFvzV" target="_blank" rel="noopener">Discord</a>
     <span class="footer-sep">|</span><a href="sneakpeek.html">Sneak Peek</a>
   </footer>
 </div>
+
 <script>
-const SUPABASE_URL="https://zwdqajeziyvquagocctd.supabase.co";
-const SUPABASE_ANON="sb_publishable_uVQY0x9KdutfLIdzCOHd-A_eB6MAJNM";
+// ═══════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════
+const SUPABASE_URL  = "https://zwdqajeziyvquagocctd.supabase.co";
+const SUPABASE_ANON = "sb_publishable_uVQY0x9KdutfLIdzCOHd-A_eB6MAJNM";
+const BUY_URL       = "https://www.roblox.com/de/game-pass/1738044254/125-Rbx";
+
+// ═══════════════════════════════════════════════════
+//  THEMES
+// ═══════════════════════════════════════════════════
 const THEMES={
-  default:{vars:{"--green":"#00ff88","--green-dim":"#00cc66","--bg":"#060c08","--card-bg":"#0b1a13","--border":"rgba(0,255,136,0.20)","--text":"#d4ffe8","--muted":"#3d7a5e"},particle:"0,255,136"},
-  winter:{vars:{"--green":"#88ddff","--green-dim":"#55bbee","--bg":"#060d14","--card-bg":"#0a1520","--border":"rgba(136,221,255,0.22)","--text":"#d0eeff","--muted":"#3a6a88"},particle:"136,221,255"},
-  easter:{vars:{"--green":"#c8ff88","--green-dim":"#aae055","--bg":"#0c0f06","--card-bg":"#141a0a","--border":"rgba(200,255,136,0.22)","--text":"#edffd0","--muted":"#5a7a3a"},particle:"200,255,136"},
-  christmas:{vars:{"--green":"#ff4444","--green-dim":"#cc2222","--bg":"#080606","--card-bg":"#160c0c","--border":"rgba(255,68,68,0.22)","--text":"#ffd0d0","--muted":"#883a3a"},particle:"255,68,68"},
-  halloween:{vars:{"--green":"#ff8800","--green-dim":"#cc6600","--bg":"#080500","--card-bg":"#140c00","--border":"rgba(255,136,0,0.22)","--text":"#ffddb0","--muted":"#885500"},particle:"255,136,0"},
-  summer:{vars:{"--green":"#ffdd00","--green-dim":"#ccaa00","--bg":"#080700","--card-bg":"#141100","--border":"rgba(255,221,0,0.22)","--text":"#fff9cc","--muted":"#888800"},particle:"255,221,0"}
+  default:   {vars:{"--green":"#00ff88","--green-dim":"#00cc66","--bg":"#060c08","--card-bg":"#0b1a13","--border":"rgba(0,255,136,0.20)","--text":"#d4ffe8","--muted":"#3d7a5e"},particle:"0,255,136"},
+  winter:    {vars:{"--green":"#88ddff","--green-dim":"#55bbee","--bg":"#060d14","--card-bg":"#0a1520","--border":"rgba(136,221,255,0.22)","--text":"#d0eeff","--muted":"#3a6a88"},particle:"136,221,255"},
+  easter:    {vars:{"--green":"#c8ff88","--green-dim":"#aae055","--bg":"#0c0f06","--card-bg":"#141a0a","--border":"rgba(200,255,136,0.22)","--text":"#edffd0","--muted":"#5a7a3a"},particle:"200,255,136"},
+  christmas: {vars:{"--green":"#ff4444","--green-dim":"#cc2222","--bg":"#080606","--card-bg":"#160c0c","--border":"rgba(255,68,68,0.22)","--text":"#ffd0d0","--muted":"#883a3a"},particle:"255,68,68"},
+  halloween: {vars:{"--green":"#ff8800","--green-dim":"#cc6600","--bg":"#080500","--card-bg":"#140c00","--border":"rgba(255,136,0,0.22)","--text":"#ffddb0","--muted":"#885500"},particle:"255,136,0"},
+  summer:    {vars:{"--green":"#ffdd00","--green-dim":"#ccaa00","--bg":"#080700","--card-bg":"#141100","--border":"rgba(255,221,0,0.22)","--text":"#fff9cc","--muted":"#888800"},particle:"255,221,0"}
 };
 function applyTheme(k){const t=THEMES[k]||THEMES.default;for(const[p,v]of Object.entries(t.vars))document.documentElement.style.setProperty(p,v);window.__pc=t.particle;}
+
+// ═══════════════════════════════════════════════════
+//  SUPABASE LOAD SETTINGS
+// ═══════════════════════════════════════════════════
 async function loadSettings(){
   try{
     const res=await fetch(`${SUPABASE_URL}/rest/v1/settings?select=key,value`,{method:'GET',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json'}});
@@ -166,10 +331,153 @@ async function loadSettings(){
     applyTheme(map.theme||"default");
   }catch(e){applyTheme("default");}
 }
+
+// ═══════════════════════════════════════════════════
+//  PURCHASE MODAL
+// ═══════════════════════════════════════════════════
+function openPurchaseModal(){
+  // Reset to form state
+  document.getElementById('modal-form-state').style.display='block';
+  document.getElementById('modal-success-state').style.display='none';
+  document.getElementById('modal-err').textContent='';
+  document.getElementById('rbx-username').value='';
+  document.getElementById('rbx-id').value='';
+  document.getElementById('rbx-username').classList.remove('err');
+  document.getElementById('rbx-id').classList.remove('err');
+  document.getElementById('modal-confirm-btn').disabled=false;
+  document.getElementById('modal-confirm-btn').textContent='[ Confirm & Buy ]';
+  document.getElementById('purchase-modal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('purchase-modal').classList.remove('open');
+}
+
+// Close on backdrop click
+document.getElementById('purchase-modal').addEventListener('click', function(e){
+  if(e.target===this) closeModal();
+});
+
+// Close on Escape
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') closeModal();
+});
+
+async function submitAndBuy(){
+  const usernameEl = document.getElementById('rbx-username');
+  const idEl       = document.getElementById('rbx-id');
+  const errEl      = document.getElementById('modal-err');
+  const btn        = document.getElementById('modal-confirm-btn');
+
+  const username = usernameEl.value.trim();
+  const userId   = idEl.value.trim();
+
+  // Reset errors
+  usernameEl.classList.remove('err');
+  idEl.classList.remove('err');
+  errEl.textContent = '';
+
+  // Validate
+  let hasErr = false;
+  if(!username || username.length < 3){
+    usernameEl.classList.add('err');
+    hasErr = true;
+  }
+  if(!userId || isNaN(userId) || Number(userId) < 1){
+    idEl.classList.add('err');
+    hasErr = true;
+  }
+  if(hasErr){
+    errEl.textContent = '[ Please fill in both fields correctly ]';
+    return;
+  }
+
+  // Disable button + show loading
+  btn.disabled = true;
+  btn.textContent = '[ Saving... ]';
+
+  try{
+    // Save to Supabase purchases table
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/purchases`,
+      {
+        method: 'POST',
+        mode: 'cors',
+        headers:{
+          'apikey': SUPABASE_ANON,
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          roblox_username: username,
+          roblox_id:       parseInt(userId),
+          timestamp:       new Date().toISOString(),
+          status:          'pending' // Will be 'confirmed' after purchase
+        })
+      }
+    );
+
+    if(!res.ok){
+      const errBody = await res.text();
+      throw new Error(`HTTP ${res.status}: ${errBody}`);
+    }
+
+    // Show success state
+    document.getElementById('modal-form-state').style.display='none';
+    document.getElementById('modal-success-state').style.display='flex';
+    document.getElementById('modal-success-text').innerHTML=
+      `Registered: <strong style="color:var(--green)">${username}</strong> (ID: ${userId})<br/>Click below to complete your purchase on Roblox.`;
+
+    // Auto-open Roblox after 1.5s
+    setTimeout(()=>{ window.open(BUY_URL,'_blank'); }, 1500);
+
+  } catch(e){
+    btn.disabled = false;
+    btn.textContent = '[ Confirm & Buy ]';
+    if(e.message.includes('Failed to fetch') || e.message.includes('CORS')){
+      errEl.textContent = '[ Connection error — check CORS settings in Supabase ]';
+    } else {
+      errEl.textContent = '[ Error: ' + e.message.substring(0,80) + ' ]';
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  COUNTDOWN
+// ═══════════════════════════════════════════════════
 const TARGET=new Date('2026-04-25T00:00:00');
-function tick(){const diff=TARGET-Date.now();if(diff<=0){document.getElementById('countdown').innerHTML='<div class="cd-live">[ DLC IS LIVE ]</div>';return;}const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);document.getElementById('cd-d').textContent=String(d).padStart(2,'0');document.getElementById('cd-h').textContent=String(h).padStart(2,'0');document.getElementById('cd-m').textContent=String(m).padStart(2,'0');document.getElementById('cd-s').textContent=String(s).padStart(2,'0');}
-tick();setInterval(tick,1000);
-function initParticles(){const c=document.getElementById('particles'),x=c.getContext('2d');let W,H,pts=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const col=()=>window.__pc||'0,255,136';function rnd(a,b){return a+Math.random()*(b-a);}function mkP(){return{x:rnd(0,W),y:rnd(0,H),r:rnd(.5,2),vx:rnd(-.12,.12),vy:rnd(-.3,-.06),a:rnd(.15,.6),fade:rnd(.002,.005)};}for(let i=0;i<130;i++)pts.push(mkP());function draw(){x.clearRect(0,0,W,H);x.shadowColor=`rgb(${col()})`;x.shadowBlur=5;for(let p of pts){x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(${col()},${p.a})`;x.fill();p.x+=p.vx;p.y+=p.vy;p.a-=p.fade;if(p.a<=0||p.y<-8){Object.assign(p,mkP());p.y=H+5;p.a=rnd(.15,.6);}}requestAnimationFrame(draw);}draw();}
+function tick(){
+  const diff=TARGET-Date.now();
+  if(diff<=0){document.getElementById('countdown').innerHTML='<div class="cd-live">[ DLC IS LIVE ]</div>';return;}
+  const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  document.getElementById('cd-d').textContent=String(d).padStart(2,'0');
+  document.getElementById('cd-h').textContent=String(h).padStart(2,'0');
+  document.getElementById('cd-m').textContent=String(m).padStart(2,'0');
+  document.getElementById('cd-s').textContent=String(s).padStart(2,'0');
+}
+tick(); setInterval(tick,1000);
+
+// ═══════════════════════════════════════════════════
+//  PARTICLES
+// ═══════════════════════════════════════════════════
+function initParticles(){
+  const c=document.getElementById('particles'),x=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize(); window.addEventListener('resize',resize);
+  const col=()=>window.__pc||'0,255,136';
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  function mkP(){return{x:rnd(0,W),y:rnd(0,H),r:rnd(.5,2),vx:rnd(-.12,.12),vy:rnd(-.3,-.06),a:rnd(.15,.6),fade:rnd(.002,.005)};}
+  for(let i=0;i<130;i++)pts.push(mkP());
+  function draw(){
+    x.clearRect(0,0,W,H);x.shadowColor=`rgb(${col()})`;x.shadowBlur=5;
+    for(let p of pts){x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(${col()},${p.a})`;x.fill();p.x+=p.vx;p.y+=p.vy;p.a-=p.fade;if(p.a<=0||p.y<-8){Object.assign(p,mkP());p.y=H+5;p.a=rnd(.15,.6);}}
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
 loadSettings().then(()=>initParticles());
 </script>
 </body>
