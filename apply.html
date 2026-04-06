@@ -331,6 +331,111 @@ const THEMES={default:{vars:{"--green":"#00ff88","--green-dim":"#00cc66","--bg":
 function applyTheme(k){const t=THEMES[k]||THEMES.default;for(const[p,v]of Object.entries(t.vars))document.documentElement.style.setProperty(p,v);window.__pc=t.particle;}
 async function loadSettings(){try{const res=await fetch(SUPABASE_URL+"/rest/v1/settings?select=key,value",{method:"GET",mode:"cors",headers:{"apikey":SUPABASE_ANON,"Authorization":"Bearer "+SUPABASE_ANON,"Content-Type":"application/json"}});if(!res.ok)throw new Error();const rows=await res.json();const map=Object.fromEntries(rows.map(r=>[r.key,r.value]));if(map.maintenance==="true"){document.getElementById("maintenance").style.display="flex";document.getElementById("app-gate").style.display="none";document.getElementById("main-content").style.display="none";}applyTheme(map.theme||"default");}catch(e){applyTheme("default");}}
 
+// ── DISCORD WEBHOOK ─────────────────────────────────────
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1490699321648222361/Ee8hR0z0HUEA92Ge3yxaGNCW1AmWN3mPkQIqWxIefoPdI-S16OSN_rqq8S-uyPQqd3j7";
+
+const ROLE_LABELS = {
+  developer:'Developer', moderator:'Moderator', tester:'Tester / QA',
+  builder:'Builder', designer:'UI Designer', other:'Other'
+};
+const EXP_LABELS = {
+  beginner:'Beginner (0–1 yr)', intermediate:'Intermediate (1–3 yrs)',
+  advanced:'Advanced (3–5 yrs)', expert:'Expert (5+ yrs)'
+};
+const HOURS_LABELS = {
+  '1-3':'1–3 hrs/week','4-7':'4–7 hrs/week','8-15':'8–15 hrs/week','15+':'15+ hrs/week'
+};
+
+async function sendDiscordNotification(data){
+  const roleLabel     = ROLE_LABELS[data.role]     || data.role;
+  const expLabel      = EXP_LABELS[data.experience] || data.experience;
+  const hoursLabel    = HOURS_LABELS[data.hours]    || data.hours;
+  const portfolio     = data.portfolio ? data.portfolio : 'Not provided';
+  const robloxUrl     = `https://www.roblox.com/users/${data.roblox_id}/profile`;
+  const timestamp     = new Date().toISOString();
+
+  const payload = {
+    username: "Cmdr DLC — Applications",
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/0.png",
+    embeds: [
+      {
+        title: "📋 New Team Application",
+        color: 0x00ff88,
+        thumbnail: {
+          url: `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${data.roblox_id}&size=150x150&format=Png&isCircular=false`
+        },
+        fields: [
+          {
+            name: "👤 Roblox Account",
+            value: `[${data.roblox_username}](${robloxUrl})\nID: \`${data.roblox_id}\``,
+            inline: true
+          },
+          {
+            name: "💬 Discord",
+            value: `\`${data.discord}\``,
+            inline: true
+          },
+          {
+            name: "🎂 Age",
+            value: `\`${data.age}\``,
+            inline: true
+          },
+          {
+            name: "🎯 Applying For",
+            value: `\`${roleLabel}\``,
+            inline: true
+          },
+          {
+            name: "⭐ Experience",
+            value: `\`${expLabel}\``,
+            inline: true
+          },
+          {
+            name: "⏰ Availability",
+            value: `\`${hoursLabel}\``,
+            inline: true
+          },
+          {
+            name: "🛠️ Skills",
+            value: `\`${data.skills}\``,
+            inline: false
+          },
+          {
+            name: "❓ Why do they want to join?",
+            value: data.why.length > 400 ? data.why.substring(0, 400) + '...' : data.why,
+            inline: false
+          },
+          {
+            name: "💡 What can they contribute?",
+            value: data.contrib.length > 400 ? data.contrib.substring(0, 400) + '...' : data.contrib,
+            inline: false
+          },
+          {
+            name: "🔗 Portfolio",
+            value: portfolio,
+            inline: false
+          }
+        ],
+        footer: {
+          text: "Cmdr DLC Team Application System • Test Phase"
+        },
+        timestamp: timestamp
+      }
+    ]
+  };
+
+  try{
+    await fetch(DISCORD_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  }catch(e){
+    // Discord notification failure is non-blocking — don't stop the form submission
+    console.warn('Discord notification failed:', e.message);
+  }
+}
+
 // ── APPLICATION SUBMIT ──────────────────────────────────
 async function submitApplication(){
   const fields={
@@ -349,10 +454,8 @@ async function submitApplication(){
   const btn=document.getElementById('submit-btn');
   errEl.textContent='';
 
-  // Clear previous errors
   Object.keys(fields).forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('err');});
 
-  // Required field check
   const required=['f-rbx-name','f-rbx-id','f-discord','f-age','f-role','f-experience','f-skills','f-why','f-contrib','f-hours'];
   let hasErr=false;
   for(const id of required){
@@ -362,9 +465,12 @@ async function submitApplication(){
   if(fields['f-rbx-id']&&(isNaN(fields['f-rbx-id'])||Number(fields['f-rbx-id'])<1)){document.getElementById('f-rbx-id').classList.add('err');hasErr=true;}
   if(hasErr){errEl.textContent='[ Please fill in all required fields correctly ]';return;}
 
-  btn.disabled=true;btn.textContent='[ Submitting... ]';
+  btn.disabled=true; btn.textContent='[ Submitting... ]';
+
+  const portfolio = document.getElementById('f-portfolio').value.trim() || null;
 
   try{
+    // 1. Save to Supabase
     const res=await fetch(SUPABASE_URL+"/rest/v1/applications",{
       method:'POST',mode:'cors',
       headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json','Prefer':'return=minimal'},
@@ -378,17 +484,36 @@ async function submitApplication(){
         skills:          fields['f-skills'],
         why:             fields['f-why'],
         contribution:    fields['f-contrib'],
-        portfolio:       document.getElementById('f-portfolio').value.trim()||null,
+        portfolio:       portfolio,
         hours_per_week:  fields['f-hours'],
         status:          'pending',
         timestamp:       new Date().toISOString()
       })
     });
     if(!res.ok){const t=await res.text();throw new Error(`HTTP ${res.status}: ${t}`);}
+
+    // 2. Send Discord notification (non-blocking)
+    btn.textContent='[ Sending notification... ]';
+    await sendDiscordNotification({
+      roblox_username: fields['f-rbx-name'],
+      roblox_id:       parseInt(fields['f-rbx-id']),
+      discord:         fields['f-discord'],
+      age:             parseInt(fields['f-age']),
+      role:            fields['f-role'],
+      experience:      fields['f-experience'],
+      skills:          fields['f-skills'],
+      why:             fields['f-why'],
+      contrib:         fields['f-contrib'],
+      portfolio:       portfolio || 'Not provided',
+      hours:           fields['f-hours']
+    });
+
+    // 3. Show success
     document.getElementById('app-form-wrap').style.display='none';
     document.getElementById('app-success').style.display='block';
+
   }catch(e){
-    btn.disabled=false;btn.textContent='[ Submit Application ]';
+    btn.disabled=false; btn.textContent='[ Submit Application ]';
     errEl.textContent='[ Error: '+(e.message||'Connection failed').substring(0,80)+' ]';
   }
 }
