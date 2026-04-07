@@ -24,7 +24,7 @@
     .gate-btn{width:100%;padding:.9rem;background:var(--green);color:#060c08;font-family:'Share Tech Mono',monospace;font-size:.9rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s,box-shadow .2s,transform .15s}
     .gate-btn:hover{background:var(--green-dim);box-shadow:0 0 24px rgba(0,255,136,.4);transform:translateY(-1px)}
     .gate-err{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--red);letter-spacing:.1em;margin-top:.8rem;min-height:1rem}
-    #panel{display:none;position:relative;z-index:10;width:100%;max-width:900px;padding:1.5rem 1rem}
+    #panel{display:none;position:relative;z-index:10;width:100%;max-width:960px;padding:1.5rem 1rem}
     .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:1rem}
     .panel-title{font-family:'Share Tech Mono',monospace;font-size:1.1rem;color:var(--green);letter-spacing:.12em}
     .panel-badge{font-family:'Share Tech Mono',monospace;font-size:.6rem;background:var(--green);color:#060c08;padding:.15rem .5rem;border-radius:2px;font-weight:700}
@@ -46,53 +46,52 @@
     .theme-btn{display:flex;flex-direction:column;align-items:center;gap:.4rem;background:var(--bg);border:1px solid var(--border);padding:.9rem .5rem;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;transition:border-color .2s,color .2s,background .2s}
     .theme-btn:hover{border-color:var(--green);color:var(--text)}
     .theme-btn.active{border-color:var(--green);color:var(--green);background:rgba(0,255,136,.07);box-shadow:0 0 12px rgba(0,255,136,.15)}
-    .theme-btn .t-icon{font-size:1.8rem}
-    .theme-btn .t-name{font-size:.65rem}
+    .theme-btn .t-icon{font-size:1.8rem}.theme-btn .t-name{font-size:.65rem}
     .t-active-badge{font-size:.55rem;color:var(--green);font-family:'Share Tech Mono',monospace;letter-spacing:.1em}
-
-    /* BUYERS TABLE */
-    .buyers-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;gap:.6rem;flex-wrap:wrap}
+    /* TAB BAR for Buyers / Applications */
+    .data-tabs{display:flex;gap:.6rem;margin-bottom:1rem}
+    .data-tab{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:.45rem 1rem;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+    .data-tab:hover{color:var(--text);border-color:rgba(0,255,136,.35)}
+    .data-tab.active{color:var(--green);border-color:var(--green);background:rgba(0,255,136,.07)}
+    .data-panel{display:none}.data-panel.active{display:block}
+    /* TABLE STYLES */
+    .buyers-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;gap:.5rem;flex-wrap:wrap}
     .buyers-count{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em}
-    .tb-btn{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--green);background:none;border:1px solid var(--border);padding:.28rem .7rem;cursor:pointer;letter-spacing:.1em;transition:border-color .2s,color .2s}
+    .tb-btn{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--green);background:none;border:1px solid var(--border);padding:.28rem .7rem;cursor:pointer;letter-spacing:.1em;transition:border-color .2s}
     .tb-btn:hover{border-color:var(--green)}
     .buyers-scroll{overflow-x:auto}
-    table.bt{width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:.7rem;min-width:700px}
-    table.bt th{color:var(--green);letter-spacing:.12em;text-transform:uppercase;padding:.5rem .65rem;border-bottom:1px solid var(--border);text-align:left;font-size:.62rem;white-space:nowrap}
-    table.bt td{color:var(--text);padding:.5rem .65rem;border-bottom:1px solid rgba(0,255,136,.06);vertical-align:middle}
+    table.bt{width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:.68rem;min-width:650px}
+    table.bt th{color:var(--green);letter-spacing:.1em;text-transform:uppercase;padding:.45rem .6rem;border-bottom:1px solid var(--border);text-align:left;font-size:.6rem;white-space:nowrap}
+    table.bt td{color:var(--text);padding:.45rem .6rem;border-bottom:1px solid rgba(0,255,136,.05);vertical-align:middle}
     table.bt tr:hover td{background:rgba(0,255,136,.03)}
-    .rbx-link{color:var(--green);text-decoration:none}
-    .rbx-link:hover{text-decoration:underline}
-    .tag-pill{display:inline-block;padding:.15rem .5rem;font-size:.6rem;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-family:'Share Tech Mono',monospace}
-    .tag-pending  {color:#aaa;border:1px solid rgba(170,170,170,.35)}
-    .tag-owner    {color:#ffd700;border:1px solid rgba(255,215,0,.5);background:rgba(255,215,0,.08)}
-    .tag-active   {color:var(--green);border:1px solid rgba(0,255,136,.4);background:rgba(0,255,136,.06)}
-    .tag-blocked  {color:var(--red);border:1px solid rgba(255,68,85,.4);background:rgba(255,68,85,.06)}
-    .tag-confirmed{color:#88ddff;border:1px solid rgba(136,221,255,.4);background:rgba(136,221,255,.06)}
-    .action-btn{font-family:'Share Tech Mono',monospace;font-size:.6rem;padding:.2rem .55rem;border:1px solid var(--border);background:none;cursor:pointer;letter-spacing:.08em;transition:color .2s,border-color .2s;margin-left:.3rem}
+    .rbx-link{color:var(--green);text-decoration:none}.rbx-link:hover{text-decoration:underline}
+    .tag-pill{display:inline-block;padding:.15rem .45rem;font-size:.58rem;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;white-space:nowrap}
+    .tag-pending  {color:#aaa;border:1px solid rgba(170,170,170,.3)}
+    .tag-owner    {color:#ffd700;border:1px solid rgba(255,215,0,.45);background:rgba(255,215,0,.07)}
+    .tag-active   {color:var(--green);border:1px solid rgba(0,255,136,.35);background:rgba(0,255,136,.05)}
+    .tag-blocked  {color:var(--red);border:1px solid rgba(255,68,85,.35);background:rgba(255,68,85,.05)}
+    .tag-confirmed{color:#88ddff;border:1px solid rgba(136,221,255,.35);background:rgba(136,221,255,.05)}
+    .action-btn{font-family:'Share Tech Mono',monospace;font-size:.58rem;padding:.18rem .5rem;border:1px solid var(--border);background:none;cursor:pointer;letter-spacing:.07em;transition:color .2s,border-color .2s;margin-left:.25rem}
     .action-btn.del:hover{color:var(--red);border-color:var(--red)}
     .action-btn.tag-action:hover{color:var(--green);border-color:var(--green)}
-    .device-cell{font-size:.6rem;color:var(--muted);line-height:1.5}
-
-    /* TAG EDITOR MODAL */
+    .device-cell{font-size:.58rem;color:var(--muted);line-height:1.5}
+    /* TAG MODAL */
     #tag-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:center;justify-content:center;padding:1rem}
     #tag-modal.open{display:flex}
-    .tag-modal-box{width:100%;max-width:340px;background:var(--card-bg);border:1px solid var(--border);padding:1.4rem;position:relative;animation:modal-in .25s ease both}
-    .tag-modal-title{font-family:'Share Tech Mono',monospace;font-size:.85rem;color:var(--green);letter-spacing:.12em;margin-bottom:1rem}
-    .tag-options{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
-    .tag-opt{display:flex;align-items:center;gap:.7rem;padding:.55rem .8rem;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:border-color .2s,background .2s;font-family:'Share Tech Mono',monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
-    .tag-opt:hover{border-color:var(--green);background:rgba(0,255,136,.05)}
-    .tag-modal-cancel{width:100%;padding:.65rem;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:color .2s,border-color .2s}
+    .tag-modal-box{width:100%;max-width:320px;background:var(--card-bg);border:1px solid var(--border);padding:1.4rem;animation:modal-in .25s ease both}
+    .tag-modal-title{font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--green);letter-spacing:.12em;margin-bottom:1rem}
+    .tag-options{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1rem}
+    .tag-opt{display:flex;align-items:center;gap:.7rem;padding:.5rem .8rem;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:border-color .2s,background .2s;font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:.07em}
+    .tag-opt:hover{border-color:var(--green);background:rgba(0,255,136,.04)}
+    .tag-modal-cancel{width:100%;padding:.6rem;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:color .2s,border-color .2s}
     .tag-modal-cancel:hover{color:var(--red);border-color:var(--red)}
-
-    .status-bar{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.08em;text-align:center;margin-top:.8rem;min-height:1rem;padding:.3rem}
-    .status-bar.ok{color:var(--green)}
-    .status-bar.err{color:var(--red)}
-    .cors-hint{display:none;margin-top:1rem;background:#0d1a10;border:1px solid #ffcc00;border-left:3px solid #ffcc00;padding:1.1rem 1.3rem;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:#ffe9a0;line-height:2;letter-spacing:.04em}
-    .cors-hint strong{color:#fff}
-    .panel-footer{text-align:center;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:1.2rem;letter-spacing:.08em}
-    .panel-footer a{color:var(--green);text-decoration:none}
     .buyers-empty{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--muted);text-align:center;padding:1.5rem;letter-spacing:.1em}
-
+    .status-bar{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.08em;text-align:center;margin-top:.8rem;min-height:1rem;padding:.3rem}
+    .status-bar.ok{color:var(--green)}.status-bar.err{color:var(--red)}
+    .cors-hint{display:none;margin-top:.8rem;background:#0d1a10;border:1px solid #ffcc00;border-left:3px solid #ffcc00;padding:1rem 1.2rem;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:#ffe9a0;line-height:2;letter-spacing:.04em}
+    .cors-hint strong{color:#fff}
+    .panel-footer{text-align:center;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:1rem;letter-spacing:.08em}
+    .panel-footer a{color:var(--green);text-decoration:none}
     @keyframes fade-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes modal-in{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
@@ -101,16 +100,16 @@
 <body>
 <canvas id="particles"></canvas>
 
-<!-- TAG EDITOR MODAL -->
+<!-- TAG MODAL -->
 <div id="tag-modal">
   <div class="tag-modal-box">
     <div class="tag-modal-title">// Set Tag for <span id="tag-modal-name" style="color:#fff"></span></div>
     <div class="tag-options">
-      <div class="tag-opt" onclick="applyTag('pending')"><span class="tag-pill tag-pending">Pending</span> Default / No tag</div>
-      <div class="tag-opt" onclick="applyTag('active')"><span class="tag-pill tag-active">Active</span> DLC confirmed active</div>
-      <div class="tag-opt" onclick="applyTag('confirmed')"><span class="tag-pill tag-confirmed">Confirmed</span> Purchase confirmed</div>
-      <div class="tag-opt" onclick="applyTag('blocked')"><span class="tag-pill tag-blocked">Blocked</span> User is blocked</div>
-      <div class="tag-opt" onclick="applyTag('owner')"><span class="tag-pill tag-owner">Owner</span> Site owner</div>
+      <div class="tag-opt" onclick="applyTag('pending')">  <span class="tag-pill tag-pending">Pending</span>  &nbsp;Default / no tag</div>
+      <div class="tag-opt" onclick="applyTag('active')">   <span class="tag-pill tag-active">Active</span>    &nbsp;DLC confirmed active</div>
+      <div class="tag-opt" onclick="applyTag('confirmed')"><span class="tag-pill tag-confirmed">Confirmed</span>&nbsp;Purchase confirmed</div>
+      <div class="tag-opt" onclick="applyTag('blocked')">  <span class="tag-pill tag-blocked">Blocked</span>   &nbsp;User is blocked</div>
+      <div class="tag-opt" onclick="applyTag('owner')">    <span class="tag-pill tag-owner">Owner</span>      &nbsp;Site owner</div>
     </div>
     <button class="tag-modal-cancel" onclick="closeTagModal()">Cancel</button>
   </div>
@@ -139,7 +138,6 @@
     </div>
   </div>
 
-  <!-- MAINTENANCE -->
   <div class="p-card">
     <div class="p-card-title">// Maintenance Mode</div>
     <div class="toggle-row">
@@ -151,32 +149,41 @@
     </div>
   </div>
 
-  <!-- THEMES -->
   <div class="p-card">
     <div class="p-card-title">// Active Theme</div>
     <div class="theme-grid" id="theme-grid"></div>
   </div>
 
-  <!-- BUYERS -->
   <div class="p-card">
-    <div class="p-card-title">// Purchase Registrations</div>
-    <div class="buyers-toolbar">
-      <div class="buyers-count" id="buyers-count">Loading...</div>
-      <button class="tb-btn" onclick="loadBuyers()">&#8635; Refresh</button>
+    <div class="p-card-title">// Data</div>
+    <div class="data-tabs">
+      <button class="data-tab active" onclick="switchDataTab('purchases',this)">📋 Purchases</button>
+      <button class="data-tab" onclick="switchDataTab('applications',this)">📝 Applications</button>
     </div>
-    <div class="buyers-scroll">
-      <div id="buyers-table"><div class="buyers-empty">[ Loading... ]</div></div>
+
+    <!-- PURCHASES TAB -->
+    <div id="tab-purchases" class="data-panel active">
+      <div class="buyers-toolbar">
+        <div class="buyers-count" id="buyers-count">—</div>
+        <button class="tb-btn" onclick="loadBuyers()">&#8635; Refresh</button>
+      </div>
+      <div class="buyers-scroll"><div id="buyers-table"><div class="buyers-empty">[ Loading... ]</div></div></div>
+    </div>
+
+    <!-- APPLICATIONS TAB -->
+    <div id="tab-applications" class="data-panel">
+      <div class="buyers-toolbar">
+        <div class="buyers-count" id="apps-count">—</div>
+        <button class="tb-btn" onclick="loadApplications()">&#8635; Refresh</button>
+      </div>
+      <div class="buyers-scroll"><div id="apps-table"><div class="buyers-empty">[ Loading... ]</div></div></div>
     </div>
   </div>
 
   <div class="status-bar" id="status-bar"></div>
   <div class="cors-hint" id="cors-hint">
-    <div style="color:#ffcc00;margin-bottom:.6rem;font-size:.76rem;">&#9888; CORS ERROR — ONE-TIME FIX REQUIRED</div>
-    1. Go to <strong>supabase.com</strong> &rarr; Your Project<br/>
-    2. <strong>Project Settings</strong> &rarr; <strong>API</strong><br/>
-    3. Scroll to <strong>"Allowed Origins / CORS"</strong><br/>
-    4. Add: <strong style="color:#00ff88">https://cmdrdlc.github.io</strong><br/>
-    5. <strong>Save</strong> &rarr; Reload this page
+    <div style="color:#ffcc00;margin-bottom:.5rem;font-size:.74rem;">&#9888; CORS ERROR — FIX IN SUPABASE</div>
+    Settings &rarr; Data API &rarr; Allowed Origins &rarr; Add: <strong style="color:#00ff88">https://cmdrdlc.github.io</strong> &rarr; Save
   </div>
   <div class="panel-footer"><a href="index.html">&larr; Back to Site</a></div>
 </div>
@@ -185,20 +192,12 @@
 const SUPABASE_URL  = "https://zwdqajeziyvquagocctd.supabase.co";
 const SUPABASE_ANON = "sb_publishable_uVQY0x9KdutfLIdzCOHd-A_eB6MAJNM";
 
-const THEMES={
-  default:  {label:"Default",  icon:"⬛",vars:{"--green":"#00ff88","--green-dim":"#00cc66","--bg":"#060c08","--card-bg":"#0b1a13","--border":"rgba(0,255,136,0.20)","--text":"#d4ffe8","--muted":"#3d7a5e"},particle:"0,255,136"},
-  winter:   {label:"Winter",   icon:"❄️", vars:{"--green":"#88ddff","--green-dim":"#55bbee","--bg":"#060d14","--card-bg":"#0a1520","--border":"rgba(136,221,255,0.22)","--text":"#d0eeff","--muted":"#3a6a88"},particle:"136,221,255"},
-  easter:   {label:"Easter",   icon:"🐣",vars:{"--green":"#c8ff88","--green-dim":"#aae055","--bg":"#0c0f06","--card-bg":"#141a0a","--border":"rgba(200,255,136,0.22)","--text":"#edffd0","--muted":"#5a7a3a"},particle:"200,255,136"},
-  christmas:{label:"Christmas",icon:"🎄",vars:{"--green":"#ff4444","--green-dim":"#cc2222","--bg":"#080606","--card-bg":"#160c0c","--border":"rgba(255,68,68,0.22)","--text":"#ffd0d0","--muted":"#883a3a"},particle:"255,68,68"},
-  halloween:{label:"Halloween",icon:"🎃",vars:{"--green":"#ff8800","--green-dim":"#cc6600","--bg":"#080500","--card-bg":"#140c00","--border":"rgba(255,136,0,0.22)","--text":"#ffddb0","--muted":"#885500"},particle:"255,136,0"},
-  summer:   {label:"Summer",   icon:"☀️", vars:{"--green":"#ffdd00","--green-dim":"#ccaa00","--bg":"#080700","--card-bg":"#141100","--border":"rgba(255,221,0,0.22)","--text":"#fff9cc","--muted":"#888800"},particle:"255,221,0"}
-};
+const THEMES={default:{label:"Default",icon:"⬛",vars:{"--green":"#00ff88","--green-dim":"#00cc66","--bg":"#060c08","--card-bg":"#0b1a13","--border":"rgba(0,255,136,0.20)","--text":"#d4ffe8","--muted":"#3d7a5e"},particle:"0,255,136"},winter:{label:"Winter",icon:"❄️",vars:{"--green":"#88ddff","--green-dim":"#55bbee","--bg":"#060d14","--card-bg":"#0a1520","--border":"rgba(136,221,255,0.22)","--text":"#d0eeff","--muted":"#3a6a88"},particle:"136,221,255"},easter:{label:"Easter",icon:"🐣",vars:{"--green":"#c8ff88","--green-dim":"#aae055","--bg":"#0c0f06","--card-bg":"#141a0a","--border":"rgba(200,255,136,0.22)","--text":"#edffd0","--muted":"#5a7a3a"},particle:"200,255,136"},christmas:{label:"Christmas",icon:"🎄",vars:{"--green":"#ff4444","--green-dim":"#cc2222","--bg":"#080606","--card-bg":"#160c0c","--border":"rgba(255,68,68,0.22)","--text":"#ffd0d0","--muted":"#883a3a"},particle:"255,68,68"},halloween:{label:"Halloween",icon:"🎃",vars:{"--green":"#ff8800","--green-dim":"#cc6600","--bg":"#080500","--card-bg":"#140c00","--border":"rgba(255,136,0,0.22)","--text":"#ffddb0","--muted":"#885500"},particle:"255,136,0"},summer:{label:"Summer",icon:"☀️",vars:{"--green":"#ffdd00","--green-dim":"#ccaa00","--bg":"#080700","--card-bg":"#141100","--border":"rgba(255,221,0,0.22)","--text":"#fff9cc","--muted":"#888800"},particle:"255,221,0"}};
 function applyTheme(k){const t=THEMES[k]||THEMES.default;for(const[p,v]of Object.entries(t.vars))document.documentElement.style.setProperty(p,v);window.__pc=t.particle;}
 
-// ── PASSWORD ─────────────────────────────────────────────────
-// Password: Cmdr@DLC#2026!Secure  (XOR obfuscated — no plaintext)
+// ── PASSWORD (XOR obfuscated) — Password: Cmdr@DLC#2026!Secure ──
 const _xk=[0x4F,0x2A,0x7B,0x1C,0x88,0x34,0xF2,0x09,0x5D,0xA1,0x6E,0x3B,0xCC,0x77,0x20,0xE4,0x91,0x58];
-const _pb=(function(){return "Cmdr@DLC#2026!Secure".split('').map((c,i)=>c.charCodeAt(0)^_xk[i%_xk.length]);})();
+const _pb=(()=>"Cmdr@DLC#2026!Secure".split('').map((c,i)=>c.charCodeAt(0)^_xk[i%_xk.length]))();
 function _deob(a){return a.map((b,i)=>String.fromCharCode(b^_xk[i%_xk.length])).join('');}
 let _att=0,_locked=false;
 function togglePw(){const f=document.getElementById('pw-input');f.type=f.type==='password'?'text':'password';}
@@ -207,52 +206,45 @@ async function checkAccess(){
   const input=document.getElementById('pw-input').value;
   const err=document.getElementById('gate-err');
   await new Promise(r=>setTimeout(r,300+Math.random()*200));
-  if(input===_deob(_pb)){
-    _att=0;sessionStorage.setItem('_a',btoa('granted:'+Date.now()));showPanel();
-  }else{
-    _att++;
-    document.getElementById('pw-input').value='';
+  if(input===_deob(_pb)){_att=0;sessionStorage.setItem('_a',btoa('granted:'+Date.now()));showPanel();}
+  else{
+    _att++;document.getElementById('pw-input').value='';
     document.getElementById('gate').style.animation='shake .4s ease';
     setTimeout(()=>document.getElementById('gate').style.animation='',400);
-    if(_att>=5){
-      _locked=true;let sec=30;
-      const iv=setInterval(()=>{err.textContent=`[ LOCKED ${sec}s ]`;sec--;if(sec<0){clearInterval(iv);_locked=false;_att=0;err.textContent='';}},1000);
-    }else{
-      err.textContent=`[ ACCESS DENIED — ${5-_att} attempt${5-_att===1?'':'s'} left ]`;
-    }
+    if(_att>=5){_locked=true;let s=30;const iv=setInterval(()=>{err.textContent='[ LOCKED '+s+'s ]';s--;if(s<0){clearInterval(iv);_locked=false;_att=0;err.textContent='';}},1000);}
+    else err.textContent='[ ACCESS DENIED — '+(5-_att)+' attempt'+(5-_att===1?'':'s')+' left ]';
   }
 }
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkAccess();});
-  const s=sessionStorage.getItem('_a');
-  if(s){try{if(atob(s).startsWith('granted:'))showPanel();}catch(e){}}
+  const s=sessionStorage.getItem('_a');if(s){try{if(atob(s).startsWith('granted:'))showPanel();}catch(e){}}
   initParticles();
 });
 function logout(){sessionStorage.removeItem('_a');document.getElementById('panel').style.display='none';document.getElementById('gate').style.display='block';document.getElementById('pw-input').value='';document.getElementById('gate-err').textContent='';_att=0;_locked=false;}
 
-// ── PANEL ──────────────────────────────────────────────────
+// ── PANEL ────────────────────────────────────────────────────
 async function showPanel(){
   document.getElementById('gate').style.display='none';
   document.getElementById('panel').style.display='block';
   buildThemeGrid();
   await loadAdminSettings();
-  await loadBuyers();
+  loadBuyers();
+  loadApplications();
 }
 function buildThemeGrid(){
   const g=document.getElementById('theme-grid');g.innerHTML='';
   for(const[k,t]of Object.entries(THEMES)){
     const b=document.createElement('button');b.className='theme-btn';b.dataset.key=k;
-    b.innerHTML=`<span class="t-icon">${t.icon}</span><span class="t-name">${t.label}</span>`;
+    b.innerHTML='<span class="t-icon">'+t.icon+'</span><span class="t-name">'+t.label+'</span>';
     b.onclick=()=>setTheme(k);g.appendChild(b);
   }
 }
 async function loadAdminSettings(){
   setStatus('Loading settings…');
   try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/settings?select=key,value`,{method:'GET',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json'}});
+    const res=await fetch(SUPABASE_URL+'/rest/v1/settings?select=key,value',{method:'GET',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON,'Content-Type':'application/json'}});
     if(!res.ok)throw new Error('HTTP '+res.status);
-    const rows=await res.json();
-    const map=Object.fromEntries(rows.map(r=>[r.key,r.value]));
+    const rows=await res.json();const map=Object.fromEntries(rows.map(r=>[r.key,r.value]));
     document.getElementById('toggle-maintenance').checked=map.maintenance==='true';
     highlightTheme(map.theme||'default');applyTheme(map.theme||'default');
     setStatus('Settings loaded.','ok');
@@ -262,11 +254,11 @@ async function loadAdminSettings(){
   }
 }
 async function saveSetting(key,value){
-  setStatus(`Saving ${key}…`);
+  setStatus('Saving '+key+'…');
   try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/settings?on_conflict=key`,{method:'POST',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key,value})});
+    const res=await fetch(SUPABASE_URL+'/rest/v1/settings?on_conflict=key',{method:'POST',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key,value})});
     if(!res.ok)throw new Error('HTTP '+res.status);
-    setStatus(`✓ Saved: ${key} = ${value}`,'ok');
+    setStatus('✓ Saved: '+key+' = '+value,'ok');
   }catch(e){setStatus('Error: '+e.message,'err');}
 }
 function setTheme(k){applyTheme(k);highlightTheme(k);saveSetting('theme',k);}
@@ -278,89 +270,176 @@ function highlightTheme(k){
   });
 }
 
-// ── BUYERS ─────────────────────────────────────────────────
+// ── DATA TAB SWITCHER ────────────────────────────────────────
+function switchDataTab(name, btn){
+  document.querySelectorAll('.data-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.data-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ── PURCHASES TABLE ──────────────────────────────────────────
 const TAG_LABELS={pending:'Pending',owner:'Owner',active:'Active',blocked:'Blocked',confirmed:'Confirmed'};
+
 async function loadBuyers(){
   const tbl=document.getElementById('buyers-table');
   const cnt=document.getElementById('buyers-count');
   tbl.innerHTML='<div class="buyers-empty">[ Loading... ]</div>';
   try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/purchases?select=id,roblox_username,roblox_id,tag,device_browser,device_os,device_screen,device_timezone,timestamp&order=timestamp.desc`,{method:'GET',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json'}});
+    const res=await fetch(
+      SUPABASE_URL+'/rest/v1/purchases?select=id,roblox_username,roblox_id,tag,device_browser,device_os,device_platform,device_screen,device_timezone,device_lang,timestamp&order=timestamp.desc',
+      {method:'GET',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON,'Content-Type':'application/json'}}
+    );
     if(!res.ok)throw new Error('HTTP '+res.status);
     const rows=await res.json();
-    cnt.textContent=`// ${rows.length} registration${rows.length===1?'':'s'}`;
+    cnt.textContent='// '+rows.length+' registration'+(rows.length===1?'':'s');
     if(!rows.length){tbl.innerHTML='<div class="buyers-empty">[ No registrations yet ]</div>';return;}
-    let h='<table class="bt"><thead><tr><th>#</th><th>Username</th><th>Roblox ID</th><th>Tag</th><th>Device</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+    let h='<table class="bt"><thead><tr><th>#</th><th>Username</th><th>Roblox ID</th><th>Tag</th><th>Browser</th><th>OS</th><th>Screen</th><th>Timezone</th><th>Lang</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
     for(const r of rows){
-      const d=new Date(r.timestamp).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const d=new Date(r.timestamp).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
       const tag=r.tag||'pending';
-      const pill=`<span class="tag-pill tag-${tag}">${TAG_LABELS[tag]||tag}</span>`;
-      const dev=`<div class="device-cell">${r.device_browser||'?'} / ${r.device_os||'?'}<br/>${r.device_screen||''} · ${r.device_timezone||''}</div>`;
-      h+=`<tr>
-        <td style="color:var(--muted)">${r.id}</td>
-        <td><a class="rbx-link" href="https://www.roblox.com/users/${r.roblox_id}/profile" target="_blank">${r.roblox_username}</a></td>
-        <td style="color:var(--muted)">${r.roblox_id}</td>
-        <td>${pill}</td>
-        <td>${dev}</td>
-        <td style="color:var(--muted);font-size:.62rem;white-space:nowrap">${d}</td>
-        <td style="white-space:nowrap">
-          <button class="action-btn tag-action" onclick="openTagModal(${r.id},'${r.roblox_username}')">Tag</button>
-          <button class="action-btn del" onclick="deleteEntry(${r.id},'${r.roblox_username}')">Del</button>
-        </td>
-      </tr>`;
+      const pill='<span class="tag-pill tag-'+tag+'">'+(TAG_LABELS[tag]||tag)+'</span>';
+      const esc=s=>(s||'?').replace(/'/g,"&#39;");
+      h+='<tr>'
+        +'<td style="color:var(--muted)">'+r.id+'</td>'
+        +'<td><a class="rbx-link" href="https://www.roblox.com/users/'+r.roblox_id+'/profile" target="_blank">'+r.roblox_username+'</a></td>'
+        +'<td style="color:var(--muted)">'+r.roblox_id+'</td>'
+        +'<td>'+pill+'</td>'
+        +'<td class="device-cell">'+(r.device_browser||'?')+'</td>'
+        +'<td class="device-cell">'+(r.device_os||'?')+'</td>'
+        +'<td class="device-cell">'+(r.device_screen||'?')+'</td>'
+        +'<td class="device-cell" style="font-size:.57rem">'+(r.device_timezone||'?')+'</td>'
+        +'<td class="device-cell">'+(r.device_lang||'?')+'</td>'
+        +'<td style="color:var(--muted);font-size:.6rem;white-space:nowrap">'+d+'</td>'
+        +'<td style="white-space:nowrap">'
+          +'<button class="action-btn tag-action" onclick="openTagModal('+r.id+',\''+esc(r.roblox_username)+'\',\'purchases\')">Tag</button>'
+          +'<button class="action-btn del" onclick="deleteEntry('+r.id+',\''+esc(r.roblox_username)+'\',\'purchases\')">Del</button>'
+        +'</td>'
+        +'</tr>';
     }
-    h+='</tbody></table>';
-    tbl.innerHTML=h;
-  }catch(e){
-    cnt.textContent='// Error';
-    tbl.innerHTML=`<div class="buyers-empty">[ Error: ${e.message} ]</div>`;
-  }
+    h+='</tbody></table>';tbl.innerHTML=h;
+  }catch(e){cnt.textContent='// Error';tbl.innerHTML='<div class="buyers-empty">[ Error: '+e.message+' ]</div>';}
 }
 
-async function deleteEntry(id, name){
-  if(!confirm(`Delete "${name}" (ID: ${id})? This cannot be undone.`))return;
-  setStatus(`Deleting ${name}…`);
+// ── APPLICATIONS TABLE ───────────────────────────────────────
+const APP_STATUS={pending:'Pending',accepted:'Accepted',rejected:'Rejected'};
+
+async function loadApplications(){
+  const tbl=document.getElementById('apps-table');
+  const cnt=document.getElementById('apps-count');
+  tbl.innerHTML='<div class="buyers-empty">[ Loading... ]</div>';
   try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/purchases?id=eq.${id}`,{method:'DELETE',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json'}});
+    const res=await fetch(
+      SUPABASE_URL+'/rest/v1/applications?select=id,roblox_username,roblox_id,discord,age,role,experience,skills,status,device_browser,device_os,device_screen,device_timezone,timestamp&order=timestamp.desc',
+      {method:'GET',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON,'Content-Type':'application/json'}}
+    );
     if(!res.ok)throw new Error('HTTP '+res.status);
-    setStatus(`✓ Deleted: ${name}`,'ok');
-    await loadBuyers();
-  }catch(e){setStatus('Error deleting: '+e.message,'err');}
+    const rows=await res.json();
+    cnt.textContent='// '+rows.length+' application'+(rows.length===1?'':'s');
+    if(!rows.length){tbl.innerHTML='<div class="buyers-empty">[ No applications yet ]</div>';return;}
+    let h='<table class="bt"><thead><tr><th>#</th><th>Username</th><th>Discord</th><th>Age</th><th>Role</th><th>Exp</th><th>Skills</th><th>Status</th><th>Browser</th><th>OS</th><th>Screen</th><th>Timezone</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+    for(const r of rows){
+      const d=new Date(r.timestamp).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+      const st=r.status||'pending';
+      const stColor=st==='accepted'?'var(--green)':st==='rejected'?'var(--red)':'#aaa';
+      const esc=s=>(s||'?').replace(/'/g,"&#39;");
+      h+='<tr>'
+        +'<td style="color:var(--muted)">'+r.id+'</td>'
+        +'<td><a class="rbx-link" href="https://www.roblox.com/users/'+r.roblox_id+'/profile" target="_blank">'+r.roblox_username+'</a></td>'
+        +'<td style="color:var(--muted)">'+esc(r.discord)+'</td>'
+        +'<td style="color:var(--muted)">'+r.age+'</td>'
+        +'<td>'+esc(r.role)+'</td>'
+        +'<td style="color:var(--muted)">'+esc(r.experience)+'</td>'
+        +'<td style="font-size:.6rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(r.skills)+'">'+esc(r.skills)+'</td>'
+        +'<td><span style="font-family:\'Share Tech Mono\',monospace;font-size:.6rem;color:'+stColor+'">'+st.toUpperCase()+'</span></td>'
+        +'<td class="device-cell">'+(r.device_browser||'?')+'</td>'
+        +'<td class="device-cell">'+(r.device_os||'?')+'</td>'
+        +'<td class="device-cell">'+(r.device_screen||'?')+'</td>'
+        +'<td class="device-cell" style="font-size:.57rem">'+(r.device_timezone||'?')+'</td>'
+        +'<td style="color:var(--muted);font-size:.6rem;white-space:nowrap">'+d+'</td>'
+        +'<td style="white-space:nowrap">'
+          +'<button class="action-btn tag-action" onclick="openTagModal('+r.id+',\''+esc(r.roblox_username)+'\',\'applications\')">Status</button>'
+          +'<button class="action-btn del" onclick="deleteEntry('+r.id+',\''+esc(r.roblox_username)+'\',\'applications\')">Del</button>'
+        +'</td>'
+        +'</tr>';
+    }
+    h+='</tbody></table>';tbl.innerHTML=h;
+  }catch(e){cnt.textContent='// Error';tbl.innerHTML='<div class="buyers-empty">[ Error: '+e.message+' ]</div>';}
 }
 
-// ── TAG MODAL ───────────────────────────────────────────────
-let _tagEditId=null;
-function openTagModal(id, name){
-  _tagEditId=id;
+// ── DELETE ───────────────────────────────────────────────────
+async function deleteEntry(id, name, table){
+  if(!confirm('Delete "'+name+'" from '+table+'? This cannot be undone.'))return;
+  setStatus('Deleting '+name+'…');
+  try{
+    const res=await fetch(SUPABASE_URL+'/rest/v1/'+table+'?id=eq.'+id,{method:'DELETE',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON,'Content-Type':'application/json'}});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    setStatus('✓ Deleted: '+name,'ok');
+    if(table==='purchases')loadBuyers(); else loadApplications();
+  }catch(e){setStatus('Error: '+e.message,'err');}
+}
+
+// ── TAG / STATUS MODAL ───────────────────────────────────────
+let _tagId=null, _tagTable=null;
+function openTagModal(id, name, table){
+  _tagId=id; _tagTable=table;
   document.getElementById('tag-modal-name').textContent=name;
+  // Swap options based on table
+  const opts=document.getElementById('tag-modal').querySelector('.tag-options');
+  if(table==='applications'){
+    opts.innerHTML=
+      '<div class="tag-opt" onclick="applyTag(\'pending\')">  <span class="tag-pill tag-pending">Pending</span>  &nbsp;Awaiting review</div>'+
+      '<div class="tag-opt" onclick="applyTag(\'accepted\')"> <span class="tag-pill tag-active">Accepted</span>  &nbsp;Application accepted</div>'+
+      '<div class="tag-opt" onclick="applyTag(\'rejected\')"> <span class="tag-pill tag-blocked">Rejected</span>  &nbsp;Application rejected</div>';
+  } else {
+    opts.innerHTML=
+      '<div class="tag-opt" onclick="applyTag(\'pending\')">  <span class="tag-pill tag-pending">Pending</span>  &nbsp;Default / no tag</div>'+
+      '<div class="tag-opt" onclick="applyTag(\'active\')">   <span class="tag-pill tag-active">Active</span>    &nbsp;DLC confirmed active</div>'+
+      '<div class="tag-opt" onclick="applyTag(\'confirmed\')"><span class="tag-pill tag-confirmed">Confirmed</span>&nbsp;Purchase confirmed</div>'+
+      '<div class="tag-opt" onclick="applyTag(\'blocked\')">  <span class="tag-pill tag-blocked">Blocked</span>   &nbsp;User is blocked</div>'+
+      '<div class="tag-opt" onclick="applyTag(\'owner\')">    <span class="tag-pill tag-owner">Owner</span>      &nbsp;Site owner</div>';
+  }
   document.getElementById('tag-modal').classList.add('open');
 }
-function closeTagModal(){document.getElementById('tag-modal').classList.remove('open');_tagEditId=null;}
+function closeTagModal(){document.getElementById('tag-modal').classList.remove('open');_tagId=null;_tagTable=null;}
 document.getElementById('tag-modal').addEventListener('click',function(e){if(e.target===this)closeTagModal();});
-async function applyTag(tag){
-  if(!_tagEditId)return;
+
+async function applyTag(value){
+  if(!_tagId||!_tagTable)return;
+  const tbl=_tagTable; const id=_tagId;
   closeTagModal();
-  setStatus(`Setting tag to ${tag}…`);
+  setStatus('Updating…');
+  // ── FIX: correct field name per table + correct headers ──
+  const field = tbl==='applications' ? 'status' : 'tag';
+  const body  = JSON.stringify({[field]: value});
   try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/purchases?id=eq.${_tagEditId}`,{method:'PATCH',mode:'cors',headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({tag})});
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    setStatus(`✓ Tag updated to [${tag}]`,'ok');
-    await loadBuyers();
+    const res=await fetch(
+      SUPABASE_URL+'/rest/v1/'+tbl+'?id=eq.'+id,
+      {
+        method:  'PATCH',
+        mode:    'cors',
+        headers: {
+          'apikey':         SUPABASE_ANON,
+          'Authorization':  'Bearer '+SUPABASE_ANON,
+          'Content-Type':   'application/json',
+          'Prefer':         'return=representation'   // ← required for PATCH to work correctly
+        },
+        body: body
+      }
+    );
+    if(!res.ok){
+      const errBody=await res.text();
+      throw new Error('HTTP '+res.status+': '+errBody);
+    }
+    setStatus('✓ Updated to ['+value+']','ok');
+    if(tbl==='purchases')loadBuyers(); else loadApplications();
   }catch(e){setStatus('Error: '+e.message,'err');}
 }
 
 let _st;
-function setStatus(msg,type=''){const el=document.getElementById('status-bar');el.textContent=msg;el.className='status-bar '+type;clearTimeout(_st);if(type==='ok')_st=setTimeout(()=>el.textContent='',3000);}
+function setStatus(msg,type=''){const el=document.getElementById('status-bar');el.textContent=msg;el.className='status-bar '+type;clearTimeout(_st);if(type==='ok')_st=setTimeout(()=>el.textContent='',3500);}
 
-// ── PARTICLES ───────────────────────────────────────────────
-function initParticles(){
-  const c=document.getElementById('particles'),x=c.getContext('2d');let W,H,pts=[];
-  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);
-  const col=()=>window.__pc||'0,255,136';function rnd(a,b){return a+Math.random()*(b-a);}
-  function mkP(){return{x:rnd(0,W),y:rnd(0,H),r:rnd(.4,1.8),vx:rnd(-.1,.1),vy:rnd(-.25,-.05),a:rnd(.1,.45),fade:rnd(.002,.004)};}
-  for(let i=0;i<80;i++)pts.push(mkP());
-  function draw(){x.clearRect(0,0,W,H);x.shadowBlur=4;x.shadowColor=`rgb(${col()})`;for(let p of pts){x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle=`rgba(${col()},${p.a})`;x.fill();p.x+=p.vx;p.y+=p.vy;p.a-=p.fade;if(p.a<=0||p.y<-8){Object.assign(p,mkP());p.y=H+5;p.a=rnd(.1,.45);}}requestAnimationFrame(draw);}draw();
-}
+function initParticles(){const c=document.getElementById('particles'),x=c.getContext('2d');let W,H,pts=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const col=()=>window.__pc||'0,255,136';function rnd(a,b){return a+Math.random()*(b-a);}function mkP(){return{x:rnd(0,W),y:rnd(0,H),r:rnd(.4,1.8),vx:rnd(-.1,.1),vy:rnd(-.25,-.05),a:rnd(.1,.45),fade:rnd(.002,.004)};}for(let i=0;i<80;i++)pts.push(mkP());function draw(){x.clearRect(0,0,W,H);x.shadowBlur=4;x.shadowColor='rgb('+col()+')';for(let p of pts){x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);x.fillStyle='rgba('+col()+','+p.a+')';x.fill();p.x+=p.vx;p.y+=p.vy;p.a-=p.fade;if(p.a<=0||p.y<-8){Object.assign(p,mkP());p.y=H+5;p.a=rnd(.1,.45);}}requestAnimationFrame(draw);}draw();}
 </script>
 </body>
 </html>
