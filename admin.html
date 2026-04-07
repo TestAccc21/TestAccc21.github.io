@@ -197,7 +197,7 @@ function applyTheme(k){const t=THEMES[k]||THEMES.default;for(const[p,v]of Object
 
 // ── PASSWORD (XOR obfuscated) — Password: Cmdr@DLC#2026!Secure ──
 const _xk=[0x4F,0x2A,0x7B,0x1C,0x88,0x34,0xF2,0x09,0x5D,0xA1,0x6E,0x3B,0xCC,0x77,0x20,0xE4,0x91,0x58];
-const _pb=(()=>"CmdrSystem2026AdminPanel#!CmdrAdmin:Max,CmdrSystem".split('').map((c,i)=>c.charCodeAt(0)^_xk[i%_xk.length]))();
+const _pb=(()=>"Cmdr@DLC#2026!Secure".split('').map((c,i)=>c.charCodeAt(0)^_xk[i%_xk.length]))();
 function _deob(a){return a.map((b,i)=>String.fromCharCode(b^_xk[i%_xk.length])).join('');}
 let _att=0,_locked=false;
 function togglePw(){const f=document.getElementById('pw-input');f.type=f.type==='password'?'text':'password';}
